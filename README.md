@@ -1,2 +1,2 @@
 # Birthday Discord Bot
-    - Bot created by **Dan** and **Ethan**
+    - Bot created by __Dan__ and __Ethan__
