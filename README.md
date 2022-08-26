@@ -4,7 +4,7 @@ Bot created by **Dan** and **Ethan**
 
 ## Description
 
-Our description will go here
+Discord bot sending happy birthday messages to all users
 
 ## Roadmap
 
