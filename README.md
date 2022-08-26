@@ -7,3 +7,15 @@ Bot created by **Dan** and **Ethan**
 Our description will go here
 
 ## Roadmap
+
+-   [ ] Create discord server
+-   [ ] Create bot
+-   [ ] Connect to bot with token in python
+-   [ ] Create command to recieve birthdays
+    -   [ ] Specify birthday format (mm-dd-yyyy)
+    -   [ ] Store the birthdays somewhere (excel, database?)
+-   [ ] Create methods to access birthdays
+-   [ ] Create methods to scan birthdays for todays date (every 24 hr)
+-   [ ] Create methods to print birthday message
+    -   [ ] Attach random message with birthday message
+    -   [ ] Customize birthday message to specific user
