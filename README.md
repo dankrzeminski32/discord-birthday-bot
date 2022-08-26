@@ -4,7 +4,8 @@ Bot created by **Dan** and **Ethan**
 
 ## Description
 
-Our description will go here
+Our description will go here.
+Our description is as follows:
 
 ## Roadmap
 
