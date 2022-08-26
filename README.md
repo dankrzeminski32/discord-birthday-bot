@@ -8,9 +8,9 @@ Discord bot sending happy birthday messages to all users
 
 ## Roadmap
 
--   [ ] Create discord server
--   [ ] Create bot
--   [ ] Connect to bot with token in python
+-   [x] Create discord server
+-   [x] Create bot
+-   [x] Connect to bot with token in python
 -   [ ] Create command to recieve birthdays
     -   [ ] Specify birthday format (mm-dd-yyyy)
     -   [ ] Store the birthdays somewhere (excel, database?)
