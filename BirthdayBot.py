@@ -1,5 +1,3 @@
-import asyncio
-from tabnanny import check
 import discord
 from config import DiscordBotToken
 from discord.ext import commands
