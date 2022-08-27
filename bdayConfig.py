@@ -14,16 +14,21 @@ class bdayConfig:
             return False
 
     def bdayCheck():
+        todaysBirthdays = []
         today = date.today()
-        today = today.strftime("%m/%d")
+        today = today.strftime("%m/%d/%y")
         #print("Today's date:", today)
         data = pd.read_csv("DiscordBirthdays.csv")
 
-        data.columns = ["Name", "Birthday"]
-        rawlist = list(data.Birthday)
-        print(rawlist)
-        for i in rawlist:
-            if today == i:
+        data.columns = ["DiscordName", "Birthday"]
+        dateList = list(data.Birthday)
+        nameList = list(data.DiscordName)
+        print(dateList)
+        print(nameList)
+
+        for i in dateList:
+            if i == today:
+                todaysBirthdays += [i]
                 birthday = True
             else:
                 birthday = False
@@ -32,6 +37,7 @@ class bdayConfig:
             #else:
                 #print("This date is invalid")
         print(birthday)
+        print(todaysBirthdays)
 
 
 
