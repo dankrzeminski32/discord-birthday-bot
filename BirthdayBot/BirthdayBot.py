@@ -12,6 +12,7 @@ intents = discord.Intents.default()
 intents.message_content = True
 
 client = commands.Bot(command_prefix = ".", intents = intents)
+
 if file_exists:
     if os.stat(file_path).st_size == 0:
         with open('DiscordBirthdays.csv', "w", newline="") as file:
@@ -43,6 +44,7 @@ async def bday(ctx):
 
     def check(msg):
         return msg.author == ctx.author and msg.channel == ctx.channel and msg.content.startswith("0")
+
     msg = await client.wait_for('message', check=check)
     if msg.content.startswith("0"):
         await ctx.send("Your birthday has been stored in our database!")
