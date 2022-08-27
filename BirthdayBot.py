@@ -23,5 +23,15 @@ async def bday(ctx):
         color = discord.Color.blue()
     )
     await ctx.send(embed=embed)
+    
+    def check(msg):
+        return msg.author == ctx.author and msg.channel == ctx.channel and msg.content.startswith("0")
+    msg = await client.wait_for('message', check=check)
+    if msg.startswith("0"):
+        await ctx.send("Your birthday has been stored in our database!")
+
+    await ctx.send("test".format(msg))
+    user = ctx.author
+    await ctx.send(ctx.author)
 
 client.run(DiscordBotToken)
