@@ -1,4 +1,4 @@
-config.py
+config/config.py
 __pycache__
 venv/
 DiscordBirthdays.csv
