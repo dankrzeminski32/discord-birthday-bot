@@ -1,4 +1,5 @@
 import discord
+import csv
 from config import DiscordBotToken
 from discord.ext import commands
 
@@ -6,6 +7,11 @@ intents = discord.Intents.default()
 intents.message_content = True
 
 client = commands.Bot(command_prefix = ".", intents = intents)
+
+with open('DiscordBirthdays.csv', "w", newline="") as file:
+    myFile =csv.writer(file)
+
+    myFile.writerow(["DiscordName","Birthday"])
 
 @client.event
 async def on_ready():
@@ -29,8 +35,14 @@ async def bday(ctx):
     msg = await client.wait_for('message', check=check)
     if msg.content.startswith("0"):
         await ctx.send("Your birthday has been stored in our database!")
-        
+
+    await ctx.send(msg.content)    
     user = ctx.author
+    userBirthday = msg.content
     await ctx.send(ctx.author)
+    
+    with open('DiscordBirthdays.csv', "a", newline="") as file:
+        myFile = csv.writer(file)
+        myFile.writerow([user, userBirthday])
 
 client.run(DiscordBotToken)
