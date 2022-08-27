@@ -25,7 +25,7 @@ async def on_ready():
 async def test(ctx):
     await ctx.send("Hello World!")
 
-@client.command(name="bday")
+@client.command()
 async def bday(ctx):
     embed = discord.Embed(
         title = "Please enter your Birthday (Ex:07/11/01)",
