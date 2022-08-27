@@ -29,8 +29,7 @@ async def bday(ctx):
     msg = await client.wait_for('message', check=check)
     if msg.content.startswith("0"):
         await ctx.send("Your birthday has been stored in our database!")
-
-    await ctx.send("test".format(msg))
+        
     user = ctx.author
     await ctx.send(ctx.author)
 
