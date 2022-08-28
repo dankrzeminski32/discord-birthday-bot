@@ -23,7 +23,7 @@ class BirthdayChecker(object):
         today = date.today()
         today = today.strftime("%m/%d/%y")
 
-        with open('../{}'.format(self.csvfileName)) as f:
+        with open(self.csvfileName) as f:
             reader = csv.reader(f)
             next(reader, None)
             for row in reader:
@@ -37,6 +37,3 @@ class BirthdayChecker(object):
             return True
         except ValueError:
             return False
-
-birthdaychecker = BirthdayChecker("DiscordBirthdays.csv")
-print(birthdaychecker.getBirthdays())
