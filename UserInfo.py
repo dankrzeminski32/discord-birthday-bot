@@ -1,33 +1,52 @@
 import csv
+import discord
+from csv import reader
 from datetime import datetime
 from datetime import date
+from discord.ext import commands
+from discord.utils import get
 
+# Create permission intents, state what our bot should be able to do
+intents = discord.Intents.default()
+intents.message_content = True
 
-class UserAgeInfo():
+bot = commands.Bot(command_prefix = ".", intents = intents)
 
-    def __init__(self, filename):
+class UserAgeInfo(commands.Cog):
+
+    def __init__(self, bot):
         self.csvFile = "DiscordBirthdays.csv"
-    
-    def getUserAge(self):
-        today = date.today()
-        today = today.strftime("%m/%d/%y")
+        self.bot = bot
 
-        age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
+    """ ---- COMMANDS ---- """
+    @commands.command()
+    async def test(self, ctx, arg):
 
+        def check(arg):
+            return arg.author == ctx.author and arg.channel == ctx.channel
+        
+        arg = arg[2:len(arg)]
+        arg = arg[:-1]
+
+        birthdate = []
         with open(self.csvFile) as f:
             reader = csv.reader(f)
             next(reader, None)
             for row in reader:
-                if row[1] == today and self.isDateValid(str(row[1]), "%m/%d/%y"):
-                    return row
+                if row[2] == arg:
+                    birthdate = row[1]
         
+        userAge = self.getUserAge(birthdate)
+        print(userAge)
     
-    def isDateValid(self, date, pattern="%m/%d/%y"):
-        try:
-            datetime.strptime(date[:5], pattern)
-            return True
-        except ValueError:
-            return False
+    """ ---- HELPERS ---- """
+    def getUserAge(self, birthdate):
+        today = date.today()
+        today = today.strftime("%m/%d/%Y")
 
-test = UserAgeInfo("DiscordBirthdays.csv")
-test.getUserAge()
+        age = int(today[-4:]) - int(birthdate[-4:]) - ((int(today[:1]), int(today[3:5])) < (int(birthdate[:1]), int(birthdate[3:5])))
+        return age
+
+async def setup(bot):
+    await bot.add_cog(UserAgeInfo(bot))
+#test = UserAgeInfo("DiscordBirthdays.csv", bot)
