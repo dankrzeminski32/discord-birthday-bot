@@ -18,14 +18,26 @@ class Registration(commands.Cog):
             return msg.author == ctx.author and msg.channel == ctx.channel and msg.content.startswith("0")
 
         msg = await self.bot.wait_for('message', check=check)
-        await ctx.send("{}, Your birthday ({}) has been stored in our database!".format(msg.author,msg.content))
-        await self.sendConfirmationMessage(ctx)
-        self.writeUserToCSV(username = msg.author,birthday = msg.content)
-
-    """ ---- HELPERS ---- """
-    async def sendConfirmationMessage(self, ctx):
+        # await ctx.send("{}, Your birthday ({}) has been stored in our database!".format(msg.author,msg.content))
         view = RegistrationButtons()
+        
+        await self.sendConfirmationMessage(ctx,view)
+        
+        if view.userConfirmation is None:
+            await ctx.send("Timed out")
+        elif view.userConfirmation:
+            self.writeUserToCSV(username = msg.author,birthday = msg.content)
+            await ctx.send("{}, Your birthday ({}) has been stored in our database!".format(msg.author,msg.content))
+        else:
+            await ctx.send("Please try again...")
+            ctx.invoke(self.bot.get_command('bday')) #broken
+            
+    """ ---- HELPERS ---- """
+    async def sendConfirmationMessage(self, ctx, view):
         await ctx.send("Is this correct?", view=view)
+        await view.wait()
+
+        
     
     
     async def sendRegistrationMessage(self, ctx):
@@ -48,14 +60,17 @@ async def setup(bot):
 
 class RegistrationButtons(discord.ui.View):
     def __init__(self, *, timeout=180):
-        super().__init__(timeout=timeout)  
+        super().__init__(timeout=timeout)
+        self.userConfirmation = None 
         
     @discord.ui.button(label="Yes!",style=discord.ButtonStyle.green) # or .success
-    async def green_button(self,button:discord.ui.Button,interaction:discord.Interaction):
-        button.disabled=True
-        await interaction.response.edit_message(view=self)
+    async def yes(self,interaction:discord.Interaction,button:discord.ui.Button):
+        await interaction.response.send_message("Confirming", ephemeral=True)
+        self.userConfirmation = True
+        self.stop()
         
     @discord.ui.button(label="No!",style=discord.ButtonStyle.red) # or .danger
-    async def red_button(self,button:discord.ui.Button,interaction:discord.Interaction):
-        button.disabled=True
-        await interaction.response.edit_message(view=self)
+    async def no(self,interaction:discord.Interaction,button:discord.ui.Button):
+        await interaction.response.send_message("Please try again...", ephemeral=True)
+        self.value = False
+        self.stop()
