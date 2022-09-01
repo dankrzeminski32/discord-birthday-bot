@@ -12,6 +12,7 @@ class Registration(commands.Cog):
     async def bday(self, ctx):
         await self.sendRegistrationMessage(ctx)
 
+        #Need to improve this validation
         def check(msg):
             return msg.author == ctx.author and msg.channel == ctx.channel and msg.content.startswith("0")
 
@@ -28,7 +29,8 @@ class Registration(commands.Cog):
         )
         await ctx.send(embed=embed)
     
-    def writeUserToCSV(self, username, birthday):
+    @staticmethod
+    def writeUserToCSV(username: str, birthday: str):
         with open('DiscordBirthdays.csv', "a", newline="") as file:
             myFile = csv.writer(file)
             myFile.writerow([username, birthday])
