@@ -37,7 +37,9 @@ class UserAgeInfo(commands.Cog):
                     birthdate = row[1]
         
         userAge = self.getUserAge(birthdate)
+        numDays = self.daysAway(birthdate)
         print(userAge)
+        print(numDays)
     
     """ ---- HELPERS ---- """
     def getUserAge(self, birthdate):
@@ -46,6 +48,15 @@ class UserAgeInfo(commands.Cog):
 
         age = int(today[-4:]) - int(birthdate[-4:]) - ((int(today[:1]), int(today[3:5])) < (int(birthdate[:1]), int(birthdate[3:5])))
         return age
+
+    def daysAway(self, birthdate):
+        today = date.today()
+        #date_format = "%m/%d/%Y"
+        today = datetime.today()
+        birthdate = datetime.strptime(birthdate,'%m/%d')
+
+        days = (today - birthdate).days
+        return days
 
 async def setup(bot):
     await bot.add_cog(UserAgeInfo(bot))
