@@ -20,25 +20,42 @@ class Registration(commands.Cog):
         msg = await self.bot.wait_for('message', check=check)
         # await ctx.send("{}, Your birthday ({}) has been stored in our database!".format(msg.author,msg.content))
         view = RegistrationButtons()
-        
         await self.sendConfirmationMessage(ctx,view)
-        
         if view.userConfirmation is None:
             await ctx.send("Timed out")
         elif view.userConfirmation:
             self.writeUserToCSV(username = msg.author,birthday = msg.content)
             await ctx.send("{}, Your birthday ({}) has been stored in our database!".format(msg.author,msg.content))
         else:
-            await ctx.send("Please try again...")
-            ctx.invoke(self.bot.get_command('bday')) #broken
+            await self.retryLoop(ctx)
+            
             
     """ ---- HELPERS ---- """
+    async def retryLoop(self,ctx):
+        #Already know userConfirmation == false
+        # We want to generate a new view for each confirmation
+        loop = True
+        while loop:
+            view = RegistrationButtons()
+            view.userConfirmation = False
+            def check(msg):
+                return msg.author == ctx.author and msg.channel == ctx.channel and msg.content.startswith("0")
+            msg = await self.bot.wait_for('message', check=check)
+            await self.sendConfirmationMessage(ctx,view)
+            if view.userConfirmation != False:
+                loop = False
+                
+        if view.userConfirmation is None:
+            await ctx.send("Timed out")
+        elif view.userConfirmation:
+            self.writeUserToCSV(username = msg.author,birthday = msg.content)
+            await ctx.send("{}, Your birthday ({}) has been stored in our database!".format(msg.author,msg.content))
+        else:
+            print("failure")
+        
     async def sendConfirmationMessage(self, ctx, view):
         await ctx.send("Is this correct?", view=view)
         await view.wait()
-
-        
-    
     
     async def sendRegistrationMessage(self, ctx):
         embed = discord.Embed(
@@ -65,12 +82,12 @@ class RegistrationButtons(discord.ui.View):
         
     @discord.ui.button(label="Yes!",style=discord.ButtonStyle.green) # or .success
     async def yes(self,interaction:discord.Interaction,button:discord.ui.Button):
-        await interaction.response.send_message("Confirming", ephemeral=True)
+        await interaction.response.send_message("Confirming...") #Ephermal = True if we only want user to see, tbd
         self.userConfirmation = True
         self.stop()
         
     @discord.ui.button(label="No!",style=discord.ButtonStyle.red) # or .danger
     async def no(self,interaction:discord.Interaction,button:discord.ui.Button):
-        await interaction.response.send_message("Please try again...", ephemeral=True)
-        self.value = False
+        await interaction.response.send_message("Please try again... (mm/dd/yyyy)")
+        self.userConfirmation = False
         self.stop()
