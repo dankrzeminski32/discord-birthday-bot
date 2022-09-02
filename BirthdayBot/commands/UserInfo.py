@@ -20,7 +20,7 @@ class UserAgeInfo(commands.Cog):
 
     """ ---- COMMANDS ---- """
     @commands.command()
-    async def test(self, ctx, arg):
+    async def age(self, ctx, arg):
 
         def check(arg):
             return arg.author == ctx.author and arg.channel == ctx.channel
