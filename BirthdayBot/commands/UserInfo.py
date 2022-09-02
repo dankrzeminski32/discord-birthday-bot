@@ -34,10 +34,13 @@ class UserAgeInfo(commands.Cog):
             next(reader, None)
             for row in reader:
                 if row[2] == arg:
+                    argName = row[0]
                     birthdate = row[1]
-        
+
+        argName = argName[:-5]
         userAge = self.getUserAge(birthdate)
         numDays = self.daysAway(birthdate)
+        await ctx.send("```css\n" + argName +" is currently "+ str(userAge)+ " years old. Days until birthday: "+ str(numDays) + "```")
         print(userAge)
         print(numDays)
     
@@ -53,7 +56,7 @@ class UserAgeInfo(commands.Cog):
         today = date.today()
         #date_format = "%m/%d/%Y"
         today = datetime.today()
-        birthdate = datetime.strptime(birthdate,'%m/%d')
+        birthdate = datetime.strptime(birthdate,'%m/%d/%Y')
 
         days = (today - birthdate).days
         return days
