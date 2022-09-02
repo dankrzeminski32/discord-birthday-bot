@@ -19,7 +19,7 @@ class Registration(commands.Cog):
 
         msg = await self.bot.wait_for('message', check=check)
         # await ctx.send("{}, Your birthday ({}) has been stored in our database!".format(msg.author,msg.content))
-        view = RegistrationButtons()
+        view = RegistrationButtons(author = ctx.author)
         await self.sendConfirmationMessage(ctx,view)
         if view.userConfirmation is None:
             await ctx.send("Timed out")
@@ -36,7 +36,7 @@ class Registration(commands.Cog):
         # We want to generate a new view for each confirmation
         loop = True
         while loop:
-            view = RegistrationButtons()
+            view = RegistrationButtons(author = ctx.author)
             view.userConfirmation = False
             def check(msg):
                 return msg.author == ctx.author and msg.channel == ctx.channel and msg.content.startswith("0")
@@ -76,9 +76,10 @@ async def setup(bot):
 
 
 class RegistrationButtons(discord.ui.View):
-    def __init__(self, *, timeout=180):
+    def __init__(self, *, timeout=180, author):
         super().__init__(timeout=timeout)
         self.userConfirmation = None 
+        self.author = author
         
     @discord.ui.button(label="Yes!",style=discord.ButtonStyle.green) # or .success
     async def yes(self,interaction:discord.Interaction,button:discord.ui.Button):
@@ -91,3 +92,9 @@ class RegistrationButtons(discord.ui.View):
         await interaction.response.send_message("Please try again... (mm/dd/yyyy)")
         self.userConfirmation = False
         self.stop()
+
+    async def interaction_check(self, inter: discord.MessageInteraction) -> bool:
+        if inter.user != self.author:
+            await inter.response.send_message(content="You don't have permission to press this button.", ephemeral=True)
+            return False
+        return True;
