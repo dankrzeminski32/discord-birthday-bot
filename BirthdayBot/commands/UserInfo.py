@@ -53,12 +53,15 @@ class UserAgeInfo(commands.Cog):
         return age
 
     def daysAway(self, birthdate):
-        today = date.today()
-        #date_format = "%m/%d/%Y"
-        today = datetime.today()
-        birthdate = datetime.strptime(birthdate,'%m/%d/%Y')
+        if birthdate[0] == "0":
+            birthMonth = birthdate[1]
+        else:
+            birthMonth = birthdate[:1]
 
-        days = (today - birthdate).days
+        today = datetime.now()
+        date1 = datetime(today.year, int(birthMonth), int(birthdate[3:5]))
+        date2 = datetime(today.year+1, int(birthMonth), int(birthdate[3:5]))
+        days = ((date1 if date1 > today else date2) - today).days
         return days
 
 async def setup(bot):
