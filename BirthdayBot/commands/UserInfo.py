@@ -41,15 +41,15 @@ class UserAgeInfo(commands.Cog):
         userAge = self.getUserAge(birthdate)
         numDays = self.daysAway(birthdate)
         await ctx.send("```css\n" + argName +" is currently "+ str(userAge)+ " years old. Days until birthday: "+ str(numDays) + "```")
-        print(userAge)
-        print(numDays)
     
     """ ---- HELPERS ---- """
     def getUserAge(self, birthdate):
         today = date.today()
-        today = today.strftime("%m/%d/%Y")
+        today = today.strftime("%m/%d/%Y")#Changes todays date to valid format to check birthdate
+        today = datetime.strptime(today,"%m/%d/%Y")#Converts today's date back into an object
+        birthdate = datetime.strptime(birthdate,"%m/%d/%Y")#Converts birthdate to a date object
 
-        age = int(today[-4:]) - int(birthdate[-4:]) - ((int(today[:1]), int(today[3:5])) < (int(birthdate[:1]), int(birthdate[3:5])))
+        age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
         return age
 
     def daysAway(self, birthdate):
