@@ -2,13 +2,7 @@ import asyncio
 import discord
 from discord.ext import commands
 from config import DISCORD_BOT_TOKEN, DATABASE_URI
-from BirthdayBot.database import Database
-from BirthdayBot.database import BirthdayChecker
-import sys
-from sqlalchemy import create_engine
-from BirthdayBot.models import Base, DiscordUser
-from sqlalchemy.orm import sessionmaker, Session
-from contextlib import contextmanager
+
 
 
 # Create permission intents, state what our bot should be able to do
@@ -16,9 +10,6 @@ intents = discord.Intents.default()
 intents.message_content = True
 
 bot = commands.Bot(command_prefix = ".", intents = intents)
-
-engine = create_engine(DATABASE_URI)
-Session = sessionmaker(bind=engine)
 
 @bot.event
 async def on_ready():
