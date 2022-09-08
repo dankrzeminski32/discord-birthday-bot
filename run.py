@@ -6,7 +6,9 @@ from BirthdayBot.database import Database
 from BirthdayBot.database import BirthdayChecker
 import sys
 from sqlalchemy import create_engine
-from BirthdayBot.models import Base
+from BirthdayBot.models import Base, DiscordUser
+from sqlalchemy.orm import sessionmaker, Session
+
 
 # Create permission intents, state what our bot should be able to do
 intents = discord.Intents.default()
@@ -26,9 +28,17 @@ async def load_extensions():
 
 async def create_database():
     engine = create_engine(DATABASE_URI)
+    Session = sessionmaker(bind=engine)
     print(Base.metadata.tables)
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
+    
+    s = Session()
+    discorduser = DiscordUser(username="dan",Birthday="09/27/2001")
+    s.add(discorduser)
+    s.commit()
+    s.close()
+
     
 
 async def main():
