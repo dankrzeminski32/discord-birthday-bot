@@ -11,4 +11,4 @@ class DiscordUser(Base):
     
     def __repr__(self):
         return "<DiscordUser(id='{}', username='{}', birthday={})>"\
-                .format(self.id, self.username, self.birthday)
+                .format(self.id, self.username, self.Birthday)
