@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 import csv
 from discord.ui import Button, View
+from settings import session_scope
+from BirthdayBot.models import DiscordUser
 
 class Registration(commands.Cog):
     """Class Dedicated to housing all commands related to registration"""
@@ -15,16 +17,17 @@ class Registration(commands.Cog):
 
         #Need to improve this validation
         def check(msg):
-            return msg.author == ctx.author and msg.channel == ctx.channel and msg.content.startswith("0")
+            return msg.author == ctx.author and msg.channel == ctx.channel
 
         msg = await self.bot.wait_for('message', check=check)
+        
         # await ctx.send("{}, Your birthday ({}) has been stored in our database!".format(msg.author,msg.content))
         view = RegistrationButtons()
         await self.sendConfirmationMessage(ctx,view)
         if view.userConfirmation is None:
             await ctx.send("Timed out")
         elif view.userConfirmation:
-            self.writeUserToCSV(username = msg.author,birthday = msg.content)
+            self.writeUserToDB(username = msg.author,birthday = msg.content)
             await ctx.send("{}, Your birthday ({}) has been stored in our database!".format(msg.author,msg.content))
         else:
             await self.retryLoop(ctx)
@@ -48,7 +51,7 @@ class Registration(commands.Cog):
         if view.userConfirmation is None:
             await ctx.send("Timed out")
         elif view.userConfirmation:
-            self.writeUserToCSV(username = msg.author,birthday = msg.content)
+            self.writeUserToDB(username = msg.author,birthday = msg.content)
             await ctx.send("{}, Your birthday ({}) has been stored in our database!".format(msg.author,msg.content))
         else:
             print("failure")
@@ -66,10 +69,14 @@ class Registration(commands.Cog):
         await ctx.send(embed=embed)
     
     @staticmethod
-    def writeUserToCSV(username: str, birthday: str):
-        with open('DiscordBirthdays.csv', "a", newline="") as file:
-            myFile = csv.writer(file)
-            myFile.writerow([username, birthday])
+    def writeUserToDB(username: str, birthday: str):
+        try:
+            with session_scope() as s:
+                user = DiscordUser(username=username, Birthday=birthday)
+                s.add(user)
+            print("success")
+        except Exception as e:
+            print(e)
 
 async def setup(bot):
     await bot.add_cog(Registration(bot))

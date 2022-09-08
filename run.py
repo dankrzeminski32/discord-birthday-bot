@@ -30,19 +30,6 @@ async def load_extensions():
             await bot.load_extension(filename)
 
 
-@contextmanager
-def session_scope():
-    session = Session()
-    try:
-        yield session
-        session.commit()
-    except Exception:
-        session.rollback()
-        raise
-    finally:
-        session.close()
-    
-
 async def main():
     async with bot:
         await load_extensions()
