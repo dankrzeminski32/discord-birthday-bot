@@ -9,7 +9,7 @@ from sqlalchemy import create_engine
 from BirthdayBot.models import Base, DiscordUser
 from sqlalchemy.orm import sessionmaker, Session
 from contextlib import contextmanager
-
+from settings import session_scope
 
 # Create permission intents, state what our bot should be able to do
 intents = discord.Intents.default()
@@ -19,7 +19,7 @@ bot = commands.Bot(command_prefix = ".", intents = intents)
 
 engine = create_engine(DATABASE_URI)
 Session = sessionmaker(bind=engine)
-
+Base.metadata.create_all(engine)
 @bot.event
 async def on_ready():
     print(f'We have logged in as {bot.user}')
@@ -34,6 +34,7 @@ async def main():
     async with bot:
         await load_extensions()
         await bot.start(DISCORD_BOT_TOKEN)
+    
 
 #Main Bot Cycle
 asyncio.run(main())
