@@ -8,6 +8,7 @@ import sys
 from sqlalchemy import create_engine
 from BirthdayBot.models import Base, DiscordUser
 from sqlalchemy.orm import sessionmaker, Session
+from contextlib import contextmanager
 
 
 # Create permission intents, state what our bot should be able to do
@@ -15,6 +16,9 @@ intents = discord.Intents.default()
 intents.message_content = True
 
 bot = commands.Bot(command_prefix = ".", intents = intents)
+
+engine = create_engine(DATABASE_URI)
+Session = sessionmaker(bind=engine)
 
 @bot.event
 async def on_ready():
@@ -26,24 +30,21 @@ async def load_extensions():
             await bot.load_extension(filename)
 
 
-async def create_database():
-    engine = create_engine(DATABASE_URI)
-    Session = sessionmaker(bind=engine)
-    print(Base.metadata.tables)
-    Base.metadata.drop_all(engine)
-    Base.metadata.create_all(engine)
-    
-    s = Session()
-    discorduser = DiscordUser(username="dan",Birthday="09/27/2001")
-    s.add(discorduser)
-    s.commit()
-    s.close()
-
+@contextmanager
+def session_scope():
+    session = Session()
+    try:
+        yield session
+        session.commit()
+    except Exception:
+        session.rollback()
+        raise
+    finally:
+        session.close()
     
 
 async def main():
     async with bot:
-        await create_database()
         await load_extensions()
         await bot.start(DISCORD_BOT_TOKEN)
 
