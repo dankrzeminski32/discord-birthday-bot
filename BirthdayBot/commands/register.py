@@ -72,7 +72,7 @@ class Registration(commands.Cog):
     def writeUserToDB(username: str, birthday: str):
         try:
             with session_scope() as s:
-                user = DiscordUser(username=username, Birthday=birthday)
+                user = DiscordUser(username=str(username), Birthday=birthday)
                 s.add(user)
             print("success")
         except Exception as e:
