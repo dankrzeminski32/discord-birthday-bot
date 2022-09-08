@@ -5,11 +5,14 @@ attrs==22.1.0
 charset-normalizer==2.1.1
 discord.py==2.0.0
 frozenlist==1.3.1
+greenlet==1.1.3
 idna==3.3
 multidict==6.0.2
 numpy==1.23.2
 pandas==1.4.3
+psycopg2==2.9.3
 python-dateutil==2.8.2
 pytz==2022.2.1
 six==1.16.0
+SQLAlchemy==1.4.41
 yarl==1.8.1

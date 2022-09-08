@@ -23,8 +23,3 @@ try:
 
 except (Exception, Error) as error:
     print("Error while connecting to PostgreSQL", error)
-finally:
-    if (connection):
-        cursor.close()
-        connection.close()
-        print("PostgreSQL connection is closed")
