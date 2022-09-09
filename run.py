@@ -17,9 +17,6 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix = ".", intents = intents)
 
-engine = create_engine(DATABASE_URI)
-Session = sessionmaker(bind=engine)
-Base.metadata.create_all(engine)
 @bot.event
 async def on_ready():
     print(f'We have logged in as {bot.user}')

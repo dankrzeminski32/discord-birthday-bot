@@ -18,8 +18,9 @@ class BirthdayMessages(Base):
     __tablename__ = 'RandomMessages'
     id = Column(Integer, primary_key=True)
     bdayMessage = Column(String)
+    author = Column(String)
 
 
     def __repr__(self):
-        return "<BirthdayMessages(id='{}', bdayMessage{})>"\
-                .format(self.id, self.bdayMessage)
+        return "<BirthdayMessages(id='{}', bdayMessage{}, author{})>"\
+                .format(self.id, self.bdayMessage, self.author)

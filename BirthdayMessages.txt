@@ -7,8 +7,8 @@ It's better to hang out with people better than you. Pick out associates whose b
 The question is not who is going to let me, it's who is going to stop me.;Ayn Rand
 The dumbest people I know are those who know it all.;Malcolm Forbes
 If what you’re doing is not your passion, you have nothing to lose.;George Eliot
-The person who says something is impossible should not interrupt the person who is doing it.;
-"Making the simple complicated is commonplace; making the complicated simple, awesomely simple, that's creativity.";Charles Mingus
+The person who says something is impossible should not interrupt the person who is doing it.;Confucius
+Making the simple complicated is commonplace; making the complicated simple, awesomely simple, that's creativity.;Charles Mingus
 All our dreams can come true – if we have the courage to pursue them.;Walt Disney
 The best years of your life are the ones in which you decide your problems are your own. You do not blame them on your mother, the ecology, or the president. You realize that you control your own destiny.;Albert Ellis
 If opportunity doesn’t knock, build a door.;Milton Berle
@@ -36,7 +36,7 @@ The trouble in corporate America is that too many people with too much power liv
 We buy things we don't need with money we don't have to impress people we don't like.;David Ramsey
 It is hard to fail, but it is worse never to have tried to succeed.;Theodore Roosevelt
 Instead of wondering when your next vacation is, maybe you should set up a life you don't need to escape from.;Seth Godin
-"It’s a funny thing about life; if you refuse to accept anything but the best, you very often get it.";W. Somerset Maugham
+It’s a funny thing about life; if you refuse to accept anything but the best, you very often get it.;W. Somerset Maugham
 We make a fine bourbon, at a profit if we can, at a loss if we must, but always FINE BOURBON.;Pappy Van Winkle
 An army of lions led by a sheep is no match for an army of sheep led by a lion.;Winston Churchill
 A ship in port is safe, but that is not what ships are for. ;Grace Hopper
@@ -52,9 +52,9 @@ The harder I work, the luckier I get.;Samuel Goldwyn
 Life is not measured by the number of breaths we take, but by the moments that take our breath away.;Maya Angelou
 Never regret. If it's good, it's wonderful. If it's bad, it's experience.;Victoria Holt
 We are what we repeatedly do. Excellence, then is not an act but a habit.;Aristotle
-"Happiness is not something you postpone for the future; it is something you design for the present.";Jim Rohn
-Don’t make a decision based solely on popularity. Just because other people are doing it doesn’t mean it’s the best choice for you.;NULL
-Sometimes you need to be alone to reflect on life.  Take time out to take care of yourself.  You deserve it.;NULL
+Happiness is not something you postpone for the future; it is something you design for the present.;Jim Rohn
+Don’t make a decision based solely on popularity. Just because other people are doing it doesn’t mean it’s the best choice for you.;Ethan Kvachkoff
+Sometimes you need to be alone to reflect on life.  Take time out to take care of yourself.  You deserve it.;Dan Krzeminski
 One travels more usefully when alone, because he reflects more.;Thomas Jefferson
 We must all suffer one of two things: the pain of discipline or the pain of regret and disappointment.;Jim Rohn
 I haven't failed, I've just found 10,000 ways that don't work.;Thomas Alva Edison
@@ -62,14 +62,14 @@ The three most harmful addictions are heroin, carbohydrates and a monthly salary
 Never half-ass two things, whole-ass one thing.;Ron Swanson
 Humility is not thinking less of yourself, it's thinking of yourself less.;C. S. Lewis
 Every traveler has a home of his own, and he learns to appreciate it the more from his wandering.;Charles Dickens
-"Study while others are sleeping; work while others are loafing; prepare while others are playing; and dream while others are wishing.";William A. Ward
+Study while others are sleeping; work while others are loafing; prepare while others are playing; and dream while others are wishing.;William A. Ward
 Nothing diminishes anxiety faster than action.;Walter Anderson
 If you don't design your own life plan, chances are you'll fall into someone else's plan.;Jim Rohn
 If you can solve your problem, then what is the need of worrying? If you cannot solve it, then what is the use of worrying?;Shantideva
 Sometimes life is going to hit you in the head with a brick. Dont lose faith.;Steve Jobs
 It takes as much energy to wish as it does to plan.;Eleanor Roosevelt
 I am so clever that sometimes I don't understand a single word of what I am saying.;Oscar Wilde
-"Underpromise;overdeliver.";Tom Peters
+Underpromise;overdeliver.;Tom Peters
 The world needs dreamers and the world needs doers. But above all, the world needs dreamers who do.;Sarah Ban Breathnach
 When you listen, it's amazing what you can learn. When you act on what you've learned, it's amazing what you can change.;A. McLaughlin
 Simplicity is the ultimate sophistication.;Leonardo Da Vinci
@@ -83,8 +83,8 @@ Nothing is really work unless you would rather be doing something else.;James M.
 The highest reward for a person's toil is not what they get for it, but what they become by it.;John Ruskin
 Pleasure in the job puts perfection in the work.;Aristotle
 Long-range goals keep you from being frustrated by short-term failures.;J. C. Penney
-"Respond; don't react. Listen; don't talk. Think; don't assume.";Raji Lukkoor
-"Do not fear going forward slowly; fear only to stand still.";Chinese Proverb
+Respond; don't react. Listen; don't talk. Think; don't assume.;Raji Lukkoor
+Do not fear going forward slowly; fear only to stand still.;Chinese Proverb
 Win without boasting. Lose without excuse.;Albert Payson
 Talent is cheaper than table salt. What separates the talented individual from the successful one is a lot of hard work.;Stephen King
 Don't re-open old wounds in order to examine their origins. Leave them healed.;Richard Bandler
