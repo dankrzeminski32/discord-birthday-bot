@@ -23,11 +23,11 @@ class Registration(commands.Cog):
         
         # await ctx.send("{}, Your birthday ({}) has been stored in our database!".format(msg.author,msg.content))
         view = RegistrationButtons()
-        await self.sendConfirmationMessage(ctx,view)
+        await self.sendConfirmationMessage(ctx,view, msg)
         if view.userConfirmation is None:
             await ctx.send("Timed out")
         elif view.userConfirmation:
-            self.writeUserToDB(username = msg.author,birthday = msg.content)
+            self.writeUserToDB(username = msg.author,birthday = msg.content, discord_id=msg.author.id)
             await ctx.send("{}, Your birthday ({}) has been stored in our database!".format(msg.author,msg.content))
         else:
             await self.retryLoop(ctx)
@@ -42,22 +42,22 @@ class Registration(commands.Cog):
             view = RegistrationButtons()
             view.userConfirmation = False
             def check(msg):
-                return msg.author == ctx.author and msg.channel == ctx.channel and msg.content.startswith("0")
+                return msg.author == ctx.author and msg.channel == ctx.channel
             msg = await self.bot.wait_for('message', check=check)
-            await self.sendConfirmationMessage(ctx,view)
+            await self.sendConfirmationMessage(ctx,view, msg)
             if view.userConfirmation != False:
                 loop = False
                 
         if view.userConfirmation is None:
             await ctx.send("Timed out")
         elif view.userConfirmation:
-            self.writeUserToDB(username = msg.author,birthday = msg.content)
+            self.writeUserToDB(username = msg.author,birthday = msg.content, discord_id= msg.author)
             await ctx.send("{}, Your birthday ({}) has been stored in our database!".format(msg.author,msg.content))
         else:
             print("failure")
         
-    async def sendConfirmationMessage(self, ctx, view):
-        await ctx.send("Is this correct?", view=view)
+    async def sendConfirmationMessage(self, ctx, view, msg):
+        await ctx.send("Is this correct? {}".format(msg.content), view=view)
         await view.wait()
     
     async def sendRegistrationMessage(self, ctx):
@@ -69,13 +69,14 @@ class Registration(commands.Cog):
         await ctx.send(embed=embed)
     
     @staticmethod
-    def writeUserToDB(username: str, birthday: str):
+    def writeUserToDB(username: str, birthday: str, discord_id: str):
         try:
             with session_scope() as s:
-                user = DiscordUser(username=str(username), Birthday=birthday)
+                user = DiscordUser(username=str(username), Birthday=birthday, discord_ID=discord_id)
                 s.add(user)
             print("success")
         except Exception as e:
+            exception = e
             print(e)
 
 async def setup(bot):

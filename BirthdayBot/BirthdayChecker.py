@@ -3,20 +3,6 @@ from discord.ext import commands
 from datetime import datetime
 from datetime import date
 
-
-class Database(object):
-    """Handles operations relating to our csv database"""       
-    def __init__(self, filename: str):
-        self.csvFile = open(filename, "w", newline="")
-        self.csvWriter = csv.writer(self.csvFile)
-        self.createColumnHeaders()
-
-    def createColumnHeaders(self):
-        self.csvWriter.writerow(["DiscordName", "Birthday"])
-        
-    def __str__(self):
-        return f'Database file name is {self.csvFile}'
-
 class BirthdayChecker(object):
     """Handles the checking of birthdays for the day"""
     def __init__(self, databaseFileName: str):
