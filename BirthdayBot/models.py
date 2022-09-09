@@ -4,6 +4,7 @@ from sqlalchemy import Column, Integer, String, Date
 
 Base = declarative_base()
 
+
 class DiscordUser(Base):
     __tablename__ = 'DiscordUser'
     id = Column(Integer, primary_key=True)

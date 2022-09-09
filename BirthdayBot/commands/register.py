@@ -2,8 +2,9 @@ import discord
 from discord.ext import commands
 import csv
 from discord.ui import Button, View
-from settings import session_scope
+from db_settings import session_scope
 from BirthdayBot.models import DiscordUser
+from sqlalchemy.exc import SQLAlchemyError
 
 class Registration(commands.Cog):
     """Class Dedicated to housing all commands related to registration"""
@@ -27,8 +28,12 @@ class Registration(commands.Cog):
         if view.userConfirmation is None:
             await ctx.send("Timed out")
         elif view.userConfirmation:
-            self.writeUserToDB(username = msg.author,birthday = msg.content, discord_id=msg.author.id)
-            await ctx.send("{}, Your birthday ({}) has been stored in our database!".format(msg.author,msg.content))
+            try:
+                self.writeUserToDB(username = msg.author,birthday = msg.content, discord_id=msg.author.id)
+                await ctx.send("{}, Your birthday ({}) has been stored in our database!".format(msg.author,msg.content))
+            except:
+                await ctx.send("Invalid date format... Please try again. (mm/dd/yyyy)")
+                await self.retryLoop(ctx)
         else:
             await self.retryLoop(ctx)
             
@@ -37,24 +42,32 @@ class Registration(commands.Cog):
     async def retryLoop(self,ctx):
         #Already know userConfirmation == false
         # We want to generate a new view for each confirmation
-        loop = True
-        while loop:
-            view = RegistrationButtons()
-            view.userConfirmation = False
-            def check(msg):
-                return msg.author == ctx.author and msg.channel == ctx.channel
-            msg = await self.bot.wait_for('message', check=check)
-            await self.sendConfirmationMessage(ctx,view, msg)
-            if view.userConfirmation != False:
-                loop = False
-                
-        if view.userConfirmation is None:
-            await ctx.send("Timed out")
-        elif view.userConfirmation:
-            self.writeUserToDB(username = msg.author,birthday = msg.content, discord_id= msg.author)
-            await ctx.send("{}, Your birthday ({}) has been stored in our database!".format(msg.author,msg.content))
-        else:
-            print("failure")
+        outerLoop = True
+        while outerLoop:
+            loop = True
+            while loop:
+                view = RegistrationButtons()
+                view.userConfirmation = False
+                def check(msg):
+                    return msg.author == ctx.author and msg.channel == ctx.channel
+                msg = await self.bot.wait_for('message', check=check)
+                await self.sendConfirmationMessage(ctx,view, msg)
+                if view.userConfirmation != False:
+                    loop = False
+                    
+            if view.userConfirmation is None:
+                await ctx.send("Timed out")
+                outerLoop = False
+            elif view.userConfirmation:
+                try:
+                    self.writeUserToDB(username = msg.author,birthday = msg.content, discord_id= msg.author.id)
+                    await ctx.send("{}, Your birthday ({}) has been stored in our database!".format(msg.author,msg.content))
+                    outerLoop = False
+                except:
+                    await ctx.send("Invalid date format... Please try again. (mm/dd/yyyy)")
+                    outerLoop = True
+            else:
+                print("failure")
         
     async def sendConfirmationMessage(self, ctx, view, msg):
         await ctx.send("Is this correct? {}".format(msg.content), view=view)
@@ -62,7 +75,7 @@ class Registration(commands.Cog):
     
     async def sendRegistrationMessage(self, ctx):
         embed = discord.Embed(
-            title = "Please enter your Birthday (Ex:07/11/01)",
+            title = "Please enter your Birthday (mm/dd/yyyy)",
             description = "This will store your birthday in our database",
             color = discord.Color.blue()
         )
@@ -70,14 +83,17 @@ class Registration(commands.Cog):
     
     @staticmethod
     def writeUserToDB(username: str, birthday: str, discord_id: str):
-        try:
-            with session_scope() as s:
-                user = DiscordUser(username=str(username), Birthday=birthday, discord_ID=discord_id)
-                s.add(user)
-            print("success")
-        except Exception as e:
-            exception = e
-            print(e)
+        # try:
+        with session_scope() as s:
+            user = DiscordUser(username=str(username), Birthday=birthday, discord_ID=discord_id)
+            s.add(user)
+        #     print("success")
+        #     return True
+        # except SQLAlchemyError as e:
+        #     error= str(e.__dict__['orig'])
+        #     print(error)
+            
+        #     return False
 
 async def setup(bot):
     await bot.add_cog(Registration(bot))
