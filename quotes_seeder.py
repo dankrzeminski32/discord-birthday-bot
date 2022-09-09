@@ -12,6 +12,7 @@ try:
             author = author[1].rstrip()
             author_Column = author
             bdayMessage_column = line.rsplit(';', 1)[0]
+            bdayMessage_column = bdayMessage_column.encode('cp1252').decode('utf-8')
             message2 = BirthdayMessages(bdayMessage = bdayMessage_column, author = author_Column)
             s.add(message2)
         print("success")
