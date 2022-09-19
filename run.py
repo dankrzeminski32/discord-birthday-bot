@@ -2,7 +2,7 @@ import asyncio
 import discord
 from discord.ext import commands
 from config import DISCORD_BOT_TOKEN, DATABASE_URI
-
+from BirthdayBot.BirthdayChecker import BirthdayChecker
 
 
 # Create permission intents, state what our bot should be able to do
@@ -20,10 +20,14 @@ async def load_extensions():
     for filename in extensions:
             await bot.load_extension(filename)
 
+def getBirthdays():
+    bdaychecker = BirthdayChecker()
+    print(bdaychecker.getAllBirthdays())
 
 async def main():
     async with bot:
         await load_extensions()
+        getBirthdays()
         await bot.start(DISCORD_BOT_TOKEN)
 
 #Main Bot Cycle
