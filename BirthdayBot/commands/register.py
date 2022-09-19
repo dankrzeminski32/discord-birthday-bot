@@ -100,9 +100,10 @@ async def setup(bot):
 
 
 class RegistrationButtons(discord.ui.View):
-    def __init__(self, *, timeout=180):
+    def __init__(self, *, timeout=180, author):
         super().__init__(timeout=timeout)
         self.userConfirmation = None 
+        self.author = author
         
     @discord.ui.button(label="Yes!",style=discord.ButtonStyle.green) # or .success
     async def yes(self,interaction:discord.Interaction,button:discord.ui.Button):
@@ -115,3 +116,9 @@ class RegistrationButtons(discord.ui.View):
         await interaction.response.send_message("Please try again... (mm/dd/yyyy)")
         self.userConfirmation = False
         self.stop()
+
+    async def interaction_check(self, inter: discord.MessageInteraction) -> bool:
+        if inter.user != self.author:
+            await inter.response.send_message(content="You don't have permission to press this button.", ephemeral=True)
+            return False
+        return True;
