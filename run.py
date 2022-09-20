@@ -16,7 +16,7 @@ async def on_ready():
     print(f'We have logged in as {bot.user}')
 
 async def load_extensions():
-    extensions = ['BirthdayBot.commands.register', "BirthdayBot.commands.UserInfo"]
+    extensions = ['BirthdayBot.commands.Registration', "BirthdayBot.commands.UserAgeInfo"]
     for filename in extensions:
             await bot.load_extension(filename)
 
