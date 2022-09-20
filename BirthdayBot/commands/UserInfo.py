@@ -5,6 +5,7 @@ from datetime import datetime
 from datetime import date
 from discord.ext import commands
 from discord.utils import get
+from db_settings import session_scope
 
 # Create permission intents, state what our bot should be able to do
 intents = discord.Intents.default()
@@ -15,7 +16,6 @@ bot = commands.Bot(command_prefix = ".", intents = intents)
 class UserAgeInfo(commands.Cog):
 
     def __init__(self, bot):
-        self.csvFile = "DiscordBirthdays.csv"
         self.bot = bot
 
     """ ---- COMMANDS ---- """
@@ -28,14 +28,7 @@ class UserAgeInfo(commands.Cog):
         arg = arg[2:len(arg)]
         arg = arg[:-1]
 
-        birthdate = []
-        with open(self.csvFile) as f:
-            reader = csv.reader(f)
-            next(reader, None)
-            for row in reader:
-                if row[2] == arg:
-                    argName = row[0]
-                    birthdate = row[1]
+        birthdate = 
 
         argName = argName[:-5]
         userAge = self.getUserAge(birthdate)
@@ -43,13 +36,14 @@ class UserAgeInfo(commands.Cog):
         await ctx.send("```css\n" + argName +" is currently "+ str(userAge)+ " years old. Days until birthday: "+ str(numDays) + "```")
     
     """ ---- HELPERS ---- """
-    def getUserAge(self, birthdate):
+    def getUserAge(self, Birthday):
+        
+        month = Birthday.month
+        year = Birthday.year
+        day = Birthday.day
         today = date.today()
-        today = today.strftime("%m/%d/%Y")#Changes todays date to valid format to check birthdate
-        today = datetime.strptime(today,"%m/%d/%Y")#Converts today's date back into an object
-        birthdate = datetime.strptime(birthdate,"%m/%d/%Y")#Converts birthdate to a date object
-
-        age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
+        
+        age = today.year - year - ((today.month, today.day) < (month, day))
         return age
 
     def daysAway(self, birthdate):
