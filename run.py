@@ -2,14 +2,8 @@ import asyncio
 import discord
 from discord.ext import commands
 from config import DISCORD_BOT_TOKEN, DATABASE_URI
-from BirthdayBot.database import Database
-from BirthdayBot.database import BirthdayChecker
-import sys
-from sqlalchemy import create_engine
-from BirthdayBot.models import Base, DiscordUser
-from sqlalchemy.orm import sessionmaker, Session
-from contextlib import contextmanager
-from settings import session_scope
+from BirthdayBot.BirthdayChecker import BirthdayChecker
+
 
 # Create permission intents, state what our bot should be able to do
 intents = discord.Intents.default()
@@ -22,14 +16,18 @@ async def on_ready():
     print(f'We have logged in as {bot.user}')
 
 async def load_extensions():
-    extensions = ['BirthdayBot.commands.register']
+    extensions = ['BirthdayBot.commands.register', "BirthdayBot.commands.UserInfo"]
     for filename in extensions:
             await bot.load_extension(filename)
 
+def getBirthdays():
+    bdaychecker = BirthdayChecker()
+    print(bdaychecker.getAllBirthdays())
 
 async def main():
     async with bot:
         await load_extensions()
+        getBirthdays()
         await bot.start(DISCORD_BOT_TOKEN)
     
 
