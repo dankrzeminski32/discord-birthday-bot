@@ -1,11 +1,9 @@
 import asyncio
 import discord
 from discord.ext import commands
-from config import DISCORD_BOT_TOKEN
-from BirthdayBot.database import Database
-from BirthdayBot.database import BirthdayChecker
-from os import path
-import sys
+from config import DISCORD_BOT_TOKEN, DATABASE_URI
+from BirthdayBot.BirthdayChecker import BirthdayChecker
+
 
 # Create permission intents, state what our bot should be able to do
 intents = discord.Intents.default()
@@ -22,17 +20,16 @@ async def load_extensions():
     for filename in extensions:
             await bot.load_extension(filename)
 
-async def create_database():
-    if path.exists("DiscordBirthdays.csv"):
-        pass
-    else:
-        Database("DiscordBirthdays.csv")
+def getBirthdays():
+    bdaychecker = BirthdayChecker()
+    print(bdaychecker.getAllBirthdays())
 
 async def main():
     async with bot:
-        await create_database()
         await load_extensions()
+        getBirthdays()
         await bot.start(DISCORD_BOT_TOKEN)
+    
 
 #Main Bot Cycle
 asyncio.run(main())
