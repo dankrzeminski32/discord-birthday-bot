@@ -2,3 +2,5 @@ config.py
 __pycache__
 venv/
 DiscordBirthdays.csv
+BirthdayMessages.txt
+BirthdayImages.txt

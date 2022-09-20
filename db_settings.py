@@ -11,6 +11,8 @@ Base.metadata.drop_all(engine)
 Base.metadata.create_all(engine)
 print(Base.metadata.__dict__)
 
+engine = create_engine(DATABASE_URI)
+Session = sessionmaker(bind=engine)
 
 @contextmanager
 def session_scope():
@@ -23,4 +25,3 @@ def session_scope():
         raise
     finally:
         session.close()
-    

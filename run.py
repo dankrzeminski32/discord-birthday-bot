@@ -29,6 +29,7 @@ async def main():
         await load_extensions()
         getBirthdays()
         await bot.start(DISCORD_BOT_TOKEN)
+    
 
 #Main Bot Cycle
 asyncio.run(main())
