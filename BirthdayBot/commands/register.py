@@ -22,8 +22,9 @@ class Registration(commands.Cog):
 
         msg = await self.bot.wait_for('message', check=check)
         
+        author = ctx.author
         # await ctx.send("{}, Your birthday ({}) has been stored in our database!".format(msg.author,msg.content))
-        view = RegistrationButtons()
+        view = RegistrationButtons(author=author)
         await self.sendConfirmationMessage(ctx,view, msg)
         if view.userConfirmation is None:
             await ctx.send("Timed out")
@@ -46,7 +47,8 @@ class Registration(commands.Cog):
         while outerLoop:
             loop = True
             while loop:
-                view = RegistrationButtons()
+                author = ctx.author
+                view = RegistrationButtons(author=author)
                 view.userConfirmation = False
                 def check(msg):
                     return msg.author == ctx.author and msg.channel == ctx.channel
@@ -102,7 +104,7 @@ async def setup(bot):
 class RegistrationButtons(discord.ui.View):
     def __init__(self, *, timeout=180, author):
         super().__init__(timeout=timeout)
-        self.userConfirmation = None 
+        self.userConfirmation = None
         self.author = author
         
     @discord.ui.button(label="Yes!",style=discord.ButtonStyle.green) # or .success

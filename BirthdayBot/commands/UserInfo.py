@@ -28,8 +28,7 @@ class UserAgeInfo(commands.Cog):
         arg = arg[2:len(arg)]
         arg = arg[:-1]
 
-        birthdate = 
-
+        birthdate = "dan"
         argName = argName[:-5]
         userAge = self.getUserAge(birthdate)
         numDays = self.daysAway(birthdate)
