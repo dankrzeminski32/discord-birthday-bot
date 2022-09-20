@@ -52,8 +52,8 @@ async def birthdayAnnouncements():
 # Runs at 6:00 am everyday, timezone is the servers timezone, unless changed... 
 @birthdayAnnouncements.before_loop
 async def before_birthdayAnnouncements():
-    hour = 16
-    minute = 53
+    hour = 7
+    minute = 0
     await bot.wait_until_ready()
     now = datetime.now()
     print(now)
