@@ -91,17 +91,11 @@ class Registration(commands.Cog):
     
     @staticmethod
     def writeUserToDB(username: str, birthday: str, discord_id: str):
-        # try:
+        # session_scope will raise an exception if invalid, use this with try/except
         with session_scope() as s:
             user = DiscordUser(username=str(username), Birthday=birthday, discord_ID=discord_id)
             s.add(user)
-        #     print("success")
-        #     return True
-        # except SQLAlchemyError as e:
-        #     error= str(e.__dict__['orig'])
-        #     print(error)
-            
-        #     return False
+
 
 async def setup(bot):
     await bot.add_cog(Registration(bot))

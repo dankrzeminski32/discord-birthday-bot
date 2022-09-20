@@ -7,12 +7,9 @@ from BirthdayBot.models import Base
 
 engine = create_engine(DATABASE_URI)
 Session = sessionmaker(bind=engine)
-Base.metadata.drop_all(engine)
-Base.metadata.create_all(engine)
-print(Base.metadata.__dict__)
-
-engine = create_engine(DATABASE_URI)
-Session = sessionmaker(bind=engine)
+# Base.metadata.drop_all(engine)
+# Base.metadata.create_all(engine)
+# print(Base.metadata.__dict__)
 
 @contextmanager
 def session_scope():
