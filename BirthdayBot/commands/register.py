@@ -9,7 +9,13 @@ class Registration(commands.Cog):
     """Class Dedicated to housing all commands related to registration"""
     def __init__(self, bot):
         self.bot = bot
-
+##########################################################################    
+    @commands.command()
+    async def test(self, ctx): 
+        embed=discord.Embed(title="Happy Birthday,", color=0x0099FF)
+        embed.set_image(url="https://www.birthdaywishes.expert/wp-content/uploads/2019/03/Smile-It-is-your-Special-Day-Funny-happy-birthday-image.jpg?ezimgfmt=ng%3Awebp%2Fngcb1%2Frs%3Adevice%2Frscb1-1")
+        await ctx.send(embed=embed)
+##########################################################################
     """ ---- COMMANDS ---- """
     @commands.command()
     async def bday(self, ctx):
