@@ -36,24 +36,29 @@ async def load_extensions():
             await bot.load_extension(filename)
     
 
-@tasks.loop(hours=24)
+@tasks.loop(seconds=30)
 async def birthdayAnnouncements():
     await bot.wait_until_ready()
     bdaychecker = BirthdayChecker(bot)
+    channel=None
     bdays = bdaychecker.getAllBirthdays()
     for guild in bot.guilds:
         for channel in guild.text_channels:
             if channel.name == 'birthdays':
                 bday_channel = channel.id
-    channel = bot.get_channel(bday_channel)
-    await bdaychecker.sendBirthdayMessages(bdays, channel)
+                channel = bot.get_channel(bday_channel)
+        #what if channel got deleted?
+        if channel.name != 'birthdays' or channel == None:
+            new_channel = await guild.create_text_channel('birthdays')
+            channel = bot.get_channel(new_channel.id)
+        await bdaychecker.sendBirthdayMessages(bdays, channel)
 
 
 # Runs at 6:00 am everyday, timezone is the servers timezone, unless changed... 
 @birthdayAnnouncements.before_loop
 async def before_birthdayAnnouncements():
-    hour = 7
-    minute = 0
+    hour = 18
+    minute = 25
     await bot.wait_until_ready()
     now = datetime.now()
     print(now)
