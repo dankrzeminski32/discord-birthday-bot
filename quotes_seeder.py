@@ -1,5 +1,5 @@
 from BirthdayBot.models import Base, BirthdayMessages
-from settings import session_scope
+from db_settings import session_scope
 
 file1 = open('BirthdayMessages.txt', 'r')
 Lines = file1.readlines()
@@ -18,5 +18,3 @@ try:
         print("success")
 except Exception as e:
     print(e)
-
-

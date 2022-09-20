@@ -26,3 +26,13 @@ class BirthdayMessages(Base):
     def __repr__(self):
         return "<BirthdayMessages(id='{}', bdayMessage{}, author{})>"\
                 .format(self.id, self.bdayMessage, self.author)
+
+class BirthdayImages(Base):
+    __tablename__ = 'BirthdayImages'
+    id = Column(Integer, primary_key=True)
+    bdayImage = Column(String)
+
+
+    def __repr__(self):
+        return "<BirthdayImages(id='{}', bdayImage{})>"\
+                .format(self.id, self.bdayImage)

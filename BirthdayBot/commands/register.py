@@ -14,7 +14,7 @@ class Registration(commands.Cog):
     @commands.command()
     async def test(self, ctx): 
         embed=discord.Embed(title="Happy Birthday,", color=0x0099FF)
-        embed.set_image(url="https://www.birthdaywishes.expert/wp-content/uploads/2019/03/Smile-It-is-your-Special-Day-Funny-happy-birthday-image.jpg?ezimgfmt=ng%3Awebp%2Fngcb1%2Frs%3Adevice%2Frscb1-1")
+        embed.set_image(url="https://media2.giphy.com/media/MCeIiRETfwBK2rtGRi/200w.gif?cid=82a1493bgmtvivf2kgyy7dv9b6zss1184tso0rczefjortue&rid=200w.gif&ct=g")
         await ctx.send(embed=embed)
 ##########################################################################
     """ ---- COMMANDS ---- """
