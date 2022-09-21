@@ -4,3 +4,5 @@ venv/
 DiscordBirthdays.csv
 BirthdayMessages.txt
 BirthdayImages.txt
+.vscode/
+launch.json

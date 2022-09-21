@@ -17,6 +17,17 @@ bot = commands.Bot(command_prefix = ".", intents = intents)
 @bot.event
 async def on_ready():
     print(f'We have logged in as {bot.user}')
+    print("testing")
+    print(discord.__version__)
+    tempchan = None
+    for guild in bot.guilds:
+        for channel in guild.text_channels:
+            if channel.name == "birthdays": #must be lowercase
+                tempchan = channel
+                break;
+        if tempchan == None:
+            await guild.create_text_channel('birthdays') #ditto
+        
 
 
 async def load_extensions():
@@ -25,26 +36,29 @@ async def load_extensions():
             await bot.load_extension(filename)
     
 
-@tasks.loop(hours=24)
-async def my_task():
+@tasks.loop(seconds=30)
+async def birthdayAnnouncements():
     await bot.wait_until_ready()
     bdaychecker = BirthdayChecker(bot)
+    channel=None
     bdays = bdaychecker.getAllBirthdays()
-    print(bdays)
-    text_channel_list = []
     for guild in bot.guilds:
         for channel in guild.text_channels:
-            text_channel_list.append(channel)
-    print(text_channel_list)
-    channel = bot.get_channel(1012844968903196792) 
-    await bdaychecker.sendBirthdayMessages(bdays, channel)
+            if channel.name == 'birthdays':
+                bday_channel = channel.id
+                channel = bot.get_channel(bday_channel)
+        #what if channel got deleted?
+        if channel.name != 'birthdays' or channel == None:
+            new_channel = await guild.create_text_channel('birthdays')
+            channel = bot.get_channel(new_channel.id)
+        await bdaychecker.sendBirthdayMessages(bdays, channel)
 
 
 # Runs at 6:00 am everyday, timezone is the servers timezone, unless changed... 
-@my_task.before_loop
-async def before_my_task():
-    hour = 7
-    minute = 0
+@birthdayAnnouncements.before_loop
+async def before_birthdayAnnouncements():
+    hour = 18
+    minute = 25
     await bot.wait_until_ready()
     now = datetime.now()
     print(now)
@@ -55,7 +69,7 @@ async def before_my_task():
 
 async def main():
     async with bot:
-        my_task.start()
+        birthdayAnnouncements.start()
         await load_extensions()
         await bot.start(DISCORD_BOT_TOKEN)
     
