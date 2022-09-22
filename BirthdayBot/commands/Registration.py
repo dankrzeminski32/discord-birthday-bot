@@ -18,7 +18,6 @@ class Registration(commands.Cog):
     @commands.command()
     async def test(self, ctx):
         await ctx.send("test")
-
     ##########################################################################
     """ ---- COMMANDS ---- """
 
