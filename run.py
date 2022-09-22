@@ -1,5 +1,6 @@
 import asyncio
 import discord
+from BirthdayBot.Seeder import Seeder
 from discord.ext import commands, tasks
 from config import DISCORD_BOT_TOKEN, DATABASE_URI
 from BirthdayBot.BirthdayChecker import BirthdayChecker
@@ -14,6 +15,9 @@ intents.message_content = True
 # intents.members = True
 
 bot = commands.Bot(command_prefix=".", intents=intents)
+mainSeeder = Seeder("BirthdayImages.txt", "BirthdayMessages.txt")
+# mainSeeder.imageSeed()
+# mainSeeder.quoteSeed()
 
 
 @bot.event
