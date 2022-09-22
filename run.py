@@ -4,7 +4,8 @@ from discord.ext import commands, tasks
 from config import DISCORD_BOT_TOKEN, DATABASE_URI
 from BirthdayBot.BirthdayChecker import BirthdayChecker
 from datetime import datetime, timedelta
-#import schedule
+
+# import schedule
 
 # Create permission intents, state what our bot should be able to do
 intents = discord.Intents.default()
