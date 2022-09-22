@@ -25,7 +25,7 @@ class BirthdayMessages(Base):
     author = Column(String)
 
     def __repr__(self):
-        return "<BirthdayMessages(id='{}', bdayMessage{}, author{})>".format(
+        return "<BirthdayMessages(id='{}', bdayMessage={}, author={})>".format(
             self.id, self.bdayMessage, self.author
         )
 
@@ -36,4 +36,4 @@ class BirthdayImages(Base):
     bdayImage = Column(String)
 
     def __repr__(self):
-        return "<BirthdayImages(id='{}', bdayImage{})>".format(self.id, self.bdayImage)
+        return "<BirthdayImages(id='{}', bdayImage={})>".format(self.id, self.bdayImage)
