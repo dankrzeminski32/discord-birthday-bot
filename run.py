@@ -12,49 +12,52 @@ intents.message_content = True
 # intents.guilds = True
 # intents.members = True
 
-bot = commands.Bot(command_prefix = ".", intents = intents)
+bot = commands.Bot(command_prefix=".", intents=intents)
+
 
 @bot.event
 async def on_ready():
-    print(f'We have logged in as {bot.user}')
+    print(f"We have logged in as {bot.user}")
     print("testing")
     print(discord.__version__)
     tempchan = None
     for guild in bot.guilds:
         for channel in guild.text_channels:
-            if channel.name == "birthdays": #must be lowercase
+            if channel.name == "birthdays":  # must be lowercase
                 tempchan = channel
-                break;
+                break
         if tempchan == None:
-            await guild.create_text_channel('birthdays') #ditto
-        
+            await guild.create_text_channel("birthdays")  # ditto
 
 
 async def load_extensions():
-    extensions = ['BirthdayBot.commands.Registration', "BirthdayBot.commands.UserAgeInfo"]
+    extensions = [
+        "BirthdayBot.commands.Registration",
+        "BirthdayBot.commands.UserAgeInfo",
+    ]
     for filename in extensions:
-            await bot.load_extension(filename)
-    
+        await bot.load_extension(filename)
+
 
 @tasks.loop(seconds=30)
 async def birthdayAnnouncements():
     await bot.wait_until_ready()
     bdaychecker = BirthdayChecker(bot)
-    channel=None
+    channel = None
     bdays = bdaychecker.getAllBirthdays()
     for guild in bot.guilds:
         for channel in guild.text_channels:
-            if channel.name == 'birthdays':
+            if channel.name == "birthdays":
                 bday_channel = channel.id
                 channel = bot.get_channel(bday_channel)
-        #what if channel got deleted?
-        if channel.name != 'birthdays' or channel == None:
-            new_channel = await guild.create_text_channel('birthdays')
+        # what if channel got deleted?
+        if channel.name != "birthdays" or channel == None:
+            new_channel = await guild.create_text_channel("birthdays")
             channel = bot.get_channel(new_channel.id)
         await bdaychecker.sendBirthdayMessages(bdays, channel)
 
 
-# Runs at 6:00 am everyday, timezone is the servers timezone, unless changed... 
+# Runs at 6:00 am everyday, timezone is the servers timezone, unless changed...
 @birthdayAnnouncements.before_loop
 async def before_birthdayAnnouncements():
     hour = 18
@@ -65,13 +68,15 @@ async def before_birthdayAnnouncements():
     future = datetime(now.year, now.month, now.day, hour, minute)
     if now.hour >= hour and now.minute > minute:
         future += timedelta(days=1)
-    await asyncio.sleep((future-now).seconds)
+    await asyncio.sleep((future - now).seconds)
+
 
 async def main():
     async with bot:
         birthdayAnnouncements.start()
         await load_extensions()
         await bot.start(DISCORD_BOT_TOKEN)
-    
-#Main Bot Cycle
+
+
+# Main Bot Cycle
 asyncio.run(main())

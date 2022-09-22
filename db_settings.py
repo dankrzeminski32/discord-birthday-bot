@@ -11,6 +11,7 @@ Session = sessionmaker(bind=engine)
 # Base.metadata.create_all(engine)
 # print(Base.metadata.__dict__)
 
+
 @contextmanager
 def session_scope():
     session = Session()
