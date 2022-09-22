@@ -33,8 +33,8 @@ async def on_ready():
 
 async def load_extensions():
     extensions = [
-        "BirthdayBot.commands.Registration",
-        "BirthdayBot.commands.UserAgeInfo",
+        "BirthdayBot.Cogs.Registration",
+        "BirthdayBot.Cogs.UserAgeInfo",
     ]
     for filename in extensions:
         await bot.load_extension(filename)
