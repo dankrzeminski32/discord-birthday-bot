@@ -39,6 +39,7 @@ async def load_extensions():
     for filename in extensions:
         await bot.load_extension(filename)
 
+
 @tasks.loop(seconds=30)
 async def birthdayAnnouncements():
     await bot.wait_until_ready()
