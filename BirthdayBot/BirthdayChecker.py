@@ -6,9 +6,9 @@ from datetime import datetime
 from datetime import date
 from db_settings import session_scope
 from sqlalchemy import extract
-from BirthdayBot.models import DiscordUser
-from BirthdayBot.models import BirthdayImages
-from BirthdayBot.models import BirthdayMessages
+from BirthdayBot.Models import DiscordUser
+from BirthdayBot.Models import BirthdayImages
+from BirthdayBot.Models import BirthdayMessages
 
 
 class BirthdayChecker(object):

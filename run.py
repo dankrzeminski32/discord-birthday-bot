@@ -1,9 +1,13 @@
 import asyncio
 import discord
+from BirthdayBot.Seeder import Seeder
+from db_settings import session_scope
 from discord.ext import commands, tasks
 from config import DISCORD_BOT_TOKEN, DATABASE_URI
 from BirthdayBot.BirthdayChecker import BirthdayChecker
 from datetime import datetime, timedelta
+from BirthdayBot.Models import BirthdayImages
+from BirthdayBot.Models import BirthdayMessages
 import logging
 
 #Set up logging
@@ -17,6 +21,27 @@ intents.message_content = True
 # intents.members = True
 
 bot = commands.Bot(command_prefix=".", intents=intents, log_handler=handler, log_level=logging.DEBUG)
+mainSeeder = Seeder("BirthdayImages.txt", "BirthdayMessages.txt")
+# mainSeeder.imageSeed()
+# mainSeeder.quoteSeed()
+
+
+def seedIfEmpty():
+    try:
+        with session_scope() as s:
+            if not s.query(BirthdayImages).all():
+                mainSeeder.imageSeed()
+                print("Birthday Images table was empty. Now seeding...")
+            else:
+                print("Birthday Images table is filled")
+
+            if not s.query(BirthdayMessages).all():
+                mainSeeder.quoteSeed()
+                print("Birthday Messages table was empty. Now seeding...")
+            else:
+                print("Birthday Messages table is filled")
+    except Exception as e:
+        print(e)
 
 
 @bot.event
@@ -78,6 +103,7 @@ async def birthdayAnnouncements():
 async def main():
     async with bot:
         birthdayAnnouncements.start()
+        seedIfEmpty()
         await load_extensions()
         await bot.start(DISCORD_BOT_TOKEN)
 

@@ -6,7 +6,7 @@ from datetime import date
 from discord.ext import commands
 from discord.utils import get
 from db_settings import session_scope
-from BirthdayBot.models import DiscordUser
+from BirthdayBot.Models import DiscordUser
 
 # Create permission intents, state what our bot should be able to do
 intents = discord.Intents.default()

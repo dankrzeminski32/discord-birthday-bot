@@ -4,7 +4,7 @@ import csv
 import random
 from discord.ui import Button, View
 from db_settings import session_scope
-from BirthdayBot.models import DiscordUser
+from BirthdayBot.Models import DiscordUser
 from sqlalchemy.exc import SQLAlchemyError
 
 
