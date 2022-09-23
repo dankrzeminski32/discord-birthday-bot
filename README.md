@@ -21,9 +21,9 @@ Discord bot sending happy birthday messages to all users
 -   [x] Clean up code, modularize functionality
 -   [x] add requirements.txt for rebuilding purposes
 -   [x] Create methods to print birthday message
-    -   [ ] Attach random message with birthday message (in progress - ethan) 
+    -   [x] Attach random message with birthday message (in progress - ethan) 
 -   [ ] add relevant comments/documentation to every command method we create (these should be tracked/organized)
--   [ ] Clean up seeder files
+-   [x] Clean up seeder files
 -   [ ] Improve visual design of each announcement/response
 -   [ ] Improve Birthday confirmation message (present it nicer) 
 -   [ ] Add '.bday help' command (gives relevant details about each command, .age .bday)
