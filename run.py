@@ -4,8 +4,11 @@ from discord.ext import commands, tasks
 from config import DISCORD_BOT_TOKEN, DATABASE_URI
 from BirthdayBot.BirthdayChecker import BirthdayChecker
 from datetime import datetime, timedelta
+import logging
 
-# import schedule
+#Set up logging
+handler = logging.FileHandler(filename='discord_default.log', encoding='utf-8', mode='w')
+#logging.basicConfig(level=logging.INFO, filename='bot.log')
 
 # Create permission intents, state what our bot should be able to do
 intents = discord.Intents.default()
@@ -13,7 +16,7 @@ intents.message_content = True
 # intents.guilds = True
 # intents.members = True
 
-bot = commands.Bot(command_prefix=".", intents=intents)
+bot = commands.Bot(command_prefix=".", intents=intents, log_handler=handler, log_level=logging.DEBUG)
 
 
 @bot.event
@@ -59,17 +62,17 @@ async def birthdayAnnouncements():
 
 
 # Runs at 6:00 am everyday, timezone is the servers timezone, unless changed...
-@birthdayAnnouncements.before_loop
-async def before_birthdayAnnouncements():
-    hour = 18
-    minute = 25
-    await bot.wait_until_ready()
-    now = datetime.now()
-    print(now)
-    future = datetime(now.year, now.month, now.day, hour, minute)
-    if now.hour >= hour and now.minute > minute:
-        future += timedelta(days=1)
-    await asyncio.sleep((future - now).seconds)
+# @birthdayAnnouncements.before_loop
+# async def before_birthdayAnnouncements():
+#     hour = 18
+#     minute = 39
+#     await bot.wait_until_ready()
+#     now = datetime.now()
+#     print(now)
+#     future = datetime(now.year, now.month, now.day, hour, minute)
+#     if now.hour >= hour and now.minute > minute:
+#         future += timedelta(days=1)
+#     await asyncio.sleep((future - now).seconds)
 
 
 async def main():
