@@ -1,3 +1,4 @@
+from ast import Break
 import discord
 from discord.ext import commands
 import csv
@@ -44,6 +45,7 @@ class Registration(commands.Cog):
                 "PAUSE! You have entered a birthday in the future. Please try again!"
             )
             await self.retryLoop(ctx)
+            return None
 
         view = RegistrationButtons(author=author)
         await self.sendConfirmationMessage(ctx, view, msg)
