@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 import csv
 import random
+import datetime
+from datetime import datetime
 from discord.ui import Button, View
 from db_settings import session_scope
 from BirthdayBot.models import DiscordUser
@@ -33,7 +35,16 @@ class Registration(commands.Cog):
         msg = await self.bot.wait_for("message", check=check)
 
         author = ctx.author
-        # await ctx.send("{}, Your birthday ({}) has been stored in our database!".format(msg.author,msg.content))
+
+        # MM/DD/YYYY
+        today = datetime.now()
+        inputDate = datetime.strptime(msg.content, "%m/%d/%Y")
+        if inputDate > today:
+            await ctx.send(
+                "PAUSE! You have entered a birthday in the future. Please try again!"
+            )
+            await self.retryLoop(ctx)
+
         view = RegistrationButtons(author=author)
         await self.sendConfirmationMessage(ctx, view, msg)
         if view.userConfirmation is None:
@@ -71,9 +82,20 @@ class Registration(commands.Cog):
                     return msg.author == ctx.author and msg.channel == ctx.channel
 
                 msg = await self.bot.wait_for("message", check=check)
-                await self.sendConfirmationMessage(ctx, view, msg)
-                if view.userConfirmation != False:
-                    loop = False
+
+                validInput = True
+                today = datetime.now()
+                inputDate = datetime.strptime(msg.content, "%m/%d/%Y")
+                if inputDate > today:
+                    await ctx.send(
+                        "PAUSE! You have entered a birthday in the future. Please try again."
+                    )
+                    validInput = False
+
+                if validInput == True:
+                    await self.sendConfirmationMessage(ctx, view, msg)
+                    if view.userConfirmation != False:
+                        loop = False
 
             if view.userConfirmation is None:
                 await ctx.send("Timed out")
