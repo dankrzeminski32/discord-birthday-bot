@@ -39,7 +39,13 @@ class Registration(commands.Cog):
 
         # MM/DD/YYYY
         today = datetime.now()
-        inputDate = datetime.strptime(msg.content, "%m/%d/%Y")
+        try:
+            inputDate = datetime.strptime(msg.content, "%m/%d/%Y")
+        except:
+            await ctx.send("Invalid date format. Please try again!")
+            await self.retryLoop(ctx)
+            return None
+
         if inputDate > today:
             await ctx.send(
                 "PAUSE! You have entered a birthday in the future. Please try again!"
@@ -87,8 +93,12 @@ class Registration(commands.Cog):
 
                 validInput = True
                 today = datetime.now()
-                inputDate = datetime.strptime(msg.content, "%m/%d/%Y")
-                if inputDate > today:
+                try:
+                    inputDate = datetime.strptime(msg.content, "%m/%d/%Y")
+                except:
+                    validInput = False
+
+                if (inputDate > today) and validInput == True:
                     await ctx.send(
                         "PAUSE! You have entered a birthday in the future. Please try again."
                     )
