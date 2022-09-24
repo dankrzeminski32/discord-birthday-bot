@@ -4,7 +4,7 @@ import random
 from discord.ext import commands
 from datetime import datetime
 from datetime import date
-from db_settings import session_scope
+from BirthdayBot.Utils import session_scope
 from sqlalchemy import extract
 from BirthdayBot.Models import DiscordUser
 from BirthdayBot.Models import BirthdayImages

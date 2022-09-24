@@ -3,7 +3,7 @@ from discord.ext import commands
 import csv
 import random
 from discord.ui import Button, View
-from db_settings import session_scope
+from BirthdayBot.Utils import session_scope
 from BirthdayBot.Models import DiscordUser
 from sqlalchemy.exc import SQLAlchemyError
 

@@ -1,63 +1,47 @@
 import asyncio
 import discord
+from BirthdayBot.Utils import session_scope, logger, recreateDB
 from BirthdayBot.Seeder import Seeder
-from db_settings import session_scope
 from discord.ext import commands, tasks
-from config import DISCORD_BOT_TOKEN, DATABASE_URI
+from config import DISCORD_BOT_TOKEN, DATABASE_URI, PATH_TO_BIRTHDAY_IMGS, PATH_TO_BIRTHDAY_QUOTES
 from BirthdayBot.BirthdayChecker import BirthdayChecker
 from datetime import datetime, timedelta
 from BirthdayBot.Models import BirthdayImages
 from BirthdayBot.Models import BirthdayMessages
-import logging
-
-#Set up logging
-handler = logging.FileHandler(filename='discord_default.log', encoding='utf-8', mode='w')
-#logging.basicConfig(level=logging.INFO, filename='bot.log')
 
 # Create permission intents, state what our bot should be able to do
 intents = discord.Intents.default()
 intents.message_content = True
-# intents.guilds = True
-# intents.members = True
 
-bot = commands.Bot(command_prefix=".", intents=intents, log_handler=handler, log_level=logging.DEBUG)
-mainSeeder = Seeder("BirthdayImages.txt", "BirthdayMessages.txt")
-# mainSeeder.imageSeed()
-# mainSeeder.quoteSeed()
+#DISCORD BOT OBJECT 
+bot = commands.Bot(command_prefix=".", intents=intents)
+
+#MAIN SEEDER OBJECT
+mainSeeder = Seeder(PATH_TO_BIRTHDAY_IMGS, PATH_TO_BIRTHDAY_QUOTES)
 
 
-def seedIfEmpty():
+
+def seedDBIfEmpty() -> None:
     try:
         with session_scope() as s:
             if not s.query(BirthdayImages).all():
+                logger.info("Birthday Images table was empty. Now seeding...")
                 mainSeeder.imageSeed()
-                print("Birthday Images table was empty. Now seeding...")
             else:
-                print("Birthday Images table is filled")
+                logger.info("Birthday Images table is filled")
 
             if not s.query(BirthdayMessages).all():
+                logger.info("Birthday Quotes table was empty. Now seeding...")
                 mainSeeder.quoteSeed()
-                print("Birthday Messages table was empty. Now seeding...")
             else:
-                print("Birthday Messages table is filled")
+                print("Birthday Quotes table is filled")
     except Exception as e:
-        print(e)
+        logger.error("Database Seeding Issue, %s" % e)
 
 
 @bot.event
 async def on_ready():
-    print(f"We have logged in as {bot.user}")
-    print("testing")
-    print(discord.__version__)
-    tempchan = None
-    for guild in bot.guilds:
-        for channel in guild.text_channels:
-            if channel.name == "birthdays":  # must be lowercase
-                tempchan = channel
-                break
-        if tempchan == None:
-            await guild.create_text_channel("birthdays")  # ditto
-
+    logger.info(f"We have logged in as {bot.user}")
 
 async def load_extensions():
     extensions = [
@@ -81,6 +65,8 @@ async def birthdayAnnouncements():
                 channel = bot.get_channel(bday_channel)
         # what if channel got deleted?
         if channel.name != "birthdays" or channel == None:
+            logger.warning("birthdays channel not found in %s" % guild)
+            logger.info("Attempting to create 'birthday' channel in %s" % guild)
             new_channel = await guild.create_text_channel("birthdays")
             channel = bot.get_channel(new_channel.id)
         await bdaychecker.sendBirthdayMessages(bdays, channel)
@@ -103,7 +89,8 @@ async def birthdayAnnouncements():
 async def main():
     async with bot:
         birthdayAnnouncements.start()
-        seedIfEmpty()
+        recreateDB()
+        seedDBIfEmpty()
         await load_extensions()
         await bot.start(DISCORD_BOT_TOKEN)
 
