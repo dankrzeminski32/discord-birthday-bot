@@ -8,6 +8,7 @@ from discord.utils import get
 from BirthdayBot.Utils import session_scope, logger
 from BirthdayBot.Models import DiscordUser
 
+
 class UserAgeInfo(commands.Cog):
     def __init__(self, bot):
         self.bot = bot

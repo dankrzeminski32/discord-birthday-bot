@@ -10,6 +10,7 @@ from BirthdayBot.Utils import session_scope, logger
 from BirthdayBot.Models import DiscordUser
 from sqlalchemy.exc import SQLAlchemyError
 from BirthdayBot.Cogs.UserAgeInfo import UserAgeInfo
+from BirthdayBot.Cogs import Help
 
 
 class Registration(commands.Cog):
@@ -217,7 +218,12 @@ class Registration(commands.Cog):
             
 
     async def sendConfirmationMessage(self, ctx, view, msg):
-        await ctx.send("Is this correct? {}".format(msg.content), view=view)
+        embed = discord.Embed(
+            title="Confirmation:",
+            description="Is this correct? {}".format(msg.content),
+            color=discord.Color.blue(),
+        )
+        await ctx.send(embed=embed, view=view)
         await view.wait()
 
     async def sendRegistrationMessage(self, ctx):
@@ -248,7 +254,7 @@ class RegistrationButtons(discord.ui.View):
         self.userConfirmation = None
         self.author = author
 
-    @discord.ui.button(label="Yes!", style=discord.ButtonStyle.green)  # or .success
+    @discord.ui.button(label="Yes! 👍", style=discord.ButtonStyle.green)  # or .success
     async def yes(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_message(
             "Confirming..."
@@ -256,7 +262,7 @@ class RegistrationButtons(discord.ui.View):
         self.userConfirmation = True
         self.stop()
 
-    @discord.ui.button(label="No!", style=discord.ButtonStyle.red)  # or .danger
+    @discord.ui.button(label="No! 👎", style=discord.ButtonStyle.red)  # or .danger
     async def no(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_message("Please try again... (mm/dd/yyyy)")
         self.userConfirmation = False
