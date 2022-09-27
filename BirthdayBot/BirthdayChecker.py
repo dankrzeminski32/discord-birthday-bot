@@ -4,11 +4,11 @@ import random
 from discord.ext import commands
 from datetime import datetime
 from datetime import date
-from db_settings import session_scope
+from BirthdayBot.Utils import session_scope
 from sqlalchemy import extract
-from BirthdayBot.models import DiscordUser
-from BirthdayBot.models import BirthdayImages
-from BirthdayBot.models import BirthdayMessages
+from BirthdayBot.Models import DiscordUser
+from BirthdayBot.Models import BirthdayImages
+from BirthdayBot.Models import BirthdayMessages
 
 
 class BirthdayChecker(object):
@@ -32,27 +32,34 @@ class BirthdayChecker(object):
         return all_birthdays
 
     async def sendBirthdayMessages(self, todays_birthdays: list, channel) -> None:
-        with session_scope() as session:
-            birthdayMessage = random.choice(session.query(BirthdayMessages).all())
-            birthdayMessage = birthdayMessage.bdayMessage
-            author = random.choice(session.query(BirthdayMessages).all())
-            author = author.author
-            birthdayImage = random.choice(session.query(BirthdayImages).all())
-            birthdayImage = birthdayImage.bdayImage
 
         for birthday in todays_birthdays:
+            random_msg_details = self.generateRandomMessage()
             embed = discord.Embed(
                 title="Happy Birthday!",
-                description=f"{birthday.username}",
+                description=f"<@{birthday.discord_ID}>",
                 color=discord.Color.blue(),
             )
             embed.add_field(
                 name="Quote:",
-                value=birthdayMessage + "\n🤵" + author,
+                value=random_msg_details["message"]
+                + "\n ~ 🤵"
+                + random_msg_details["author"],
                 inline=False,
             )
-            embed.set_image(url=birthdayImage)
+            embed.set_image(url=random_msg_details["birthdayImage"])
             await channel.send(embed=embed)
 
-    def __str__(self):
-        return f"BirthdayChecker reading from {self.csvfileName}"
+    def generateRandomMessage(self) -> dict:
+        with session_scope() as session:
+            birthdayMessage = random.choice(session.query(BirthdayMessages).all())
+            author = random.choice(session.query(BirthdayMessages).all())
+            birthdayImage = random.choice(session.query(BirthdayImages).all())
+
+            bdayMessage = {
+                "message": birthdayMessage.bdayMessage,
+                "author": author.author,
+                "birthdayImage": birthdayImage.bdayImage,
+            }
+
+            return bdayMessage
