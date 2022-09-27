@@ -8,12 +8,12 @@ async def helpList(ctx):
         color=discord.Color.blue(),
     )
     embed.add_field(
-        name=".age @user",
+        name=".bday age @user",
         value="Gives the age of the user along with how many days until their birthday.",
         inline=False,
     ),
     embed.add_field(
-        name=".bday",
+        name=".bday register",
         value="Will prompt you to enter your birthday into the data base (mm/dd/yyyy) format.",
         inline=False,
     )

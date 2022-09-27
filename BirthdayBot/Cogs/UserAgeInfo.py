@@ -8,12 +8,6 @@ from discord.utils import get
 from BirthdayBot.Utils import session_scope, logger
 from BirthdayBot.Models import DiscordUser
 
-# Create permission intents, state what our bot should be able to do
-intents = discord.Intents.default()
-intents.message_content = True
-
-bot = commands.Bot(command_prefix=".", intents=intents)
-
 
 class UserAgeInfo(commands.Cog):
     def __init__(self, bot):

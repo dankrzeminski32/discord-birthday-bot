@@ -9,7 +9,7 @@ from discord.ui import Button, View
 from BirthdayBot.Utils import session_scope, logger
 from BirthdayBot.Models import DiscordUser
 from sqlalchemy.exc import SQLAlchemyError
-from BirthdayBot.commands import HelpCommand
+from BirthdayBot.Cogs import HelpCommand
 
 
 class Registration(commands.Cog):
@@ -32,7 +32,7 @@ class Registration(commands.Cog):
         await helper(ctx)
 
     @commands.command()
-    async def bday(self, ctx):
+    async def register(self, ctx):
         await self.sendRegistrationMessage(ctx)
 
         # Need to improve this validation
