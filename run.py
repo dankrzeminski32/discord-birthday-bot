@@ -25,24 +25,6 @@ bot = commands.Bot(command_prefix=".", intents=intents)
 mainSeeder = Seeder(PATH_TO_BIRTHDAY_IMGS, PATH_TO_BIRTHDAY_QUOTES)
 
 
-def seedDBIfEmpty() -> None:
-    try:
-        with session_scope() as s:
-            if not s.query(BirthdayImages).all():
-                logger.info("Birthday Images table was empty. Now seeding...")
-                mainSeeder.imageSeed()
-            else:
-                logger.info("Birthday Images table is filled")
-
-            if not s.query(BirthdayMessages).all():
-                logger.info("Birthday Quotes table was empty. Now seeding...")
-                mainSeeder.quoteSeed()
-            else:
-                print("Birthday Quotes table is filled")
-    except Exception as e:
-        logger.error("Database Seeding Issue, %s" % e)
-
-
 @bot.event
 async def on_ready():
     logger.info(f"We have logged in as {bot.user}")
@@ -94,8 +76,8 @@ async def birthdayAnnouncements():
 async def main():
     async with bot:
         birthdayAnnouncements.start()
-        recreateDB()
-        seedDBIfEmpty()
+        #recreateDB()
+        mainSeeder.seedDBIfEmpty()
         await load_extensions()
         await bot.start(DISCORD_BOT_TOKEN)
 
