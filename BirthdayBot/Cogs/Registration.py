@@ -9,7 +9,7 @@ from discord.ui import Button, View
 from BirthdayBot.Utils import session_scope, logger
 from BirthdayBot.Models import DiscordUser
 from sqlalchemy.exc import SQLAlchemyError
-from BirthdayBot.Cogs import HelpCommand
+from BirthdayBot.Cogs import Help
 
 
 class Registration(commands.Cog):
@@ -25,11 +25,6 @@ class Registration(commands.Cog):
 
     ##########################################################################
     """ ---- COMMANDS ---- """
-
-    @commands.command()
-    async def helpme(self, ctx):
-        helper = HelpCommand.helpList
-        await helper(ctx)
 
     @commands.command()
     async def register(self, ctx):
