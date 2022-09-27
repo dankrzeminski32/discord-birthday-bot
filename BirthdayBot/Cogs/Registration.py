@@ -6,8 +6,8 @@ import random
 import datetime
 from datetime import datetime
 from discord.ui import Button, View
-from db_settings import session_scope
-from BirthdayBot.models import DiscordUser
+from BirthdayBot.Utils import session_scope, logger
+from BirthdayBot.Models import DiscordUser
 from sqlalchemy.exc import SQLAlchemyError
 from BirthdayBot.commands import HelpCommand
 
@@ -73,6 +73,11 @@ class Registration(commands.Cog):
                         msg.author, msg.content
                     )
                 )
+                logger.info(
+                    "NEW USER REGISTERED: Author: {} Birthday: {} Discord ID: {}".format(
+                        msg.author, msg.content, msg.author
+                    )
+                )
             except:
                 await ctx.send("Invalid date format... Please try again. (mm/dd/yyyy)")
                 await self.retryLoop(ctx)
@@ -128,6 +133,11 @@ class Registration(commands.Cog):
                     await ctx.send(
                         "{}, Your birthday ({}) has been stored in our database!".format(
                             msg.author, msg.content
+                        )
+                    )
+                    logger.info(
+                        "NEW USER REGISTERED: Author: {} Birthday: {} Discord ID: {}".format(
+                            msg.author, msg.content, msg.author
                         )
                     )
                     outerLoop = False
