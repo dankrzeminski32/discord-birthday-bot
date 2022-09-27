@@ -50,7 +50,9 @@ class UserAgeInfo(commands.Cog):
                 + str(numDays)
                 + "```"
             )
-            logger.info("{} Asked for {}'s information (.age)".format(ctx.author,argName))
+            logger.info(
+                "{} Asked for {}'s information (.age)".format(ctx.author, argName)
+            )
         except:
             await ctx.send("Sorry, that user's information is not available.")
 

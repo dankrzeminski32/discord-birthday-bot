@@ -42,10 +42,12 @@ class BirthdayChecker(object):
             )
             embed.add_field(
                 name="Quote:",
-                value=random_msg_details['message'] + "\n ~ 🤵" + random_msg_details['author'],
+                value=random_msg_details["message"]
+                + "\n ~ 🤵"
+                + random_msg_details["author"],
                 inline=False,
             )
-            embed.set_image(url=random_msg_details['birthdayImage'])
+            embed.set_image(url=random_msg_details["birthdayImage"])
             await channel.send(embed=embed)
 
     def generateRandomMessage(self) -> dict:
@@ -57,8 +59,7 @@ class BirthdayChecker(object):
             bdayMessage = {
                 "message": birthdayMessage.bdayMessage,
                 "author": author.author,
-                "birthdayImage": birthdayImage.bdayImage
+                "birthdayImage": birthdayImage.bdayImage,
             }
 
             return bdayMessage
-

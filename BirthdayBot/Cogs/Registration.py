@@ -48,7 +48,11 @@ class Registration(commands.Cog):
                         msg.author, msg.content
                     )
                 )
-                logger.info("NEW USER REGISTERED: Author: {} Birthday: {} Discord ID: {}".format(msg.author,msg.content,msg.author))
+                logger.info(
+                    "NEW USER REGISTERED: Author: {} Birthday: {} Discord ID: {}".format(
+                        msg.author, msg.content, msg.author
+                    )
+                )
             except:
                 await ctx.send("Invalid date format... Please try again. (mm/dd/yyyy)")
                 await self.retryLoop(ctx)
@@ -91,7 +95,11 @@ class Registration(commands.Cog):
                             msg.author, msg.content
                         )
                     )
-                    logger.info("NEW USER REGISTERED: Author: {} Birthday: {} Discord ID: {}".format(msg.author,msg.content,msg.author))
+                    logger.info(
+                        "NEW USER REGISTERED: Author: {} Birthday: {} Discord ID: {}".format(
+                            msg.author, msg.content, msg.author
+                        )
+                    )
                     outerLoop = False
                 except:
                     await ctx.send(

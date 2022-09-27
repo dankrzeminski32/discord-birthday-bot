@@ -21,7 +21,10 @@ class Seeder(object):
                     imageUrl = BirthdayImages(bdayImage=line)
                     s.add(imageUrl)
                     total_images_added += 1
-                logger.info("Images seeder has ran successfully. %s Images added" % total_images_added)
+                logger.info(
+                    "Images seeder has ran successfully. %s Images added"
+                    % total_images_added
+                )
         except Exception as e:
             logger.error("Image Logger has failed, %s" % e)
 
@@ -56,6 +59,9 @@ class Seeder(object):
                         )
                         s.add(message2)
                         total_added_quotes += 1
-                logger.info("Quotes seeder has ran successfully. %s Quotes added" % total_added_quotes)
+                logger.info(
+                    "Quotes seeder has ran successfully. %s Quotes added"
+                    % total_added_quotes
+                )
         except Exception as e:
             logger.error("Quotes Logger has failed, %s" % e)

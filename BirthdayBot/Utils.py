@@ -12,7 +12,9 @@ logger = logging.getLogger(__name__)
 fh = FileHandler("bot.log", mode="w")
 logger.setLevel("DEBUG")
 formatter = logging.Formatter(
-        '%(asctime)s - %(filename)s - %(levelname)-2s - %(message)s', datefmt="%Y-%m-%d - %I:%M:%S %p")
+    "%(asctime)s - %(filename)s - %(levelname)-2s - %(message)s",
+    datefmt="%Y-%m-%d - %I:%M:%S %p",
+)
 fh.setFormatter(formatter)
 logger.addHandler(fh)
 logger.info("Logger has been successfully configured.")
@@ -26,7 +28,7 @@ Session = sessionmaker(bind=engine)
 def recreateDB():
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
-    #print(Base.metadata.__dict__)
+    # print(Base.metadata.__dict__)
 
 
 @contextmanager

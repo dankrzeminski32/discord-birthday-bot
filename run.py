@@ -3,7 +3,12 @@ import discord
 from BirthdayBot.Utils import session_scope, logger, recreateDB
 from BirthdayBot.Seeder import Seeder
 from discord.ext import commands, tasks
-from config import DISCORD_BOT_TOKEN, DATABASE_URI, PATH_TO_BIRTHDAY_IMGS, PATH_TO_BIRTHDAY_QUOTES
+from config import (
+    DISCORD_BOT_TOKEN,
+    DATABASE_URI,
+    PATH_TO_BIRTHDAY_IMGS,
+    PATH_TO_BIRTHDAY_QUOTES,
+)
 from BirthdayBot.BirthdayChecker import BirthdayChecker
 from datetime import datetime, timedelta
 from BirthdayBot.Models import BirthdayImages
@@ -13,12 +18,11 @@ from BirthdayBot.Models import BirthdayMessages
 intents = discord.Intents.default()
 intents.message_content = True
 
-#DISCORD BOT OBJECT 
+# DISCORD BOT OBJECT
 bot = commands.Bot(command_prefix=".", intents=intents)
 
-#MAIN SEEDER OBJECT
+# MAIN SEEDER OBJECT
 mainSeeder = Seeder(PATH_TO_BIRTHDAY_IMGS, PATH_TO_BIRTHDAY_QUOTES)
-
 
 
 def seedDBIfEmpty() -> None:
@@ -42,6 +46,7 @@ def seedDBIfEmpty() -> None:
 @bot.event
 async def on_ready():
     logger.info(f"We have logged in as {bot.user}")
+
 
 async def load_extensions():
     extensions = [
