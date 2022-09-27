@@ -3,7 +3,7 @@ from discord.ext import commands
 import csv
 import random
 from discord.ui import Button, View
-from BirthdayBot.Utils import session_scope
+from BirthdayBot.Utils import session_scope, logger
 from BirthdayBot.Models import DiscordUser
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -48,6 +48,7 @@ class Registration(commands.Cog):
                         msg.author, msg.content
                     )
                 )
+                logger.info("NEW USER REGISTERED: Author: {} Birthday: {} Discord ID: {}".format(msg.author,msg.content,msg.author))
             except:
                 await ctx.send("Invalid date format... Please try again. (mm/dd/yyyy)")
                 await self.retryLoop(ctx)
@@ -90,6 +91,7 @@ class Registration(commands.Cog):
                             msg.author, msg.content
                         )
                     )
+                    logger.info("NEW USER REGISTERED: Author: {} Birthday: {} Discord ID: {}".format(msg.author,msg.content,msg.author))
                     outerLoop = False
                 except:
                     await ctx.send(

@@ -5,7 +5,7 @@ from datetime import datetime
 from datetime import date
 from discord.ext import commands
 from discord.utils import get
-from BirthdayBot.Utils import session_scope
+from BirthdayBot.Utils import session_scope, logger
 from BirthdayBot.Models import DiscordUser
 
 # Create permission intents, state what our bot should be able to do
@@ -50,6 +50,7 @@ class UserAgeInfo(commands.Cog):
                 + str(numDays)
                 + "```"
             )
+            logger.info("{} Asked for {}'s information (.age)".format(ctx.author,argName))
         except:
             await ctx.send("Sorry, that user's information is not available.")
 
