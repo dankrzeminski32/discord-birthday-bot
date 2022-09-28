@@ -61,7 +61,10 @@ class Registration(commands.Cog):
         elif view.userConfirmation:
             try:
                 self.writeUserToDB(
-                    username=msg.author, birthday=msg.content, discord_id=msg.author.id
+                    username=msg.author,
+                    birthday=msg.content,
+                    discord_id=msg.author.id,
+                    guild=msg.guild.id,
                 )
                 await ctx.send(
                     "{}, Your birthday ({}) has been stored in our database!".format(
@@ -69,8 +72,8 @@ class Registration(commands.Cog):
                     )
                 )
                 logger.info(
-                    "NEW USER REGISTERED: Author: {} Birthday: {} Discord ID: {}".format(
-                        msg.author, msg.content, msg.author
+                    "NEW USER REGISTERED: Author: {} Birthday: {} Discord ID: {} Guild: {}".format(
+                        msg.author, msg.content, msg.author, msg.guild.id
                     )
                 )
             except:
@@ -162,11 +165,14 @@ class Registration(commands.Cog):
         await ctx.send(embed=embed)
 
     @staticmethod
-    def writeUserToDB(username: str, birthday: str, discord_id: str):
+    def writeUserToDB(username: str, birthday: str, discord_id: str, guild: int):
         # session_scope will raise an exception if invalid, use this with try/except
         with session_scope() as s:
             user = DiscordUser(
-                username=str(username), Birthday=birthday, discord_ID=discord_id
+                username=str(username),
+                Birthday=birthday,
+                discord_ID=discord_id,
+                guild=guild,
             )
             s.add(user)
 

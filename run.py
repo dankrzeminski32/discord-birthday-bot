@@ -63,8 +63,8 @@ async def birthdayAnnouncements():
     await bot.wait_until_ready()
     bdaychecker = BirthdayChecker(bot)
     channel = None
-    bdays = bdaychecker.getAllBirthdays()
     for guild in bot.guilds:
+        bdays = bdaychecker.getAllBirthdays(guild)
         for channel in guild.text_channels:
             if channel.name == "birthdays":
                 bday_channel = channel.id
@@ -95,7 +95,7 @@ async def birthdayAnnouncements():
 async def main():
     async with bot:
         birthdayAnnouncements.start()
-        recreateDB()
+        # recreateDB()
         seedDBIfEmpty()
         await load_extensions()
         await bot.start(DISCORD_BOT_TOKEN)
