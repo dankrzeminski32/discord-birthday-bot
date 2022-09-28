@@ -1,8 +1,6 @@
 from ast import Break
 import discord
 from discord.ext import commands
-import csv
-import random
 import datetime
 from datetime import datetime
 from discord.ui import Button, View
