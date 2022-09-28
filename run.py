@@ -5,15 +5,9 @@ from BirthdayBot.Seeder import Seeder
 from discord.ext import commands, tasks
 from config import (
     DISCORD_BOT_TOKEN,
-    DATABASE_URI,
     PATH_TO_BIRTHDAY_IMGS,
     PATH_TO_BIRTHDAY_QUOTES,
 )
-from BirthdayBot.BirthdayChecker import BirthdayChecker
-from datetime import datetime, timedelta
-from BirthdayBot.Models import BirthdayImages
-from BirthdayBot.Models import BirthdayMessages
-
 # Create permission intents, state what our bot should be able to do
 intents = discord.Intents.default()
 intents.message_content = True
@@ -23,12 +17,6 @@ bot = commands.Bot(command_prefix=".bday ", intents=intents, help_command=None)
 
 # MAIN SEEDER OBJECT
 mainSeeder = Seeder(PATH_TO_BIRTHDAY_IMGS, PATH_TO_BIRTHDAY_QUOTES)
-
-
-@bot.event
-async def on_ready():
-    logger.info(f"We have logged in as {bot.user}")
-
 
 async def load_extensions():
     extensions = [
@@ -41,43 +29,8 @@ async def load_extensions():
         await bot.load_extension(filename)
 
 
-@tasks.loop(seconds=30)
-async def birthdayAnnouncements():
-    await bot.wait_until_ready()
-    bdaychecker = BirthdayChecker(bot)
-    channel = None
-    for guild in bot.guilds:
-        bdays = bdaychecker.getAllBirthdays(guild)
-        for channel in guild.text_channels:
-            if channel.name == "birthdays":
-                bday_channel = channel.id
-                channel = bot.get_channel(bday_channel)
-        # what if channel got deleted?
-        if channel.name != "birthdays" or channel == None:
-            logger.warning("birthdays channel not found in %s" % guild)
-            logger.info("Attempting to create 'birthdays' channel in %s" % guild)
-            new_channel = await guild.create_text_channel("birthdays")
-            channel = bot.get_channel(new_channel.id)
-        await bdaychecker.sendBirthdayMessages(bdays, channel)
-
-
-# Runs at 6:00 am everyday, timezone is the servers timezone, unless changed...
-# @birthdayAnnouncements.before_loop
-# async def before_birthdayAnnouncements():
-#     hour = 18
-#     minute = 39
-#     await bot.wait_until_ready()
-#     now = datetime.now()
-#     print(now)
-#     future = datetime(now.year, now.month, now.day, hour, minute)
-#     if now.hour >= hour and now.minute > minute:
-#         future += timedelta(days=1)
-#     await asyncio.sleep((future - now).seconds)
-
-
 async def main():
     async with bot:
-        birthdayAnnouncements.start()
         # recreateDB()
         mainSeeder.seedDBIfEmpty()
         await load_extensions()

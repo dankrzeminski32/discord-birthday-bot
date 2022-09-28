@@ -138,7 +138,7 @@ class Help(commands.Cog):
         embed = discord.Embed(
             title="Bot Commands:",
             description="A list of commands with descriptions that can be used with Bday Bot.",
-            color=discord.Color.blue(),
+            color=discord.Color.red(),
         )
         embed.add_field(
             name=".bday age @user",
