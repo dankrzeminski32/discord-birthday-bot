@@ -40,8 +40,10 @@ class Registration(commands.Cog):
 
         # If we have an existing user then throw them into their own "update" loop
         if existing_user is not None:
-            existing_user_view = ExistingUserButtons(author=ctx.author, existing_user=existing_user)
-            await self.sendUpdateQuestion(ctx,existing_user_view)
+            existing_user_view = ExistingUserButtons(
+                author=ctx.author, existing_user=existing_user
+            )
+            await self.sendUpdateQuestion(ctx, existing_user_view)
             await self.handleExistingUser(ctx, existing_user_view)
             return None
 
@@ -123,12 +125,12 @@ class Registration(commands.Cog):
                     inputDate = datetime.strptime(msg.content, "%m/%d/%Y")
                 except:
                     validInput = False
-                    await ctx.send("Invalid date format. Please try again! (mm/dd/yyyy)")
-                    
+                    await ctx.send(
+                        "Invalid date format. Please try again! (mm/dd/yyyy)"
+                    )
 
-                
                 if validInput:
-                    if (inputDate > today):
+                    if inputDate > today:
                         await ctx.send(
                             "PAUSE! You have entered a birthday in the future. Please try again."
                         )
@@ -142,7 +144,7 @@ class Registration(commands.Cog):
             if view.userConfirmation is None:
                 await ctx.send("Timed out")
                 outerLoop = False
-            elif view.userConfirmation and update==False:
+            elif view.userConfirmation and update == False:
                 try:
                     self.writeUserToDB(
                         username=msg.author,
@@ -165,12 +167,10 @@ class Registration(commands.Cog):
                         "Invalid date format... Please try again. (mm/dd/yyyy)"
                     )
                     outerLoop = True
-            elif view.userConfirmation and update==True:
+            elif view.userConfirmation and update == True:
                 try:
-                    username = ctx.author.name + "#" +ctx.author.discriminator
-                    self.updateUserInDB(
-                        username=username, new_birthday=msg.content
-                    )
+                    username = ctx.author.name + "#" + ctx.author.discriminator
+                    self.updateUserInDB(username=username, new_birthday=msg.content)
                     await ctx.send(
                         "{}, Your birthday ({}) has been updated in our database!".format(
                             msg.author, msg.content
@@ -186,7 +186,7 @@ class Registration(commands.Cog):
                     await ctx.send(
                         "Invalid date format... Please try again. (mm/dd/yyyy)"
                     )
-                    outerLoop = True 
+                    outerLoop = True
             else:
                 print("failure")
 
@@ -205,14 +205,14 @@ class Registration(commands.Cog):
                 inputDate = datetime.strptime(msg.content, "%m/%d/%Y")
             except:
                 await ctx.send("Invalid date format. Please try again! (mm/dd/yyyy)")
-                await self.retryLoop(ctx, update = True)
+                await self.retryLoop(ctx, update=True)
                 return None
 
             if inputDate > today:
                 await ctx.send(
                     "PAUSE! You have entered a birthday in the future. Please try again!"
                 )
-                await self.retryLoop(ctx,update=True)
+                await self.retryLoop(ctx, update=True)
                 return None
 
             registrationView = RegistrationButtons(author=ctx.author)
@@ -222,10 +222,8 @@ class Registration(commands.Cog):
                 await ctx.send("Timed out")
             elif registrationView.userConfirmation:
                 try:
-                    username = ctx.author.name + "#" +ctx.author.discriminator
-                    self.updateUserInDB(
-                        username=username, new_birthday=msg.content
-                    )
+                    username = ctx.author.name + "#" + ctx.author.discriminator
+                    self.updateUserInDB(username=username, new_birthday=msg.content)
                     await ctx.send(
                         "{}, Your birthday ({}) has been updated in our database!".format(
                             msg.author, msg.content
@@ -238,21 +236,28 @@ class Registration(commands.Cog):
                     )
                     return None
                 except:
-                    await ctx.send("Invalid date format... Please try again. (mm/dd/yyyy)")
+                    await ctx.send(
+                        "Invalid date format... Please try again. (mm/dd/yyyy)"
+                    )
                     await self.retryLoop(ctx, update=True)
             else:
                 await self.retryLoop(ctx, update=True)
 
-    def updateUserInDB(self,username,new_birthday):
+    def updateUserInDB(self, username, new_birthday):
         with session_scope() as session:
-            user_to_update = session.query(DiscordUser).filter(DiscordUser.username==username).first()
+            user_to_update = (
+                session.query(DiscordUser)
+                .filter(DiscordUser.username == username)
+                .first()
+            )
             user_to_update.Birthday = new_birthday
-            
-            
-    async def sendUpdateQuestion(self,ctx,view):
-        await ctx.send("You already have a birthday registered, would you like to update this information?", view=view)
-        await view.wait()
 
+    async def sendUpdateQuestion(self, ctx, view):
+        await ctx.send(
+            "You already have a birthday registered, would you like to update this information?",
+            view=view,
+        )
+        await view.wait()
 
     async def sendConfirmationMessage(self, ctx, view, msg):
         embed = discord.Embed(
