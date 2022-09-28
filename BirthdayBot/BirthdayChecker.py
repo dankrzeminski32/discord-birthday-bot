@@ -17,13 +17,14 @@ class BirthdayChecker(object):
     def __init__(self, bot):
         self.bot = bot
 
-    def getAllBirthdays(self) -> list:
+    def getAllBirthdays(self, guild) -> list:
         with session_scope() as session:
             all_birthdays = (
                 session.query(DiscordUser)
                 .filter(
                     extract("month", DiscordUser.Birthday) == datetime.today().month,
                     extract("day", DiscordUser.Birthday) == datetime.today().day,
+                    DiscordUser.guild == guild.id,
                 )
                 .all()
             )
