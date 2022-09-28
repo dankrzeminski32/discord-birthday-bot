@@ -188,7 +188,7 @@ class Help(commands.Cog):
                 report = IssueReports(issues=arg, guild=ctx.author.guild.id)
                 s.add(report)
         except Exception as e:
-            logger.error("Report had an error when storing, %s" % e)
+            logger.error("Report had an error when being stored, %s" % e)
 
         await ctx.send("The issue has been reported and will be looked at.")
 
