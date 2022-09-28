@@ -78,7 +78,7 @@ async def birthdayAnnouncements():
 async def main():
     async with bot:
         birthdayAnnouncements.start()
-        #recreateDB()
+        # recreateDB()
         mainSeeder.seedDBIfEmpty()
         await load_extensions()
         await bot.start(DISCORD_BOT_TOKEN)
