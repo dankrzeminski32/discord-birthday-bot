@@ -33,8 +33,8 @@ class UserAgeInfo(commands.Cog):
                 )
                 birthdate = requested_user.Birthday
                 argName = requested_user.username[:-5]
-            userAge = self.getUserAge(birthdate)
-            numDays = self.daysAway(birthdate)
+            userAge = UserAgeInfo.getUserAge(birthdate)
+            numDays = UserAgeInfo.daysAway(birthdate)
             await ctx.send(
                 "```css\n"
                 + argName
@@ -52,7 +52,7 @@ class UserAgeInfo(commands.Cog):
 
     """ ---- HELPERS ---- """
 
-    def getUserAge(self, Birthday):
+    def getUserAge(Birthday: datetime):
 
         month = Birthday.month
         year = Birthday.year
@@ -62,7 +62,7 @@ class UserAgeInfo(commands.Cog):
         age = today.year - year - ((today.month, today.day) < (month, day))
         return age
 
-    def daysAway(self, birthdate):
+    def daysAway(birthdate: datetime):
 
         today = datetime.now()
         date1 = datetime(today.year, int(birthdate.month), int(birthdate.day))
