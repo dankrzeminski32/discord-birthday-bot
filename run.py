@@ -35,6 +35,7 @@ async def load_extensions():
         "BirthdayBot.Cogs.Registration",
         "BirthdayBot.Cogs.UserAgeInfo",
         "BirthdayBot.Cogs.Help",
+        "BirthdayBot.Cogs.Events",
     ]
     for filename in extensions:
         await bot.load_extension(filename)
@@ -45,8 +46,8 @@ async def birthdayAnnouncements():
     await bot.wait_until_ready()
     bdaychecker = BirthdayChecker(bot)
     channel = None
-    bdays = bdaychecker.getAllBirthdays()
     for guild in bot.guilds:
+        bdays = bdaychecker.getAllBirthdays(guild)
         for channel in guild.text_channels:
             if channel.name == "birthdays":
                 bday_channel = channel.id
@@ -77,7 +78,7 @@ async def birthdayAnnouncements():
 async def main():
     async with bot:
         birthdayAnnouncements.start()
-        #recreateDB()
+        # recreateDB()
         mainSeeder.seedDBIfEmpty()
         await load_extensions()
         await bot.start(DISCORD_BOT_TOKEN)

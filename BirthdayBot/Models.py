@@ -1,5 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Date
+from sqlalchemy import Column, Integer, String, Date, BigInteger
 
 
 Base = declarative_base()
@@ -11,10 +11,11 @@ class DiscordUser(Base):
     username = Column(String)
     Birthday = Column(Date)
     discord_ID = Column(String)
+    guild = Column(BigInteger)
 
     def __repr__(self):
-        return "<DiscordUser(id='{}', username='{}', birthday={})>".format(
-            self.id, self.username, self.Birthday
+        return "<DiscordUser(id='{}', username='{}', birthday={}, guild={})>".format(
+            self.id, self.username, self.Birthday, self.guild
         )
 
 

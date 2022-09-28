@@ -9,7 +9,7 @@ class Seeder(object):
         self.bdayQuotesPath = bdayQuotes_path
         self.bdayImagesFile = open(self.bdayImagePath, "r")
         self.bdayQuotesFile = open(self.bdayQuotesPath, "r")
-        
+
     def seedDBIfEmpty(self) -> None:
         try:
             with session_scope() as s:

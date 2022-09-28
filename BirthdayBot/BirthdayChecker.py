@@ -17,13 +17,14 @@ class BirthdayChecker(object):
     def __init__(self, bot):
         self.bot = bot
 
-    def getAllBirthdays(self) -> list:
+    def getAllBirthdays(self, guild) -> list:
         with session_scope() as session:
             all_birthdays = (
                 session.query(DiscordUser)
                 .filter(
                     extract("month", DiscordUser.Birthday) == datetime.today().month,
                     extract("day", DiscordUser.Birthday) == datetime.today().day,
+                    DiscordUser.guild == guild.id,
                 )
                 .all()
             )
@@ -49,8 +50,14 @@ class BirthdayChecker(object):
             )
             embed.set_image(url=random_msg_details["birthdayImage"])
             await channel.send(embed=embed)
-            logger.info("Sending Birthday Announcement: Username: {} -  Quote ID: {} - Author: {} - Image ID: {}".format(birthday.username,random_msg_details['message_id'],random_msg_details['author'],random_msg_details["birthdayImage_id"]))
-            
+            logger.info(
+                "Sending Birthday Announcement: Username: {} -  Quote ID: {} - Author: {} - Image ID: {}".format(
+                    birthday.username,
+                    random_msg_details["message_id"],
+                    random_msg_details["author"],
+                    random_msg_details["birthdayImage_id"],
+                )
+            )
 
     def generateRandomMessage(self) -> dict:
         with session_scope() as session:
@@ -62,7 +69,7 @@ class BirthdayChecker(object):
                 "author": birthdayMessage.author,
                 "birthdayImage": birthdayImage.bdayImage,
                 "message_id": birthdayMessage.id,
-                "birthdayImage_id": birthdayImage.id
+                "birthdayImage_id": birthdayImage.id,
             }
 
             return bdayMessage
