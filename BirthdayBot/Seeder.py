@@ -9,6 +9,23 @@ class Seeder(object):
         self.bdayQuotesPath = bdayQuotes_path
         self.bdayImagesFile = open(self.bdayImagePath, "r")
         self.bdayQuotesFile = open(self.bdayQuotesPath, "r")
+        
+    def seedDBIfEmpty(self) -> None:
+        try:
+            with session_scope() as s:
+                if not s.query(BirthdayImages).all():
+                    logger.info("Birthday Images table was empty. Now seeding...")
+                    self.imageSeed()
+                else:
+                    logger.info("Birthday Images table is filled")
+
+                if not s.query(BirthdayMessages).all():
+                    logger.info("Birthday Quotes table was empty. Now seeding...")
+                    self.quoteSeed()
+                else:
+                    logger.info("Birthday Quotes table is filled")
+        except Exception as e:
+            logger.error("Database Seeding Issue, %s" % e)
 
     def imageSeed(self) -> None:
         file1 = self.bdayImagesFile
