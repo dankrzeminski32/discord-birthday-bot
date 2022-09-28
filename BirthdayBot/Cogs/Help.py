@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 import platform
 from discord.ext.commands import Context
+from BirthdayBot.Utils import session_scope, logger
+from BirthdayBot.Models import IssueReports
 
 
 class Help(commands.Cog):
@@ -28,7 +30,7 @@ class Help(commands.Cog):
                 data = []
                 for command in commands:
                     description = command.description.partition("\n")[0]
-                    data.append(f"{prefix}{command.name} - {description}")
+                    data.append(f"{prefix}{command.name} - {description}" + "\n")
                 help_text = "\n".join(data)
                 embed.add_field(
                     name=i.capitalize(), value=f"```{help_text}```", inline=False
@@ -172,6 +174,23 @@ class Help(commands.Cog):
         )
         # To add more commands just add mroe fields! max=25 fields 2/25
         await ctx.send(embed=embed)
+
+    @commands.hybrid_command(
+        name="report",
+        description="used to report issues/bugs found with BirthdayBot.(EX:.bday report ISSUE HERE)",
+    )
+    async def report(self, ctx, arg) -> None:
+        def check(arg):
+            return arg.author == ctx.author and arg.channel == ctx.channel
+
+        try:
+            with session_scope() as s:
+                report = IssueReports(issues=arg, guild=ctx.author.guild.id)
+                s.add(report)
+        except Exception as e:
+            logger.error("Report had an error when storing, %s" % e)
+
+        await ctx.send("The issue has been reported and will be looked at.")
 
 
 async def setup(bot):
