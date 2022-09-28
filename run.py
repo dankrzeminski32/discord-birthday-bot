@@ -8,6 +8,7 @@ from config import (
     PATH_TO_BIRTHDAY_IMGS,
     PATH_TO_BIRTHDAY_QUOTES,
 )
+
 # Create permission intents, state what our bot should be able to do
 intents = discord.Intents.default()
 intents.message_content = True
@@ -17,6 +18,7 @@ bot = commands.Bot(command_prefix=".bday ", intents=intents, help_command=None)
 
 # MAIN SEEDER OBJECT
 mainSeeder = Seeder(PATH_TO_BIRTHDAY_IMGS, PATH_TO_BIRTHDAY_QUOTES)
+
 
 async def load_extensions():
     extensions = [

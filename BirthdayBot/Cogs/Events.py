@@ -3,6 +3,7 @@ from discord.ext import commands, tasks
 from BirthdayBot.Utils import logger
 from BirthdayBot.BirthdayChecker import BirthdayChecker
 
+
 class Events(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -16,7 +17,7 @@ class Events(commands.Cog):
             f"Hello {guild.name}! I am BirthdayBot. Thank you for inviting me.\n\n"
         )
         logger.info(f"Bot successfully joined {guild.name} and sent a join message!")
-        
+
     @commands.Cog.listener()
     async def on_ready(self):
         logger.info(f"We have logged in as {self.bot.user}")
