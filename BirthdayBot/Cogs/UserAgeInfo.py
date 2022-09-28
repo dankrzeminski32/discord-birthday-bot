@@ -15,7 +15,10 @@ class UserAgeInfo(commands.Cog):
 
     """ ---- COMMANDS ---- """
 
-    @commands.command()
+    @commands.hybrid_command(
+        name="age",
+        description="Using the age command followed by @user, it will return the age and days til next birthday.",
+    )
     async def age(self, ctx, arg):
         def check(arg):
             return arg.author == ctx.author and arg.channel == ctx.channel

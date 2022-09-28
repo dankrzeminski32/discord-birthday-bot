@@ -18,14 +18,16 @@ class Registration(commands.Cog):
         self.bot = bot
 
     ##########################################################################
-    @commands.command()
     async def test(self, ctx):
         await ctx.send("test")
 
     ##########################################################################
     """ ---- COMMANDS ---- """
 
-    @commands.command()
+    @commands.hybrid_command(
+        name="register",
+        description="Prompts the user with a message to register their birthday.",
+    )
     async def register(self, ctx):
 
         username = ctx.author.name + "#" + ctx.author.discriminator

@@ -10,10 +10,27 @@ class Help(commands.Cog):
 
     """---- COMMANDS ----"""
 
-    @commands.command()
-    async def help(self, ctx):
-        helper = Help.helpList
-        await helper(ctx)
+    @commands.hybrid_command(
+        name="help",
+        description="Shows all the usable commands for BirthdayBot.",
+    )
+    async def help(self, context: Context) -> None:
+        prefix = self.bot.command_prefix
+        embed = discord.Embed(
+            title="Help", description="List of available commands:", color=0x9C84EF
+        )
+        for i in self.bot.cogs:
+            cog = self.bot.get_cog(i)
+            commands = cog.get_commands()
+            data = []
+            for command in commands:
+                description = command.description.partition("\n")[0]
+                data.append(f"{prefix}{command.name} - {description}")
+            help_text = "\n".join(data)
+            embed.add_field(
+                name=i.capitalize(), value=f"```{help_text}```", inline=False
+            )
+        await context.send(embed=embed)
 
     """ ---- HELPERS ---- """
 
