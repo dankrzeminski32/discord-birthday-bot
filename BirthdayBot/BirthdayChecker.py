@@ -39,7 +39,7 @@ class BirthdayChecker(object):
             embed = discord.Embed(
                 title="Happy Birthday!",
                 description=f"<@{birthday.discord_ID}>",
-                color=discord.Color.blue(),
+                color=discord.Color.red(),
             )
             embed.add_field(
                 name="Quote:",

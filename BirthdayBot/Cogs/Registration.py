@@ -263,7 +263,7 @@ class Registration(commands.Cog):
         embed = discord.Embed(
             title="Confirmation:",
             description="Is this correct? {}".format(msg.content),
-            color=discord.Color.blue(),
+            color=discord.Color.red(),
         )
         await ctx.send(embed=embed, view=view)
         await view.wait()
@@ -272,7 +272,7 @@ class Registration(commands.Cog):
         embed = discord.Embed(
             title="Please enter your Birthday (mm/dd/yyyy)",
             description="This will store your birthday in our database",
-            color=discord.Color.blue(),
+            color=discord.Color.red(),
         )
         await ctx.send(embed=embed)
 
