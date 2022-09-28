@@ -9,7 +9,7 @@ class Help(commands.Cog):
     """---- COMMANDS ----"""
 
     @commands.command()
-    async def helpme(self, ctx):
+    async def help(self, ctx):
         helper = Help.helpList
         await helper(ctx)
 
