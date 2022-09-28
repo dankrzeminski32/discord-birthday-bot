@@ -20,16 +20,19 @@ class Help(commands.Cog):
             title="Help", description="List of available commands:", color=0x9C84EF
         )
         for i in self.bot.cogs:
-            cog = self.bot.get_cog(i)
-            commands = cog.get_commands()
-            data = []
-            for command in commands:
-                description = command.description.partition("\n")[0]
-                data.append(f"{prefix}{command.name} - {description}")
-            help_text = "\n".join(data)
-            embed.add_field(
-                name=i.capitalize(), value=f"```{help_text}```", inline=False
-            )
+            if i == "Events":
+                pass
+            else:
+                cog = self.bot.get_cog(i)
+                commands = cog.get_commands()
+                data = []
+                for command in commands:
+                    description = command.description.partition("\n")[0]
+                    data.append(f"{prefix}{command.name} - {description}")
+                help_text = "\n".join(data)
+                embed.add_field(
+                    name=i.capitalize(), value=f"```{help_text}```", inline=False
+                )
         await context.send(embed=embed)
 
     """ ---- HELPERS ---- """
