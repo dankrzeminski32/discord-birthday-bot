@@ -54,6 +54,5 @@ class Events(commands.Cog):
     #         future += timedelta(days=1)
     #     await asyncio.sleep((future - now).seconds)
 
-
 async def setup(bot):
     await bot.add_cog(Events(bot))

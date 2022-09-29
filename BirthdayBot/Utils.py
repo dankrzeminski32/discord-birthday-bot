@@ -3,7 +3,7 @@ from contextlib import contextmanager
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from config import DATABASE_URI
-from BirthdayBot.Models import Base
+from BirthdayBot.Models import Base, DiscordUser
 import logging
 from logging import FileHandler
 
@@ -25,12 +25,6 @@ engine = create_engine(DATABASE_URI)
 Session = sessionmaker(bind=engine)
 
 
-def recreateDB():
-    Base.metadata.drop_all(engine)
-    Base.metadata.create_all(engine)
-    # print(Base.metadata.__dict__)
-
-
 @contextmanager
 def session_scope():
     session = Session()
@@ -42,3 +36,23 @@ def session_scope():
         raise
     finally:
         session.close()
+
+
+def recreateDB():
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    # print(Base.metadata.__dict__)
+
+
+
+def addUserToDB(username: str, birthday: str, discord_id: str, guild: int) -> None:
+    # session_scope will raise an exception if invalid, use this with try/except
+    with session_scope() as s:
+        user = DiscordUser(
+            username=str(username),
+            Birthday=birthday,
+            discord_ID=discord_id,
+            guild=guild,
+        )
+        s.add(user)
+
