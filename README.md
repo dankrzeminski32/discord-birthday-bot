@@ -1,6 +1,6 @@
 # BirthdayDiscordBot 🎂
 
-A simple and easy to use Birthday Discord Bot which help boost server comradery and friendship. 
+A simple and easy to use Birthday Discord Bot which helps to boost server comradery and friendship. 
 
 ## Description
 
