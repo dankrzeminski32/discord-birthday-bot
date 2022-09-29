@@ -10,7 +10,10 @@ from sqlalchemy.exc import SQLAlchemyError
 from BirthdayBot.Cogs.UserAgeInfo import UserAgeInfo
 from BirthdayBot.Cogs import Help
 
-
+# NOTES:
+##### MAKE IT SO THE MESSAGE SENDER SEE CONFIRMATION + PLEASE TRY AGAIN + EVERYTHING ELSE
+#####SEND BIRTHDAY MESSAGE LOGIC FOR USERS IN OTHER DISCORDS
+#####FOR every guild.id check the guild for names in the database if the name is in the database AND in the guild.id then they dont need to re-enter bday for that guild "You already entered your birthday in another guild"
 class Registration(commands.Cog):
     """Class Dedicated to housing all commands related to registration"""
 
@@ -18,14 +21,16 @@ class Registration(commands.Cog):
         self.bot = bot
 
     ##########################################################################
-    @commands.command()
     async def test(self, ctx):
         await ctx.send("test")
 
     ##########################################################################
     """ ---- COMMANDS ---- """
 
-    @commands.command()
+    @commands.hybrid_command(
+        name="register",
+        description="Prompts the user with a message to register their birthday.",
+    )
     async def register(self, ctx):
 
         username = ctx.author.name + "#" + ctx.author.discriminator

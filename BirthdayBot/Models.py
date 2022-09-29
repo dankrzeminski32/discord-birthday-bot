@@ -38,3 +38,15 @@ class BirthdayImages(Base):
 
     def __repr__(self):
         return "<BirthdayImages(id='{}', bdayImage={})>".format(self.id, self.bdayImage)
+
+
+class IssueReports(Base):
+    __tablename__ = "IssueReports"
+    id = Column(Integer, primary_key=True)
+    issues = Column(String)
+    guild = Column(BigInteger)
+
+    def __repr__(self):
+        return "<BirthdayImages(id='{}', issues={}, guild={})>".format(
+            self.id, self.issues, self.guild
+        )
