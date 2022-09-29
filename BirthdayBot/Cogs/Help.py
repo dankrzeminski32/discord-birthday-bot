@@ -6,11 +6,12 @@ from BirthdayBot.Utils import session_scope, logger
 from BirthdayBot.Models import IssueReports
 import datetime
 from datetime import date
+from dataclasses import dataclass
 
 
+@dataclass
 class Help(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
+    bot: object
 
     """---- COMMANDS ----"""
 
