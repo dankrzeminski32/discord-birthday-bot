@@ -6,6 +6,7 @@ from config import DATABASE_URI
 from BirthdayBot.Models import Base
 import logging
 from logging import FileHandler
+import datetime
 
 # ----- LOGGING CONFIG -----
 logger = logging.getLogger(__name__)
