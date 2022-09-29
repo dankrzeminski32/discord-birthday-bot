@@ -12,13 +12,13 @@ Every 24 hours the bot will send out a special announcement for any registered u
 
 ### Executing program
 
-**First,** - Create a Virtual Environment
+**1.)** - Create a Virtual Environment
 
 ```bash
 python3 -m venv venv
 ```
 
-**Then,** - Activate this Environment,
+**2.)** - Activate this Environment,
 
 ```bash
 cd venv
@@ -28,16 +28,51 @@ cd venv
 source bin/activate
 ```
 
-**After activation,** - Install requirements.txt (Make sure you are in project root)
+**3.)** - Install requirements.txt (Make sure you are in project root)
 
 ```bash
 pip install -r requirements.txt
 ```
 
-**Finally,** - Run the bot
+**4.)** - Run the bot
 
 ```bash
 python run.py
+```
+
+### Black Formatting
+
+There is a github action for this repository that runs with every pull request.
+
+This action checks to make sure that you properly formatted your changes with the Python [black formatter](https://black.readthedocs.io/en/stable/)
+
+To pass this check, run the black formatter across the entire project after your last commit.
+
+**As shown below,**
+
+**1.)** - Make sure black is installed
+
+```bash
+pip install black
+```
+
+**2.)** - Format the entire project (make sure you are in root directory)
+
+```bash
+black .
+```
+
+**3.)** - Add the formatted files
+
+```git
+git add .
+```
+
+**4.)** - Push the formatted files
+
+```git
+git commit -m "black formatting"
+git push
 ```
 
 ## Authors
