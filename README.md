@@ -1,32 +1,55 @@
-# Birthday Discord Bot
+# BirthdayDiscordBot 🎂
 
-Bot created by **Dan** and **Ethan**
+A simple and easy to use Birthday Discord Bot which help boost server comradery and friendship. 
 
 ## Description
 
-Discord bot sending happy birthday messages to all users
+Simply add the bot to your server and have each user register with the ```.bday register``` command.
 
-## Roadmap
+Every 24 hours the bot will send out a special announcement for any registered users with a birthday on that day.
 
--   [x] Create discord server
--   [x] Create bot
--   [x] Connect to bot with token in python
--   [x] Create command to recieve birthdays
-    -   [x] Specify birthday format (mm-dd-yyyy)
-    -   [x] Store the birthdays somewhere (excel, database?)
-    -   [x] Switch from csv to database (postgres)
-    -   [x] add confirmation message after user sends registration data (green & red checkbox)
--   [x] Create methods to access birthdays
--   [x] Create methods to scan birthdays for todays date (every 24 hr)
--   [x] Clean up code, modularize functionality
--   [x] add requirements.txt for rebuilding purposes
--   [x] Create methods to print birthday message
-    -   [x] Attach random message with birthday message (in progress - ethan) 
--   [ ] add relevant comments/documentation to every command method we create (these should be tracked/organized)
--   [x] Clean up seeder files
--   [ ] Improve visual design of each announcement/response
--   [ ] Improve Birthday confirmation message (present it nicer) 
--   [ ] Add '.bday help' command (gives relevant details about each command, .age .bday)
--   [ ] Return 'You are already registered' on registration command...
--   [ ] provide validation if a user submits a bday in the future...
+## Getting Started
 
+### Executing program
+
+**First,** - Create a Virtual Environment
+
+```bash
+python3 -m venv venv
+```
+
+**Then,** - Activate this Environment,
+
+```bash
+cd venv
+```
+
+```bash
+source bin/activate
+```
+
+**After activation,** - Install requirements.txt (Make sure you are in project root)
+
+```bash
+pip install -r requirements.txt
+```
+
+**Finally,** - Run the bot
+
+```bash
+python run.py
+```
+
+## Authors
+
+Daniel Krzeminski - dankrzeminski32@gmail.com
+
+Ethan Kvachkoff
+
+## Version History
+
+Yet to be established
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE.md file for details
