@@ -4,6 +4,8 @@ import platform
 from discord.ext.commands import Context
 from BirthdayBot.Utils import session_scope, logger
 from BirthdayBot.Models import IssueReports
+import datetime
+from datetime import date
 
 
 class Help(commands.Cog):
@@ -180,12 +182,20 @@ class Help(commands.Cog):
         description="used to report issues/bugs found with BirthdayBot.(EX:.bday report ISSUE HERE)",
     )
     async def report(self, ctx, arg) -> None:
+        today = date.today()
+        resolved = False
+
         def check(arg):
             return arg.author == ctx.author and arg.channel == ctx.channel
 
         try:
             with session_scope() as s:
-                report = IssueReports(issues=arg, guild=ctx.author.guild.id)
+                report = IssueReports(
+                    dateCreated=today,
+                    issues=arg,
+                    guild=ctx.author.guild.id,
+                    is_resolved=resolved,
+                )
                 s.add(report)
         except Exception as e:
             logger.error("Report had an error when being stored, %s" % e)
