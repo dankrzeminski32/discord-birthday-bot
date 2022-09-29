@@ -52,6 +52,7 @@ class Registration(commands.Cog):
         today = datetime.now()
         try:
             inputDate = datetime.strptime(msg.content, "%m/%d/%Y")
+            
         except:
             await ctx.send("Invalid date format. Please try again!")
             await self.retryLoop(ctx)

@@ -1,11 +1,10 @@
-import csv
 import discord
 from csv import reader
 from datetime import datetime
 from datetime import date
 from discord.ext import commands
 from discord.utils import get
-from BirthdayBot.Utils import session_scope, logger
+from BirthdayBot.Utils import session_scope, logger, daysAway
 from BirthdayBot.Models import DiscordUser
 
 
@@ -37,7 +36,7 @@ class UserAgeInfo(commands.Cog):
                 birthdate = requested_user.Birthday
                 argName = requested_user.username[:-5]
             userAge = UserAgeInfo.getUserAge(birthdate)
-            numDays = UserAgeInfo.daysAway(birthdate)
+            numDays = daysAway(birthdate)
             await ctx.send(
                 "```css\n"
                 + argName
@@ -64,14 +63,6 @@ class UserAgeInfo(commands.Cog):
 
         age = today.year - year - ((today.month, today.day) < (month, day))
         return age
-
-    def daysAway(birthdate: datetime):
-
-        today = datetime.now()
-        date1 = datetime(today.year, int(birthdate.month), int(birthdate.day))
-        date2 = datetime(today.year + 1, int(birthdate.month), int(birthdate.day))
-        days = ((date1 if date1 > today else date2) - today).days
-        return days
 
 
 async def setup(bot):
