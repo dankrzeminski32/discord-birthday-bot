@@ -36,3 +36,7 @@ def session_scope():
         raise
     finally:
         session.close()
+
+def recreateDB():
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)

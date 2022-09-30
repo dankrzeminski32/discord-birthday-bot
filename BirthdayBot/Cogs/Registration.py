@@ -3,7 +3,7 @@ import discord
 from discord.ext import commands
 import datetime
 from datetime import datetime
-from BirthdayBot.Utils import session_scope, logger, addUserToDB
+from BirthdayBot.Utils import session_scope, logger
 from BirthdayBot.Models import DiscordUser
 from BirthdayBot.Views import RegistrationButtons, ExistingUserButtons
 

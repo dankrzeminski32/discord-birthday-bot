@@ -1,6 +1,5 @@
-from xmlrpc.client import Boolean
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Date, BigInteger
+from sqlalchemy import Column, Integer, String, Date, BigInteger, Boolean
 from sqlalchemy.ext.hybrid import hybrid_property
 from BirthdayBot.Birthday import Birthday
 
@@ -15,7 +14,7 @@ class DiscordUser(Base):
     discord_id = Column(BigInteger)
     guild = Column(BigInteger)
 
-    def _init__(self,username:str,birthday: Birthday, discord_id: int,guild: int ):
+    def _init__(self,username: str,birthday: Birthday, discord_id: int,guild: int ):
         self.username = username
         self._birthday = birthday
         self.discord_id = discord_id
