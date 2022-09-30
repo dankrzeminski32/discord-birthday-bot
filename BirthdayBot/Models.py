@@ -1,6 +1,5 @@
-from multiprocessing.managers import BaseListProxy
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Date, BigInteger
+from sqlalchemy import Column, Integer, String, Date, BigInteger, Boolean
 from sqlalchemy.ext.hybrid import hybrid_property
 from BirthdayBot.Birthday import Birthday
 from BirthdayBot.Utils import session_scope
@@ -22,7 +21,7 @@ class DiscordUser(BaseMixIn):
     discord_id = Column(BigInteger)
     guild = Column(BigInteger)
 
-    def __init__(self,username:str,birthday: Birthday, discord_id: int,guild: int ):
+    def _init__(self,username: str,birthday: Birthday, discord_id: int,guild: int ):
         self.username = username
         self._birthday = birthday
         self.discord_id = discord_id
@@ -70,10 +69,12 @@ class BirthdayImages(BaseMixIn):
 class IssueReports(BaseMixIn):
     __tablename__ = "IssueReports"
     id = Column(Integer, primary_key=True)
+    dateCreated = Column(Date)
     issues = Column(String)
     guild = Column(BigInteger)
+    is_resolved = Column(Boolean)
 
     def __repr__(self):
-        return "<BirthdayImages(id='{}', issues={}, guild={})>".format(
-            self.id, self.issues, self.guild
+        return "<BirthdayImages(id='{}', dateCreated={}, issues={}, guild={}, is_resolved{})>".format(
+            self.id, self.dateCreated, self.issues, self.guild, self.is_resolved
         )
