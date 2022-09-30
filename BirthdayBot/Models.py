@@ -31,9 +31,7 @@ class DiscordUser(BaseMixIn):
         return "<DiscordUser(id='{}', username='{}', birthday={}, guild={})>".format(
             self.id, self.username, self.birthday, self.guild
         )
-        
-    D
-    
+            
     @hybrid_property
     def birthday(self) -> Birthday:
         birthday: Birthday = Birthday(self._birthday) 
