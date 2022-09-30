@@ -6,6 +6,7 @@ from datetime import datetime
 from BirthdayBot.Utils import session_scope, logger
 from BirthdayBot.Models import DiscordUser
 from BirthdayBot.Views import RegistrationButtons, ExistingUserButtons
+from BirthdayBot.Birthday import Birthday
 
 class Registration(commands.Cog):
     """Class Dedicated to housing all commands related to registration"""
@@ -45,14 +46,12 @@ class Registration(commands.Cog):
             return msg.author == ctx.author and msg.channel == ctx.channel
 
         msg = await self.bot.wait_for("message", check=check)
-
         author = ctx.author
 
         # MM/DD/YYYY
         today = datetime.now()
         try:
-            inputDate = datetime.strptime(msg.content, "%m/%d/%Y")
-            
+            inputDate: Birthday = Birthday.fromUserInput(msg.content)
         except:
             await ctx.send("Invalid date format. Please try again!")
             await self.retryLoop(ctx)

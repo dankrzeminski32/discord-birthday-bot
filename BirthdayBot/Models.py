@@ -1,21 +1,31 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Date, BigInteger, Boolean
+from sqlalchemy import Column, Integer, String, Date, BigInteger, Boolean, exists
 from sqlalchemy.ext.hybrid import hybrid_property
 from BirthdayBot.Birthday import Birthday
 from BirthdayBot.Utils import session_scope
+from sqlalchemy.ext.declarative import declared_attr
 
-Base = declarative_base()
-
-class BaseMixIn(Base):
+class Base:
+    @declared_attr
+    def __tablename__(cls):
+        return cls.__name__ #.lower()
     @classmethod
-    def create(cls, **kw):
+    def create(cls, **kw) -> None:
         with session_scope() as session:      
             obj = cls(**kw)
             session.add(obj)
+    @classmethod
+    def get(cls, field, value) -> object:
+        with session_scope() as session:      
+            obj = session.query(exists().where(cls.__getattribute__(field)==value)).scalar()
+            return obj
 
-class DiscordUser(BaseMixIn):
-    __tablename__ = "DiscordUser"
-    id = Column(Integer, primary_key=True)
+    id =  Column(Integer, primary_key=True)
+
+Base = declarative_base(cls=Base)
+
+
+class DiscordUser(Base):
     username = Column(String)
     _birthday = Column('birthday',Date)
     discord_id = Column(BigInteger)
@@ -43,9 +53,7 @@ class DiscordUser(BaseMixIn):
         
 
 
-class BirthdayMessages(BaseMixIn):
-    __tablename__ = "RandomMessages"
-    id = Column(Integer, primary_key=True)
+class BirthdayMessages(Base):
     bdayMessage = Column(String)
     author = Column(String)
 
@@ -55,18 +63,14 @@ class BirthdayMessages(BaseMixIn):
         )
 
 
-class BirthdayImages(BaseMixIn):
-    __tablename__ = "BirthdayImages"
-    id = Column(Integer, primary_key=True)
+class BirthdayImages(Base):
     bdayImage = Column(String)
 
     def __repr__(self):
         return "<BirthdayImages(id='{}', bdayImage={})>".format(self.id, self.bdayImage)
 
 
-class IssueReports(BaseMixIn):
-    __tablename__ = "IssueReports"
-    id = Column(Integer, primary_key=True)
+class IssueReports(Base):
     dateCreated = Column(Date)
     issues = Column(String)
     guild = Column(BigInteger)
