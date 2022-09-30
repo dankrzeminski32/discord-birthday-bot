@@ -1,3 +1,4 @@
+from xmlrpc.client import Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Date, BigInteger
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -59,10 +60,12 @@ class BirthdayImages(Base):
 class IssueReports(Base):
     __tablename__ = "IssueReports"
     id = Column(Integer, primary_key=True)
+    dateCreated = Column(Date)
     issues = Column(String)
     guild = Column(BigInteger)
+    is_resolved = Column(Boolean)
 
     def __repr__(self):
-        return "<BirthdayImages(id='{}', issues={}, guild={})>".format(
-            self.id, self.issues, self.guild
+        return "<BirthdayImages(id='{}', dateCreated={}, issues={}, guild={}, is_resolved{})>".format(
+            self.id, self.dateCreated, self.issues, self.guild, self.is_resolved
         )

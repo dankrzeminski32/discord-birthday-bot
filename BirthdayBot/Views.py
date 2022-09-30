@@ -5,7 +5,19 @@ class BaseView(discord.ui.View):
     def __init__(self, *, timeout=180, author: discord.User):
         super().__init__(timeout=timeout)
         self.author = author
-        
+        self.noLabel: str
+        self.noButtonColor: str
+        self.noResponseMessage: str
+
+    def add_buttons(self):
+        no_button = discord.ui.Button(label=self.noLabel)
+    @discord.ui.button(label="No! 👎", style=discord.ButtonStyle.red)  # or .danger
+    async def no(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_message("Please try again... (mm/dd/yyyy)")
+        self.userConfirmation = False
+        self.stop()
+
+
     async def interaction_check(self, inter: discord.MessageInteraction) -> bool:
         if inter.user != self.author:
             await inter.response.send_message(
@@ -14,6 +26,8 @@ class BaseView(discord.ui.View):
             )
             return False
         return True
+
+
 
 
 
