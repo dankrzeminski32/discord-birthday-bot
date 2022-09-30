@@ -3,10 +3,8 @@ from contextlib import contextmanager
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from config import DATABASE_URI
-from BirthdayBot.Models import Base, DiscordUser
 import logging
 from logging import FileHandler
-import datetime
 
 # ----- LOGGING CONFIG -----
 logger = logging.getLogger(__name__)
@@ -37,3 +35,9 @@ def session_scope():
         raise
     finally:
         session.close()
+
+
+def recreateDB():
+    from BirthdayBot.Models import Base
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)

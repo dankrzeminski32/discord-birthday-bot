@@ -4,7 +4,7 @@ from datetime import datetime
 from datetime import date
 from discord.ext import commands
 from discord.utils import get
-from BirthdayBot.Utils import session_scope, logger, daysAway
+from BirthdayBot.Utils import session_scope, logger
 from BirthdayBot.Models import DiscordUser
 
 

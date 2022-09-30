@@ -1,12 +1,20 @@
+from multiprocessing.managers import BaseListProxy
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Date, BigInteger
 from sqlalchemy.ext.hybrid import hybrid_property
 from BirthdayBot.Birthday import Birthday
+from BirthdayBot.Utils import session_scope
 
 Base = declarative_base()
 
+class BaseMixIn(Base):
+    @classmethod
+    def create(cls, **kw):
+        with session_scope() as session:      
+            obj = cls(**kw)
+            session.add(obj)
 
-class DiscordUser(Base):
+class DiscordUser(BaseMixIn):
     __tablename__ = "DiscordUser"
     id = Column(Integer, primary_key=True)
     username = Column(String)
@@ -14,7 +22,7 @@ class DiscordUser(Base):
     discord_id = Column(BigInteger)
     guild = Column(BigInteger)
 
-    def _init__(self,username:str,birthday: Birthday, discord_id: int,guild: int ):
+    def __init__(self,username:str,birthday: Birthday, discord_id: int,guild: int ):
         self.username = username
         self._birthday = birthday
         self.discord_id = discord_id
@@ -24,10 +32,13 @@ class DiscordUser(Base):
         return "<DiscordUser(id='{}', username='{}', birthday={}, guild={})>".format(
             self.id, self.username, self.birthday, self.guild
         )
+        
+    D
     
     @hybrid_property
-    def birthday(self):
-        return self._birthday
+    def birthday(self) -> Birthday:
+        birthday: Birthday = Birthday(self._birthday) 
+        return birthday
     
     @birthday.setter
     def birthday(self, birthday:Birthday):
@@ -35,7 +46,7 @@ class DiscordUser(Base):
         
 
 
-class BirthdayMessages(Base):
+class BirthdayMessages(BaseMixIn):
     __tablename__ = "RandomMessages"
     id = Column(Integer, primary_key=True)
     bdayMessage = Column(String)
@@ -47,7 +58,7 @@ class BirthdayMessages(Base):
         )
 
 
-class BirthdayImages(Base):
+class BirthdayImages(BaseMixIn):
     __tablename__ = "BirthdayImages"
     id = Column(Integer, primary_key=True)
     bdayImage = Column(String)
@@ -56,7 +67,7 @@ class BirthdayImages(Base):
         return "<BirthdayImages(id='{}', bdayImage={})>".format(self.id, self.bdayImage)
 
 
-class IssueReports(Base):
+class IssueReports(BaseMixIn):
     __tablename__ = "IssueReports"
     id = Column(Integer, primary_key=True)
     issues = Column(String)

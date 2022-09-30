@@ -22,8 +22,8 @@ class BirthdayChecker(object):
             all_birthdays = (
                 session.query(DiscordUser)
                 .filter(
-                    extract("month", DiscordUser.Birthday) == datetime.today().month,
-                    extract("day", DiscordUser.Birthday) == datetime.today().day,
+                    extract("month", DiscordUser.birthday) == datetime.today().month,
+                    extract("day", DiscordUser.birthday) == datetime.today().day,
                     DiscordUser.guild == guild.id,
                 )
                 .all()

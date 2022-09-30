@@ -35,6 +35,8 @@ async def main():
     async with bot:
         recreateDB()
         mainSeeder.seedDBIfEmpty()
+        from BirthdayBot.Birthday import validateTests
+        validateTests()
         await load_extensions()
         await bot.start(DISCORD_BOT_TOKEN)
 
