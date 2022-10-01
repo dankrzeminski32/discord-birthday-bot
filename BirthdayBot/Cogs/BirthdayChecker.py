@@ -17,7 +17,8 @@ class BirthdayChecker(object):
     def __init__(self, bot):
         self.bot = bot
 
-    def getAllBirthdays(self, guild) -> list:
+    @classmethod
+    def getAllBirthdays(cls, guild) -> list:
         with session_scope() as session:
             all_birthdays = (
                 session.query(DiscordUser)
@@ -73,3 +74,23 @@ class BirthdayChecker(object):
             }
 
             return bdayMessage
+
+
+class BirthdayCommands(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.hybrid_command(
+        name="today",
+        description="Displays everyoen with birthdays for the day.",
+    )
+    async def today(self, ctx):
+        guildId = ctx.message.guild
+        todayBdays = BirthdayChecker.getAllBirthdays(guildId)
+        await ctx.send("The following people have birthdays:\n")
+        for birthdays in todayBdays:
+            await ctx.send("\n" + birthdays.username)
+
+
+async def setup(bot):
+    await bot.add_cog(BirthdayCommands(bot))

@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands, tasks
 from BirthdayBot.Utils import logger
-from BirthdayBot.BirthdayChecker import BirthdayChecker
+from BirthdayBot.Cogs.BirthdayChecker import BirthdayChecker
 
 
 class Events(commands.Cog):
