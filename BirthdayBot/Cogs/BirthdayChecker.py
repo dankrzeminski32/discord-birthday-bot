@@ -1,9 +1,11 @@
 import csv
+from email import message
 import discord
 import random
 from discord.ext import commands
 from datetime import datetime
 from datetime import date
+from BirthdayBot.Cogs.UserAgeInfo import UserAgeInfo
 from BirthdayBot.Utils import session_scope, logger
 from sqlalchemy import extract
 from BirthdayBot.Models import DiscordUser
@@ -87,9 +89,26 @@ class BirthdayCommands(commands.Cog):
     async def today(self, ctx):
         guildId = ctx.message.guild
         todayBdays = BirthdayChecker.getAllBirthdays(guildId)
-        await ctx.send("The following people have birthdays:\n")
+        month = datetime.today().month
+        day = datetime.today().day
+        embed = discord.Embed(
+            title=f"Todays Birthday's - {month}/{day}",
+            description="List of people with birthdays today:",
+            color=0x9C84EF,
+        )
         for birthdays in todayBdays:
-            await ctx.send("\n" + birthdays.username)
+            userAge = UserAgeInfo.getUserAge(birthdays.Birthday)
+            embed.add_field(
+                name=birthdays.username, value=f"is {userAge} today!", inline=False
+            )
+        await ctx.send(embed=embed)
+
+    @commands.hybrid_command(
+        name="me",
+        description="Displays user information.",
+    )
+    async def me(self, ctx):
+        await ctx.send("To do")
 
 
 async def setup(bot):
