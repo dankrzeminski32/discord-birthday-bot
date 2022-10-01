@@ -1,11 +1,11 @@
-from ast import Break
+from contextvars import Context
 import discord
 from discord.ext import commands
 import datetime
 from datetime import datetime
 from BirthdayBot.Utils import session_scope, logger
 from BirthdayBot.Models import DiscordUser
-from BirthdayBot.Views import RegistrationButtons, ExistingUserButtons
+from BirthdayBot.Views import ExistingUserButtons, RegistrationOpenModalButton
 from BirthdayBot.Birthday import Birthday
 
 class Registration(commands.Cog):
@@ -13,22 +13,15 @@ class Registration(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+
     """ ---- COMMANDS ---- """
     @commands.hybrid_command(
         name="register",
         description="Prompts the user with a message to register their birthday.",
     )
     async def register(self, ctx):
-
-        username = ctx.author.name + "#" + ctx.author.discriminator
-
-        with session_scope() as session:
-            existing_user = (
-                session.query(DiscordUser)
-                .filter(DiscordUser.username == username)
-                .first()
-            )
-            session.expunge_all()
+        username = ctx.author.id
+        existing_user = DiscordUser.get(field = "discord_id", value = username)
 
         # If we have an existing user then throw them into their own "update" loop
         if existing_user is not None:
@@ -39,14 +32,16 @@ class Registration(commands.Cog):
             await self.handleExistingUser(ctx, existing_user_view)
             return None
 
-        await self.sendRegistrationMessage(ctx)
+        modalView = RegistrationOpenModalButton(author=ctx.author)
+        await self.sendRegistrationMessage(ctx, modalView)
 
-        # Need to improve this validation
-        def check(msg):
-            return msg.author == ctx.author and msg.channel == ctx.channel
+        print(modalView.modalResponse)
 
-        msg = await self.bot.wait_for("message", check=check)
-        author = ctx.author
+        if response_is_valid:
+            # send confirmation
+        else:
+            "We had an error processing your request, please try again"
+            # present message in modal? 
 
         # MM/DD/YYYY
         today = datetime.now()
@@ -259,13 +254,14 @@ class Registration(commands.Cog):
         await ctx.send(embed=embed, view=view)
         await view.wait()
 
-    async def sendRegistrationMessage(self, ctx):
+    async def sendRegistrationMessage(self, ctx, view):
         embed = discord.Embed(
             title="Please enter your Birthday (mm/dd/yyyy)",
             description="This will store your birthday in our database",
-            color=discord.Color.red(),
+            color=discord.Color.red()
         )
-        await ctx.send(embed=embed)
+        await ctx.send(embed=embed, view=view)
+        await view.wait()
 
 
 async def setup(bot):

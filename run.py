@@ -1,6 +1,6 @@
 import asyncio
 import discord
-from BirthdayBot.Utils import session_scope, logger, recreateDB
+from BirthdayBot.Utils import recreateDB
 from BirthdayBot.Seeder import Seeder
 from discord.ext import commands, tasks
 from config import (
@@ -33,10 +33,8 @@ async def load_extensions():
 
 async def main():
     async with bot:
-        recreateDB()
+        #recreateDB()
         mainSeeder.seedDBIfEmpty()
-        from BirthdayBot.Birthday import validateTests
-        validateTests()
         await load_extensions()
         await bot.start(DISCORD_BOT_TOKEN)
 
