@@ -98,9 +98,12 @@ class BirthdayCommands(commands.Cog):
         )
         for birthdays in todayBdays:
             userAge = UserAgeInfo.getUserAge(birthdays.Birthday)
+            user = await ctx.guild.query_members(user_ids=[int(birthdays.discord_ID)])
+            user = user[0]
             embed.add_field(
                 name=birthdays.username, value=f"is {userAge} today!", inline=False
             )
+            embed.set_image(url=user.avatar.url)
         await ctx.send(embed=embed)
 
     @commands.hybrid_command(
@@ -108,7 +111,21 @@ class BirthdayCommands(commands.Cog):
         description="Displays user information.",
     )
     async def me(self, ctx):
-        await ctx.send("To do")
+        await ctx.send("coming soon...")
+
+    @commands.hybrid_command(
+        name="tomorrow",
+        description="Displays users birthdays for tomorrow.",
+    )
+    async def tomorrow(self, ctx):
+        await ctx.send("coming soon...")
+
+    @commands.hybrid_command(
+        name="thismonth",
+        description="Displays users birthdays for the month.",
+    )
+    async def thismonth(self, ctx):
+        await ctx.send("coming soon...")
 
 
 async def setup(bot):
