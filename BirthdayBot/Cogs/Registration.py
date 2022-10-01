@@ -34,14 +34,16 @@ class Registration(commands.Cog):
 
         modalView = RegistrationOpenModalButton(author=ctx.author)
         await self.sendRegistrationMessage(ctx, modalView)
+        response = await modalView.Modal.wait()
+        #do something with response data
+        #send confirmation
+        await modalView.Modal.on_submit_interaction.response.send_message(f"{}")
 
-        print(modalView.modalResponse)
-
-        if response_is_valid:
-            # send confirmation
-        else:
-            "We had an error processing your request, please try again"
-            # present message in modal? 
+        # if response_is_valid:
+        #     # send confirmation
+        # else:
+        #     "We had an error processing your request, please try again"
+        #     # present message in modal? 
 
         # MM/DD/YYYY
         today = datetime.now()
