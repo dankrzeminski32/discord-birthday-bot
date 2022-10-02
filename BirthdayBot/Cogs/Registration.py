@@ -5,7 +5,7 @@ import datetime
 from datetime import datetime
 from BirthdayBot.Utils import session_scope, logger
 from BirthdayBot.Models import DiscordUser
-from BirthdayBot.Views import ExistingUserButtons, RegistrationOpenModalButton
+from BirthdayBot.Views import ExistingUserButtons, RegistrationOpenModalButton, RegistrationConfirmationButtons
 from BirthdayBot.Birthday import Birthday
 
 class Registration(commands.Cog):
@@ -20,242 +20,77 @@ class Registration(commands.Cog):
         description="Prompts the user with a message to register their birthday.",
     )
     async def register(self, ctx):
-        username = ctx.author.id
-        existing_user = DiscordUser.get(field = "discord_id", value = username)
-
+        existing_user = DiscordUser.get(field = "discord_id", value = ctx.author.id)
         # If we have an existing user then throw them into their own "update" loop
         if existing_user is not None:
-            existing_user_view = ExistingUserButtons(
-                author=ctx.author, existing_user=existing_user
-            )
-            await self.sendUpdateQuestion(ctx, existing_user_view)
-            await self.handleExistingUser(ctx, existing_user_view)
+            await self.handleExistingUser(ctx, existing_user)
             return None
 
         modalView = RegistrationOpenModalButton(author=ctx.author)
         await self.sendRegistrationMessage(ctx, modalView)
-        response = await modalView.Modal.wait()
+        await modalView.Modal.wait()
         input_birthday: Birthday = modalView.Modal.birthday
-        #do something with response data
-        #send confirmation
-        await modalView.Modal.on_submit_interaction.response.send_message(f"nice bday: {input_birthday}")
-
-        # if response_is_valid:
-        #     # send confirmation
-        # else:
-        #     "We had an error processing your request, please try again"
-        #     # present message in modal? 
-
-        # MM/DD/YYYY
-        today = datetime.now()
-        try:
-            inputDate: Birthday = Birthday.fromUserInput(msg.content)
-        except:
-            await ctx.send("Invalid date format. Please try again!")
-            await self.retryLoop(ctx)
-            return None
-
-        if inputDate > today:
-            await ctx.send(
-                "PAUSE! You have entered a birthday in the future. Please try again!"
-            )
-            await self.retryLoop(ctx)
-            return None
-
-        view = RegistrationButtons(author=author)
-        await self.sendConfirmationMessage(ctx, view, msg)
-        if view.userConfirmation is None:
-            await ctx.send("Timed out")
-        elif view.userConfirmation:
-            try:
-                addUserToDB(
-                    username=msg.author,
-                    birthday=msg.content,
-                    discord_id=msg.author.id,
-                    guild=msg.guild.id,
-                )
-                await ctx.send(
-                    "{}, Your birthday ({}) has been stored in our database!".format(
-                        msg.author, msg.content
-                    )
+        
+        if input_birthday is not None:
+            response = await self.sendConfirmationMessage(ctx, input_birthday)
+            if response:
+                DiscordUser.create(
+                    username=ctx.author,
+                    birthday=input_birthday,
+                    discord_id=ctx.author.id,
+                    guild = ctx.guild.id
                 )
                 logger.info(
-                    "NEW USER REGISTERED: Author: {} Birthday: {} Discord ID: {} Guild: {}".format(
-                        msg.author, msg.content, msg.author, msg.guild.id
-                    )
-                )
-            except:
-                await ctx.send("Invalid date format... Please try again. (mm/dd/yyyy)")
-                await self.retryLoop(ctx)
+                    "NEW USER REGISTERED: Author: {} Birthday: {} Discord ID: {}".format(
+                    ctx.author, input_birthday, ctx.author.id
+                    ))
+            else:
+                await ctx.send("Okay, Please try again. (mm/dd/yyyy)")
+                await ctx.invoke(self.bot.get_command("register"))
+                return None
         else:
-            await self.retryLoop(ctx)
+            await ctx.send("Invalid date Format, Please try again. (mm/dd/yyyy).")
+            await ctx.invoke(self.bot.get_command("register"))
+            return None
+
 
     """ ---- HELPERS ---- """
+    async def handleExistingUser(self, ctx, existing_user: DiscordUser):
+        response: bool = self.sendUpdateQuestion(ctx, existing_user = existing_user)
+        if response:
+            #update the user
+            try: #try to update
+                pass
+                #
+            except: #invalid format or timeout failure 
+                pass
+        else: 
+            #send already registered, no update message. 
+            await ctx.send(f"Sounds good, see you in {existing_user.birthday.daysUntil()} days")
+        
+                
 
-    async def retryLoop(self, ctx, update=False):
-        # Already know userConfirmation == false
-        # We want to generate a new view for each confirmation
-        outerLoop = True
-        while outerLoop:
-            loop = True
-            while loop:
-                author = ctx.author
-                view = RegistrationButtons(author=author)
-                view.userConfirmation = False
-
-                def check(msg):
-                    return msg.author == ctx.author and msg.channel == ctx.channel
-
-                msg = await self.bot.wait_for("message", check=check)
-
-                validInput = True
-                today = datetime.now()
-                try:
-                    inputDate = datetime.strptime(msg.content, "%m/%d/%Y")
-                except:
-                    validInput = False
-                    await ctx.send(
-                        "Invalid date format. Please try again! (mm/dd/yyyy)"
-                    )
-
-                if validInput:
-                    if inputDate > today:
-                        await ctx.send(
-                            "PAUSE! You have entered a birthday in the future. Please try again."
-                        )
-                        validInput = False
-
-                if validInput == True:
-                    await self.sendConfirmationMessage(ctx, view, msg)
-                    if view.userConfirmation != False:
-                        loop = False
-
-            if view.userConfirmation is None:
-                await ctx.send("Timed out")
-                outerLoop = False
-            elif view.userConfirmation and update == False:
-                try:
-                    addUserToDB(
-                        username=msg.author,
-                        birthday=msg.content,
-                        discord_id=msg.author.id,
-                    )
-                    await ctx.send(
-                        "{}, Your birthday ({}) has been stored in our database!".format(
-                            msg.author, msg.content
-                        )
-                    )
-                    logger.info(
-                        "NEW USER REGISTERED: Author: {} Birthday: {} Discord ID: {}".format(
-                            msg.author, msg.content, msg.author
-                        )
-                    )
-                    outerLoop = False
-                except:
-                    await ctx.send(
-                        "Invalid date format... Please try again. (mm/dd/yyyy)"
-                    )
-                    outerLoop = True
-            elif view.userConfirmation and update == True:
-                try:
-                    username = ctx.author.name + "#" + ctx.author.discriminator
-                    self.updateUserInDB(username=username, new_birthday=msg.content)
-                    await ctx.send(
-                        "{}, Your birthday ({}) has been updated in our database!".format(
-                            msg.author, msg.content
-                        )
-                    )
-                    logger.info(
-                        "NEW USER Updated: Author: {} Birthday: {} Discord ID: {}".format(
-                            msg.author, msg.content, msg.author
-                        )
-                    )
-                    outerLoop = False
-                except:
-                    await ctx.send(
-                        "Invalid date format... Please try again. (mm/dd/yyyy)"
-                    )
-                    outerLoop = True
-            else:
-                print("failure")
-
-    async def handleExistingUser(self, ctx, view):
-        if view.userConfirmation == False:
-            return None
-        else:
-            # Need to improve this validation
-            def check(msg):
-                return msg.author == ctx.author and msg.channel == ctx.channel
-
-            msg = await self.bot.wait_for("message", check=check)
-            # MM/DD/YYYY
-            today = datetime.now()
-            try:
-                inputDate = datetime.strptime(msg.content, "%m/%d/%Y")
-            except:
-                await ctx.send("Invalid date format. Please try again! (mm/dd/yyyy)")
-                await self.retryLoop(ctx, update=True)
-                return None
-
-            if inputDate > today:
-                await ctx.send(
-                    "PAUSE! You have entered a birthday in the future. Please try again!"
-                )
-                await self.retryLoop(ctx, update=True)
-                return None
-
-            registrationView = RegistrationButtons(author=ctx.author)
-            await self.sendConfirmationMessage(ctx, registrationView, msg)
-
-            if registrationView.userConfirmation is None:
-                await ctx.send("Timed out")
-            elif registrationView.userConfirmation:
-                try:
-                    username = ctx.author.name + "#" + ctx.author.discriminator
-                    self.updateUserInDB(username=username, new_birthday=msg.content)
-                    await ctx.send(
-                        "{}, Your birthday ({}) has been updated in our database!".format(
-                            msg.author, msg.content
-                        )
-                    )
-                    logger.info(
-                        "NEW USER REGISTERED: Author: {} Birthday: {} Discord ID: {}".format(
-                            msg.author, msg.content, msg.author
-                        )
-                    )
-                    return None
-                except:
-                    await ctx.send(
-                        "Invalid date format... Please try again. (mm/dd/yyyy)"
-                    )
-                    await self.retryLoop(ctx, update=True)
-            else:
-                await self.retryLoop(ctx, update=True)
-
-    def updateUserInDB(self, username, new_birthday):
-        with session_scope() as session:
-            user_to_update = (
-                session.query(DiscordUser)
-                .filter(DiscordUser.username == username)
-                .first()
+    async def sendUpdateQuestion(self, ctx, existing_user) -> bool:
+        existing_user_view = ExistingUserButtons(
+            author=ctx.author, existing_user=existing_user
             )
-            user_to_update.Birthday = new_birthday
-
-    async def sendUpdateQuestion(self, ctx, view):
         await ctx.send(
             "You already have a birthday registered, would you like to update this information?",
-            view=view,
+            view=existing_user_view,
         )
-        await view.wait()
+        await existing_user_view.wait()
+        return existing_user_view.userConfirmation
 
-    async def sendConfirmationMessage(self, ctx, view, msg):
+    async def sendConfirmationMessage(self, ctx, birthday: Birthday) -> bool:
+        view = RegistrationConfirmationButtons(author=ctx.author)
         embed = discord.Embed(
             title="Confirmation:",
-            description="Is this correct? {}".format(msg.content),
+            description="Is this correct? - {}".format(birthday),
             color=discord.Color.red(),
         )
         await ctx.send(embed=embed, view=view)
         await view.wait()
+        return view.userConfirmation
 
     async def sendRegistrationMessage(self, ctx, view):
         embed = discord.Embed(
@@ -265,6 +100,7 @@ class Registration(commands.Cog):
         )
         await ctx.send(embed=embed, view=view)
         await view.wait()
+        
 
 
 async def setup(bot):

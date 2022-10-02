@@ -92,11 +92,11 @@ class RegistrationModal(discord.ui.Modal, title="Registration Modal"):
     
 
     async def on_submit(self, interaction: discord.Interaction):
-        self.birthday = Birthday.fromUserInput(str(self.birthdayInput))
-        self.on_submit_interaction = interaction
-        self.stop()
-
-
-    async def on_error(self, interaction: discord.Interaction, error: Exception) -> None:
-        await interaction.followup.send('Oops! Something went wrong.', ephemeral=True)
-        traceback.print_tb(error.__traceback__)
+        try:
+            self.on_submit_interaction = interaction
+            self.birthday = Birthday.fromUserInput(str(self.birthdayInput))
+            await interaction.response.defer()
+            self.stop()
+        except:
+            self.on_submit_interaction = interaction
+            self.stop()

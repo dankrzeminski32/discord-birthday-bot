@@ -20,7 +20,7 @@ class Base:
         with session_scope() as session:      
             obj = session.query(cls).filter_by(**kwargs).scalar()
             session.expunge_all()
-            return obj
+            return obj  
 
     id =  Column(Integer, primary_key=True)
 
@@ -31,7 +31,7 @@ Base = declarative_base(cls=Base)
 class DiscordUser(Base):
     username = Column(String)
     _birthday = Column('birthday',Date)
-    discord_id = Column(BigInteger, primary_key=True)
+    discord_id = Column(BigInteger)
     guild = Column(BigInteger)
 
     def __init__(self,username: str,birthday: Birthday, discord_id: int,guild: int ):
@@ -54,8 +54,11 @@ class DiscordUser(Base):
     def birthday(self, birthday: Birthday):
         self._birthday = birthday
         
-
-
+    def update(self, field, new_value):
+        with session_scope() as session:
+            self.__setattr__(field,new_value)
+            session.add(self)
+    
 class BirthdayMessages(Base):
     bdayMessage = Column(String)
     author = Column(String)
