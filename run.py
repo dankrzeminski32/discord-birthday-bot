@@ -16,7 +16,6 @@ bot = commands.Bot(command_prefix=".danbday ", intents=intents, help_command=Non
 
 mainSeeder = Seeder(PATH_TO_BIRTHDAY_IMGS, PATH_TO_BIRTHDAY_QUOTES)
 
-
 async def load_extensions():
     extensions = [
         "BirthdayBot.Cogs.Registration",
@@ -27,14 +26,12 @@ async def load_extensions():
     for filename in extensions:
         await bot.load_extension(filename)
 
-
 async def main():
     async with bot:
         #recreateDB()
         mainSeeder.seedDBIfEmpty()
         await load_extensions()
         await bot.start(DISCORD_BOT_TOKEN)
-
 
 # Main Bot Cycle
 asyncio.run(main())

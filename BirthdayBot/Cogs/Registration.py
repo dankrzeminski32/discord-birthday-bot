@@ -56,20 +56,22 @@ class Registration(commands.Cog):
     """ ---- HELPERS ---- """
     async def handleExistingUser(self, ctx, existing_user: DiscordUser):
         response: bool = await self.sendUpdateQuestion(ctx, existing_user = existing_user)
-        if response:
-            #update the user
-            try: #try to update
-                existing_user.update(field = "birthday",new_value = new_birthday)
-                ctx.send("thanks nerd")
-                #
-            except: #invalid format or timeout failure 
-                pass
-        else: 
-            #send already registered, no update message. 
-            await ctx.send(f"Sounds good, see you in {existing_user.birthday.daysUntil()} days")        
+        if response.userConfirmation is not None:
+            if response.userConfirmation:
+                try: 
+                    dateConfirmationResponse = await self.sendConfirmationMessage(ctx, response.Modal.updatedBirthday)
+                    if dateConfirmationResponse:
+                        existing_user.update(field = "birthday",new_value = response.Modal.updatedBirthday)
+                    elif dateConfirmationResponse == False:
+                        await self.handleExistingUser(ctx,existing_user=existing_user)
+                except: #invalid format or timeout failure 
+                    pass
+            else: 
+                #send already registered, no update message. 
+                await ctx.send(f"Sounds good, see you in {existing_user.birthday.daysUntil()} days")      
     
 
-    async def sendUpdateQuestion(self, ctx, existing_user) -> bool:
+    async def sendUpdateQuestion(self, ctx, existing_user) -> ExistingUserButtons:
         existing_user_view = ExistingUserButtons(
             author=ctx.author, existing_user=existing_user
             )
@@ -78,9 +80,11 @@ class Registration(commands.Cog):
             view=existing_user_view,
         )
         await existing_user_view.wait()
-        return existing_user_view.userConfirmation
+        if existing_user_view.userConfirmation:
+            await existing_user_view.Modal.wait()
+            return existing_user_view
+        return existing_user_view
 
-    
 
     async def sendConfirmationMessage(self, ctx, birthday: Birthday) -> bool:
         view = RegistrationConfirmationButtons(author=ctx.author)
