@@ -17,6 +17,15 @@ class Birthday(datetime):
     def fromUserInput(cls, datestring: str) -> None:
         converted_date: datetime =  datetime.strptime(datestring, Birthday.date_format)
         return cls(converted_date)
+
+    @staticmethod
+    def isValidInput(datestring: str) -> bool:
+        try:
+            datetime.strptime(datestring, Birthday.date_format)
+            return True
+        except:
+            return False
+
         
     def daysUntil(self) -> int:
         today: datetime.datetime = datetime.now()

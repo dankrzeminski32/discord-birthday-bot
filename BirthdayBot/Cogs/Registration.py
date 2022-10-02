@@ -35,9 +35,10 @@ class Registration(commands.Cog):
         modalView = RegistrationOpenModalButton(author=ctx.author)
         await self.sendRegistrationMessage(ctx, modalView)
         response = await modalView.Modal.wait()
+        input_birthday: Birthday = modalView.Modal.birthday
         #do something with response data
         #send confirmation
-        await modalView.Modal.on_submit_interaction.response.send_message(f"{}")
+        await modalView.Modal.on_submit_interaction.response.send_message(f"nice bday: {input_birthday}")
 
         # if response_is_valid:
         #     # send confirmation
