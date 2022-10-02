@@ -3,51 +3,60 @@ from sqlalchemy import Column, Integer, String, Date, BigInteger, Boolean
 from sqlalchemy.ext.hybrid import hybrid_property
 from BirthdayBot.Birthday import Birthday
 from BirthdayBot.Utils import session_scope
+from sqlalchemy.ext.declarative import declared_attr
 
-Base = declarative_base()
-
-class BaseMixIn(Base):
+class Base:
+    @declared_attr
+    def __tablename__(cls):
+        return cls.__name__ #.lower()
     @classmethod
-    def create(cls, **kw):
+    def create(cls, **kw) -> None:
         with session_scope() as session:      
             obj = cls(**kw)
             session.add(obj)
+    @classmethod
+    def get(cls, field: str, value: str) -> object:
+        kwargs = {field: value}
+        with session_scope() as session:      
+            obj = session.query(cls).filter_by(**kwargs).scalar()
+            session.expunge_all()
+            return obj
 
-class DiscordUser(BaseMixIn):
-    __tablename__ = "DiscordUser"
-    id = Column(Integer, primary_key=True)
+    id =  Column(Integer, primary_key=True)
+
+
+Base = declarative_base(cls=Base)
+
+
+class DiscordUser(Base):
     username = Column(String)
     _birthday = Column('birthday',Date)
-    discord_id = Column(BigInteger)
+    discord_id = Column(BigInteger, primary_key=True)
     guild = Column(BigInteger)
 
-    def _init__(self,username: str,birthday: Birthday, discord_id: int,guild: int ):
+    def __init__(self,username: str,birthday: Birthday, discord_id: int,guild: int ):
         self.username = username
         self._birthday = birthday
         self.discord_id = discord_id
         self.guild = guild
 
     def __repr__(self):
-        return "<DiscordUser(id='{}', username='{}', birthday={}, guild={})>".format(
-            self.id, self.username, self.birthday, self.guild
+        return "<DiscordUser(id='{}', username='{}', birthday={}, discord_id={}, guild={})>".format(
+            self.id, self.username, self.birthday, self.discord_id, self.guild
         )
-        
-    D
-    
+            
     @hybrid_property
     def birthday(self) -> Birthday:
         birthday: Birthday = Birthday(self._birthday) 
         return birthday
     
     @birthday.setter
-    def birthday(self, birthday:Birthday):
+    def birthday(self, birthday: Birthday):
         self._birthday = birthday
         
 
 
-class BirthdayMessages(BaseMixIn):
-    __tablename__ = "RandomMessages"
-    id = Column(Integer, primary_key=True)
+class BirthdayMessages(Base):
     bdayMessage = Column(String)
     author = Column(String)
 
@@ -57,18 +66,14 @@ class BirthdayMessages(BaseMixIn):
         )
 
 
-class BirthdayImages(BaseMixIn):
-    __tablename__ = "BirthdayImages"
-    id = Column(Integer, primary_key=True)
+class BirthdayImages(Base):
     bdayImage = Column(String)
 
     def __repr__(self):
         return "<BirthdayImages(id='{}', bdayImage={})>".format(self.id, self.bdayImage)
 
 
-class IssueReports(BaseMixIn):
-    __tablename__ = "IssueReports"
-    id = Column(Integer, primary_key=True)
+class IssueReports(Base):
     dateCreated = Column(Date)
     issues = Column(String)
     guild = Column(BigInteger)
