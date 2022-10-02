@@ -1,5 +1,7 @@
+from asyncio.windows_events import NULL
 import csv
 from email import message
+from types import NoneType
 import discord
 import random
 from discord.ext import commands
@@ -91,27 +93,26 @@ class BirthdayCommands(commands.Cog):
         todayBdays = BirthdayChecker.getAllBirthdays(guildId)
         month = datetime.today().month
         day = datetime.today().day
+        numBdays = 1
         embed = discord.Embed(
             title=f"Todays Birthday's - {month}/{day}",
             description="List of people with birthdays today:",
-            color=0x9C84EF,
+            color=discord.Color.red(),
         )
+        await ctx.send(embed=embed)
         for birthdays in todayBdays:
             userAge = UserAgeInfo.getUserAge(birthdays.Birthday)
             user = await ctx.guild.query_members(user_ids=[int(birthdays.discord_ID)])
             user = user[0]
-            embed.add_field(
-                name=birthdays.username, value=f"is {userAge} today!", inline=False
+            embed2 = discord.Embed(
+                title=f"{birthdays.username}",
+                description=f"is {userAge} today!",
+                color=discord.Color.red(),
             )
-            embed.set_image(url=user.avatar.url)
-        await ctx.send(embed=embed)
-
-    @commands.hybrid_command(
-        name="me",
-        description="Displays user information.",
-    )
-    async def me(self, ctx):
-        await ctx.send("coming soon...")
+            embed2.set_image(url=user.avatar.url)
+            embed2.set_footer(text=f"{numBdays}/{len(todayBdays)}")
+            numBdays += 1
+            await ctx.send(embed=embed2)
 
     @commands.hybrid_command(
         name="tomorrow",
