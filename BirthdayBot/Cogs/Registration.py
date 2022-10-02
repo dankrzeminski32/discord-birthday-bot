@@ -21,7 +21,6 @@ class Registration(commands.Cog):
     )
     async def register(self, ctx):
         existing_user = DiscordUser.get(field = "discord_id", value = ctx.author.id)
-        # If we have an existing user then throw them into their own "update" loop
         if existing_user is not None:
             await self.handleExistingUser(ctx, existing_user)
             return None
@@ -35,7 +34,7 @@ class Registration(commands.Cog):
             response = await self.sendConfirmationMessage(ctx, input_birthday)
             if response:
                 DiscordUser.create(
-                    username=ctx.author,
+                    username=ctx.author.name,
                     birthday=input_birthday,
                     discord_id=ctx.author.id,
                     guild = ctx.guild.id
@@ -56,30 +55,32 @@ class Registration(commands.Cog):
 
     """ ---- HELPERS ---- """
     async def handleExistingUser(self, ctx, existing_user: DiscordUser):
-        response: bool = self.sendUpdateQuestion(ctx, existing_user = existing_user)
+        response: bool = await self.sendUpdateQuestion(ctx, existing_user = existing_user)
         if response:
             #update the user
             try: #try to update
-                pass
+                existing_user.update(field = "birthday",new_value = new_birthday)
+                ctx.send("thanks nerd")
                 #
             except: #invalid format or timeout failure 
                 pass
         else: 
             #send already registered, no update message. 
-            await ctx.send(f"Sounds good, see you in {existing_user.birthday.daysUntil()} days")
-        
-                
+            await ctx.send(f"Sounds good, see you in {existing_user.birthday.daysUntil()} days")        
+    
 
     async def sendUpdateQuestion(self, ctx, existing_user) -> bool:
         existing_user_view = ExistingUserButtons(
             author=ctx.author, existing_user=existing_user
             )
         await ctx.send(
-            "You already have a birthday registered, would you like to update this information?",
+            f"You already have a birthday registered - {existing_user.birthday}, would you like to update this information?",
             view=existing_user_view,
         )
         await existing_user_view.wait()
         return existing_user_view.userConfirmation
+
+    
 
     async def sendConfirmationMessage(self, ctx, birthday: Birthday) -> bool:
         view = RegistrationConfirmationButtons(author=ctx.author)

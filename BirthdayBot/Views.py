@@ -27,11 +27,15 @@ class BaseYesOrNoView(BaseView):
         self.responseMessages: dict[str, str]
         self.userConfirmation: bool = None
         self.invalidInteractionCheckMsg: str = "You don't have permission to press this button."
+        self.YES_BUTTON_ID: str = "yesConfirmationButton" #used to overwrite callback in subclasses
+        self.NO_BUTTON_ID: str = "noConfirmationButton" #used to overwrite callback in subclasses
         self.addButtons()
 
     def addButtons(self):
         no_button = discord.ui.Button(style=self.button_colors['no'],label=self.labels['no'])
+        no_button.custom_id = self.NO_BUTTON_ID
         yes_button = discord.ui.Button(style=self.button_colors['yes'],label=self.labels['yes'])
+        yes_button.custom_id = self.YES_BUTTON_ID
 
         async def no_button_callback(interaction: discord.Interaction):
             await interaction.response.send_message(f"{self.responseMessages['no']}")
@@ -51,6 +55,13 @@ class BaseYesOrNoView(BaseView):
         self.add_item(no_button)
         self.add_item(yes_button)
 
+    def get_button(self,id: str) -> discord.ui.Button:
+        for button in self.children:
+            if button.custom_id == id:
+                return button
+        
+
+
 
 class RegistrationConfirmationButtons(BaseYesOrNoView):
     def __init__(self, author: discord.User):
@@ -58,12 +69,6 @@ class RegistrationConfirmationButtons(BaseYesOrNoView):
         self.userConfirmation = None
         self.responseMessages = {"no": "Please try again... (mm/dd/yyyy)", "yes": "Confirming..."}
 
-
-class ExistingUserButtons(BaseYesOrNoView):
-    def __init__(self, author: discord.User, existing_user: DiscordUser):
-        super().__init__(author=author)
-        self.daysUntilBirthday: int = existing_user.birthday.daysUntil()
-        self.responseMessages = {"no": f"Sounds good! Only {self.daysUntilBirthday} Days from your birthday!", "yes": "Please Provide a new Birthday...(mm/dd/yyyy)"}
 
 class RegistrationOpenModalButton(BaseView):
     def __init__(self, author: discord.User):
@@ -90,6 +95,39 @@ class RegistrationModal(discord.ui.Modal, title="Registration Modal"):
     birthday: Birthday = None
     on_submit_interaction: discord.Interaction
     
+
+    async def on_submit(self, interaction: discord.Interaction):
+        try:
+            self.on_submit_interaction = interaction
+            self.birthday = Birthday.fromUserInput(str(self.birthdayInput))
+            await interaction.response.defer()
+            self.stop()
+        except:
+            self.on_submit_interaction = interaction
+            self.stop()
+
+
+class ExistingUserButtons(BaseYesOrNoView):
+    def __init__(self, author: discord.User, existing_user: DiscordUser):
+        super().__init__(author=author)
+        self.daysUntilBirthday: int = existing_user.birthday.daysUntil()
+        self.responseMessages = {"no": f"Sounds good! Only {self.daysUntilBirthday} Days from your birthday!", "yes": "Please Provide a new Birthday...(mm/dd/yyyy)"}
+        self.yes_button = self.get_button(self.YES_BUTTON_ID)
+        self.yes_button.callback = self.openUpdateUserModal_callback()
+
+    async def openUpdateUserModal_callback(self,interaction: discord.Interaction):
+        Modal = UpdateUserModal()
+        await interaction.response.send_modal(Modal)
+        self.stop()
+        Modal.wait()
+
+
+
+
+class UpdateUserModal(discord.ui.Modal, title="Registration Modal"):
+    birthdayInput = discord.ui.TextInput(label='Birthday', placeholder="MM/DD/YYY", style=discord.TextStyle.short, min_length=8, max_length=10)
+    birthday: Birthday = None
+    on_submit_interaction: discord.Interaction
 
     async def on_submit(self, interaction: discord.Interaction):
         try:

@@ -9,6 +9,7 @@ from sqlalchemy import extract
 from BirthdayBot.Models import DiscordUser
 from BirthdayBot.Models import BirthdayImages
 from BirthdayBot.Models import BirthdayMessages
+from BirthdayBot.Birthday import Birthday
 
 
 class BirthdayChecker(object):
@@ -17,28 +18,13 @@ class BirthdayChecker(object):
     def __init__(self, bot):
         self.bot = bot
 
-    def getAllBirthdays(self, guild) -> list:
-        with session_scope() as session:
-            all_birthdays = (
-                session.query(DiscordUser)
-                .filter(
-                    extract("month", DiscordUser.birthday) == datetime.today().month,
-                    extract("day", DiscordUser.birthday) == datetime.today().day,
-                    DiscordUser.guild == guild.id,
-                )
-                .all()
-            )
-            session.expunge_all()
-
-        return all_birthdays
-
     async def sendBirthdayMessages(self, todays_birthdays: list, channel) -> None:
-
+        todays_birthdays = DiscordUser.getAll(_birthday=Birthday(datetime.today()))
         for birthday in todays_birthdays:
             random_msg_details = self.generateRandomMessage()
             embed = discord.Embed(
                 title="Happy Birthday!",
-                description=f"<@{birthday.discord_ID}>",
+                description=f"<@{birthday.discord_id}>",
                 color=discord.Color.red(),
             )
             embed.add_field(

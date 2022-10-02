@@ -2,6 +2,9 @@ import discord
 from discord.ext import commands, tasks
 from BirthdayBot.Utils import logger
 from BirthdayBot.BirthdayChecker import BirthdayChecker
+from datetime import datetime
+from BirthdayBot.Models import DiscordUser
+from BirthdayBot.Birthday import Birthday
 
 
 class Events(commands.Cog):
@@ -22,13 +25,13 @@ class Events(commands.Cog):
     async def on_ready(self):
         logger.info(f"We have logged in as {self.bot.user}")
 
-    @tasks.loop(seconds=30)
+    @tasks.loop(hours=24)
     async def birthdayAnnouncements(self):
         await self.bot.wait_until_ready()
         bdaychecker = BirthdayChecker(self.bot)
         channel = None
         for guild in self.bot.guilds:
-            bdays = bdaychecker.getAllBirthdays(guild)
+            bdays = DiscordUser.getAll(_birthday=Birthday(datetime.today()))
             for channel in guild.text_channels:
                 if channel.name == "birthdays":
                     bday_channel = channel.id

@@ -40,31 +40,3 @@ class Birthday(datetime):
     def __str__(self):
         return "{} {}, {}".format(self.strftime("%B"),self.day,self.year)
     
-    
-
-
-def validateTests():
-    from BirthdayBot.Models import DiscordUser
-    from BirthdayBot.Utils import session_scope
-    my_bday: Birthday = Birthday.fromUserInput("09/30/2020")
-    print(my_bday.daysUntil())
-
-    new_user = DiscordUser.create(
-        username = "yo",
-        birthday = my_bday,
-        discord_id=22312312,
-        guild=123123
-    )
-
-    with session_scope() as session:
-        session.add(new_user)
-        
-    with session_scope() as session:
-        test_user:DiscordUser = session.query(DiscordUser).filter_by(username="yo").first()
-        session.expunge_all()
-        
-    print(test_user)
-        
-
-    # print(my_bday.__repr__())
-    # print(my_bday)

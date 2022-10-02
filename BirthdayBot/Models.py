@@ -22,6 +22,15 @@ class Base:
             session.expunge_all()
             return obj  
 
+    @classmethod
+    def getAll(cls, **kwargs) -> list:
+        #kwargs = {field: value}
+        with session_scope() as session:      
+            obj: list = session.query(cls).filter_by(**kwargs).all()
+            session.expunge_all()
+            return obj   
+
+
     id =  Column(Integer, primary_key=True)
 
 
@@ -33,7 +42,7 @@ class DiscordUser(Base):
     _birthday = Column('birthday',Date)
     discord_id = Column(BigInteger)
     guild = Column(BigInteger)
-
+    
     def __init__(self,username: str,birthday: Birthday, discord_id: int,guild: int ):
         self.username = username
         self._birthday = birthday
