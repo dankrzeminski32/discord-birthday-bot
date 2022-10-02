@@ -50,6 +50,20 @@ class IssueReports(Base):
     is_resolved = Column(Boolean)
 
     def __repr__(self):
-        return "<BirthdayImages(id='{}', dateCreated={}, issues={}, guild={}, is_resolved{})>".format(
+        return "<IssueImages(id='{}', dateCreated={}, issues={}, guild={}, is_resolved = '{}')>".format(
             self.id, self.dateCreated, self.issues, self.guild, self.is_resolved
+        )
+
+
+class CelebrityBirthdays(Base):
+    __tablename__ = "CelebrityBirthdays"
+    id = Column(Integer, primary_key=True)
+    celebName = Column(String)
+    celebAge = Column(Integer)
+    celebJob = Column(String)
+    celebBirthdate = Column(String)
+
+    def __repr__(self):
+        return "<CelebrityBirthdays(id='{}', celebName='{}', celebAge = '{}', celebJob = '{}',celebBirthdate = '{}')>".format(
+            self.id, self.celebName, self.celebAge, self.celebJob
         )
