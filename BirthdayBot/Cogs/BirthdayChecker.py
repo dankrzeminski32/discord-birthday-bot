@@ -187,7 +187,7 @@ class BirthdayCommands(commands.Cog):
         month = datetime.strptime(str(month), "%m")
         month = month.strftime("%B")
         embed = discord.Embed(
-            title=f"{month} Birthdays",
+            title=f"{month} Birthday's",
             description="List of people with birthdays this month:",
             color=discord.Color.red(),
         )
