@@ -9,7 +9,7 @@ import datetime
 from datetime import datetime
 
 
-def runThis():
+def ScrapeIt():
 
     # Has to be lower case months or wont work.
     monthsWith29 = ["february"]
@@ -93,7 +93,7 @@ def runThis():
             print(i)
 
     for month in monthsWith29:
-        for i in range(28, 30, 1):
+        for i in range(1, 30, 1):
             CelebrityScraper.Scrape(month, i)
             time.sleep(sleepTimer)
     for month in monthsWith30:
