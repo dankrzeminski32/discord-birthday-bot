@@ -8,6 +8,7 @@ from config import (
     PATH_TO_BIRTHDAY_IMGS,
     PATH_TO_BIRTHDAY_QUOTES,
 )
+from BirthdayBot.Scraper.CelebScraper import runThis
 
 # Create permission intents, state what our bot should be able to do
 intents = discord.Intents.default()
@@ -36,6 +37,7 @@ async def main():
     async with bot:
         # recreateDB()
         mainSeeder.seedDBIfEmpty()
+        runThis()
         await load_extensions()
         await bot.start(DISCORD_BOT_TOKEN)
 

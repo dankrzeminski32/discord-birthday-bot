@@ -61,7 +61,7 @@ class CelebrityBirthdays(Base):
     celebName = Column(String)
     celebAge = Column(Integer)
     celebJob = Column(String)
-    celebBirthdate = Column(String)
+    celebBirthdate = Column(Date)
     celebLifeSpan = Column(String)
 
     def __repr__(self):
