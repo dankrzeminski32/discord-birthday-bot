@@ -8,7 +8,7 @@ from config import (
     PATH_TO_BIRTHDAY_IMGS,
     PATH_TO_BIRTHDAY_QUOTES,
 )
-from BirthdayBot.Scraper.CelebScraper import ScrapeIt, runThis
+from BirthdayBot.Scraper.CelebScraper import ScrapeIt
 
 # Create permission intents, state what our bot should be able to do
 intents = discord.Intents.default()

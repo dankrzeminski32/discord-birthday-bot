@@ -10,7 +10,7 @@ from datetime import date
 from BirthdayBot.Cogs.UserAgeInfo import UserAgeInfo
 from BirthdayBot.Utils import session_scope, logger
 from sqlalchemy import extract
-from BirthdayBot.Models import DiscordUser
+from BirthdayBot.Models import CelebrityBirthdays, DiscordUser
 from BirthdayBot.Models import BirthdayImages
 from BirthdayBot.Models import BirthdayMessages
 
@@ -69,6 +69,23 @@ class BirthdayChecker(object):
 
         return all_birthdays
 
+    @classmethod
+    def getAllCelebBirthdays(cls) -> list:
+        with session_scope() as session:
+            all_birthdays = (
+                session.query(CelebrityBirthdays)
+                .filter(
+                    extract("month", CelebrityBirthdays.celebBirthdate)
+                    == datetime.today().month,
+                    extract("day", CelebrityBirthdays.celebBirthdate)
+                    == datetime.today().day,
+                )
+                .all()
+            )
+            session.expunge_all()
+
+        return all_birthdays
+
     async def sendBirthdayMessages(self, todays_birthdays: list, channel) -> None:
 
         for birthday in todays_birthdays:
@@ -118,7 +135,7 @@ class BirthdayCommands(commands.Cog):
 
     @commands.hybrid_command(
         name="today",
-        description="Displays everyoen with birthdays for the day.",
+        description="Displays everyone with birthdays for the day.",
     )
     async def today(self, ctx):
         guildId = ctx.message.guild
@@ -145,6 +162,25 @@ class BirthdayCommands(commands.Cog):
             embed2.set_footer(text=f"{numBdays}/{len(todayBdays)}")
             numBdays += 1
             await ctx.send(embed=embed2)
+
+    @commands.hybrid_command(
+        name="todayceleb",
+        description="Displays a random celebrity with a birthday today.",
+    )
+    async def todayceleb(self, ctx):
+        todayBdays = BirthdayChecker.getAllCelebBirthdays()
+        randomBday = random.choice(todayBdays)
+        month = datetime.today().month
+        day = datetime.today().day
+        embed = discord.Embed(
+            title=f"Celebrity Birthday - {month}/{day}",
+            description="A random Celebrity with a birthday today: ",
+            color=discord.Color.red(),
+        )
+        celebAge = randomBday.celebAge
+        celebName = randomBday.celebName
+        embed.add_field(name=f"{celebName}", value=f"Age: {celebAge}", inline=True)
+        await ctx.send(embed=embed)
 
     @commands.hybrid_command(
         name="tomorrow",
