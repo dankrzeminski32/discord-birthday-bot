@@ -5,7 +5,7 @@ import datetime
 from datetime import datetime
 from BirthdayBot.Utils import session_scope, logger
 from BirthdayBot.Models import DiscordUser
-from BirthdayBot.Views import ExistingUserButtons, RegistrationOpenModalButton, RegistrationConfirmationButtons
+from BirthdayBot.Views import ExistingUserButtons, RegistrationOpenModalButton, RegistrationConfirmationButtons, UpdateConfirmationButtons, tryAgainView
 from BirthdayBot.Birthday import Birthday
 
 class Registration(commands.Cog):
@@ -54,22 +54,49 @@ class Registration(commands.Cog):
 
 
     """ ---- HELPERS ---- """
-    async def handleExistingUser(self, ctx, existing_user: DiscordUser):
+    async def handleExistingUser(self, ctx, existing_user: DiscordUser, second_iteration=False, response=None):
+        if second_iteration:
+            await self.handleBirthdayConfirmation(ctx,response, existing_user)
+            return None
+
         response: bool = await self.sendUpdateQuestion(ctx, existing_user = existing_user)
         if response.userConfirmation is not None:
-            if response.userConfirmation:
-                try: 
-                    dateConfirmationResponse = await self.sendConfirmationMessage(ctx, response.Modal.updatedBirthday)
-                    if dateConfirmationResponse:
-                        existing_user.update(field = "birthday",new_value = response.Modal.updatedBirthday)
-                    elif dateConfirmationResponse == False:
-                        await self.handleExistingUser(ctx,existing_user=existing_user)
-                except: #invalid format or timeout failure 
-                    pass
+            if response.userConfirmation: # User wants to update
+                await self.handleBirthdayConfirmation(ctx,response, existing_user)
+            else: # User doesnt want to update
+                return None
+        else:
+            ctx.send("Oops, Something went wrong, please try again.")
+
+
+    async def handleBirthdayConfirmation(self,ctx,response: UpdateConfirmationButtons,existing_user: DiscordUser):
+        try: 
+            if response.Modal.updatedBirthday is not None:
+                dateConfirmationResponse = await self.sendUpdateConfirmationMessage(ctx, response.Modal.updatedBirthday)
+                if dateConfirmationResponse.userConfirmation and response.Modal.updatedBirthday != None:# New birthday looks good
+                    existing_user.update(field = "birthday",new_value = response.Modal.updatedBirthday)
+                    await ctx.send("user updated successfully")
+                elif dateConfirmationResponse == False and response.Modal.updatedBirthday != None:# New birthday does not look good
+                    await self.handleExistingUser(ctx,existing_user=existing_user, second_iteration=True, response=dateConfirmationResponse)
+                else:
+                    resp = await self.sendInvalidRetry(ctx, update=True)
+                    await self.handleBirthdayConfirmation(ctx, resp, existing_user=existing_user)
             else: 
-                #send already registered, no update message. 
-                await ctx.send(f"Sounds good, see you in {existing_user.birthday.daysUntil()} days")      
-    
+                resp = await self.sendInvalidRetry(ctx, update=True)
+                await self.handleBirthdayConfirmation(ctx, resp, existing_user=existing_user)
+        except:
+            await ctx.send("Oops, Something went wrong, please try again.")
+
+
+    async def sendInvalidRetry(self, ctx, update: bool):
+        try_again_view = tryAgainView(author = ctx.author, update=update)
+        await ctx.send(
+            f"Invalid Date Format, please try again. (MM/DD/YYYY)",
+            view=try_again_view,
+        )
+        await try_again_view.wait()
+        await try_again_view.Modal.wait()
+        return try_again_view
 
     async def sendUpdateQuestion(self, ctx, existing_user) -> ExistingUserButtons:
         existing_user_view = ExistingUserButtons(
@@ -96,6 +123,21 @@ class Registration(commands.Cog):
         await ctx.send(embed=embed, view=view)
         await view.wait()
         return view.userConfirmation
+
+    async def sendUpdateConfirmationMessage(self, ctx, birthday: Birthday) -> UpdateConfirmationButtons:
+        view = UpdateConfirmationButtons(author=ctx.author)
+        embed = discord.Embed(
+            title="Confirmation:",
+            description="Is this correct? - {}".format(birthday),
+            color=discord.Color.red(),
+        )
+        await ctx.send(embed=embed, view=view)
+        await view.wait()
+        if view.userConfirmation:
+            return view
+        await view.Modal.wait()
+        return view
+
 
     async def sendRegistrationMessage(self, ctx, view):
         embed = discord.Embed(

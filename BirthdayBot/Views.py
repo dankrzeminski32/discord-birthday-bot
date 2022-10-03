@@ -1,4 +1,5 @@
 import discord
+from sqlalchemy import union
 from BirthdayBot.Models import DiscordUser
 import traceback
 import sys
@@ -89,7 +90,7 @@ class RegistrationOpenModalButton(BaseView):
 
 class RegistrationModal(discord.ui.Modal, title="Registration Modal"):
     birthdayInput = discord.ui.TextInput(label='Birthday', placeholder="MM/DD/YYY", style=discord.TextStyle.short, min_length=8, max_length=10)
-    birthday: Birthday = None
+    updatedBirthday: Birthday = None
     on_submit_interaction: discord.Interaction
     
 
@@ -133,4 +134,48 @@ class UpdateUserModal(discord.ui.Modal, title="Registration Modal"):
             self.stop()
         except:
             self.on_submit_interaction = interaction
+            await interaction.response.defer()
             self.stop()
+
+class UpdateConfirmationButtons(BaseYesOrNoView):
+    def __init__(self, author: discord.User):
+        super().__init__(author=author)
+        self.userConfirmation = None
+        self.responseMessages = {"no": "Please try again... (mm/dd/yyyy)", "yes": "Confirming..."}
+        self.no_button = self.get_button(self.NO_BUTTON_ID)
+        self.no_button.callback = self.openUpdateUserModal_callback
+        self.Modal: UpdateUserModal
+
+    async def openUpdateUserModal_callback(self,interaction: discord.Interaction):
+        Modal = UpdateUserModal()
+        await interaction.response.send_modal(Modal)
+        self.userConfirmation = False
+        self.stop()
+        self.Modal = Modal
+
+
+class tryAgainView(BaseView):
+    def __init__(self, author: discord.User, update: bool):
+        super().__init__(author=author)
+        self.userConfirmation: bool = None
+        self.update = update
+        self.Modal: discord.ui.Modal
+        self.tryAgainButton()
+
+    def tryAgainButton(self):
+        retry_button = discord.ui.Button(style=discord.ButtonStyle.green,label="Try Again!")
+
+        async def retry_button_callback(interaction: discord.Interaction):
+            if self.update:
+                Modal = UpdateUserModal()
+                await interaction.response.send_modal(Modal)
+            else:
+                Modal = RegistrationModal()
+                await interaction.response.send_modal(Modal)
+
+            self.userConfirmation = False
+            self.Modal = Modal
+            self.stop()
+
+        retry_button.callback = retry_button_callback
+        self.add_item(retry_button)
