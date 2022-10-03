@@ -5,7 +5,7 @@ from types import NoneType
 import discord
 import random
 from discord.ext import commands
-from datetime import datetime
+from datetime import datetime, timedelta
 from datetime import date
 from BirthdayBot.Cogs.UserAgeInfo import UserAgeInfo
 from BirthdayBot.Utils import session_scope, logger
@@ -29,6 +29,23 @@ class BirthdayChecker(object):
                 .filter(
                     extract("month", DiscordUser.Birthday) == datetime.today().month,
                     extract("day", DiscordUser.Birthday) == datetime.today().day,
+                    DiscordUser.guild == guild.id,
+                )
+                .all()
+            )
+            session.expunge_all()
+
+        return all_birthdays
+
+    @classmethod
+    def getAllFutureBirthdays(cls, guild) -> list:
+        tomorrowDate = datetime.now() + timedelta(days=1)
+        with session_scope() as session:
+            all_birthdays = (
+                session.query(DiscordUser)
+                .filter(
+                    extract("month", DiscordUser.Birthday) == tomorrowDate.month,
+                    extract("day", DiscordUser.Birthday) == tomorrowDate.day,
                     DiscordUser.guild == guild.id,
                 )
                 .all()
@@ -119,7 +136,30 @@ class BirthdayCommands(commands.Cog):
         description="Displays users birthdays for tomorrow.",
     )
     async def tomorrow(self, ctx):
-        await ctx.send("coming soon...")
+        guildId = ctx.message.guild
+        todayBdays = BirthdayChecker.getAllFutureBirthdays(guildId)
+        month = datetime.today().month
+        day = datetime.today().day
+        numBdays = 1
+        embed = discord.Embed(
+            title=f"Tomorrows Birthday's - {month}/{day+1}",
+            description="List of people with birthdays tomorrow:",
+            color=discord.Color.red(),
+        )
+        await ctx.send(embed=embed)
+        for birthdays in todayBdays:
+            userAge = UserAgeInfo.getUserAge(birthdays.Birthday)
+            user = await ctx.guild.query_members(user_ids=[int(birthdays.discord_ID)])
+            user = user[0]
+            embed2 = discord.Embed(
+                title=f"{birthdays.username}",
+                description=f"is {userAge} today!",
+                color=discord.Color.red(),
+            )
+            embed2.set_image(url=user.avatar.url)
+            embed2.set_footer(text=f"{numBdays}/{len(todayBdays)}")
+            numBdays += 1
+            await ctx.send(embed=embed2)
 
     @commands.hybrid_command(
         name="thismonth",
