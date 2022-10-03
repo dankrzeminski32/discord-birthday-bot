@@ -62,8 +62,9 @@ class CelebrityBirthdays(Base):
     celebAge = Column(Integer)
     celebJob = Column(String)
     celebBirthdate = Column(String)
+    celebLifeSpan = Column(String)
 
     def __repr__(self):
-        return "<CelebrityBirthdays(id='{}', celebName='{}', celebAge = '{}', celebJob = '{}',celebBirthdate = '{}')>".format(
-            self.id, self.celebName, self.celebAge, self.celebJob
+        return "<CelebrityBirthdays(id='{}', celebName='{}', celebAge = '{}', celebJob = '{}',celebBirthdate = '{}', lifeSpan = '{}')>".format(
+            self.id, self.celebName, self.celebAge, self.celebJob, self.celebLifeSpan
         )
