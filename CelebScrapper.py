@@ -79,6 +79,7 @@ class CelebrityScraper(object):
                     except Exception as e:
                         logger.error("Scraper Logger has failed, %s" % e)
                     i += 1
+        i += i
         print(i)
 
 
