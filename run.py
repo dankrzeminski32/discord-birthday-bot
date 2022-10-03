@@ -37,7 +37,7 @@ async def main():
     async with bot:
         # recreateDB()
         mainSeeder.seedDBIfEmpty()
-        ScrapeIt()
+        # ScrapeIt()
         await load_extensions()
         await bot.start(DISCORD_BOT_TOKEN)
 
