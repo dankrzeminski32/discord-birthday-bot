@@ -54,6 +54,21 @@ class BirthdayChecker(object):
 
         return all_birthdays
 
+    @classmethod
+    def getAllMonthBirthdays(cls, guild) -> list:
+        with session_scope() as session:
+            all_birthdays = (
+                session.query(DiscordUser)
+                .filter(
+                    extract("month", DiscordUser.Birthday) == datetime.today().month,
+                    DiscordUser.guild == guild.id,
+                )
+                .all()
+            )
+            session.expunge_all()
+
+        return all_birthdays
+
     async def sendBirthdayMessages(self, todays_birthdays: list, channel) -> None:
 
         for birthday in todays_birthdays:
@@ -162,11 +177,28 @@ class BirthdayCommands(commands.Cog):
             await ctx.send(embed=embed2)
 
     @commands.hybrid_command(
-        name="thismonth",
+        name="month",
         description="Displays users birthdays for the month.",
     )
-    async def thismonth(self, ctx):
-        await ctx.send("coming soon...")
+    async def month(self, ctx):
+        guildId = ctx.message.guild
+        monthBdays = BirthdayChecker.getAllMonthBirthdays(guildId)
+        month = datetime.today().month
+        month = datetime.strptime(str(month), "%m")
+        month = month.strftime("%B")
+        embed = discord.Embed(
+            title=f"This months Birthday's - {month}",
+            description="List of people with birthdays this month:",
+            color=discord.Color.red(),
+        )
+        for birthdays in monthBdays:
+            embed.add_field(
+                name=f"{birthdays.username}",
+                value=f"Birthday: {birthdays.Birthday.month}/{birthdays.Birthday.day}",
+                inline=False,
+            )
+        embed.set_footer(text=f"Total amount of birthdays: {len(monthBdays)}")
+        await ctx.send(embed=embed)
 
 
 async def setup(bot):
