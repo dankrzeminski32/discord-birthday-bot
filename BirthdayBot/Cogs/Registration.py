@@ -64,11 +64,9 @@ class Registration(commands.Cog):
 
     async def handleRegisterBirthdayValidation(self,ctx, modalResponseObject: BirthdayInputModal):
         userConfirmation = False
-        validBirthday = False
         
-        while validBirthday == False:
+        while modalResponseObject.recievedValidBirthdayValue == False:
             if modalResponseObject.recievedValidBirthdayValue:
-                validBirthday = True
                 while userConfirmation == False:
                     confirmation_view: RegisterConfirmationButtons = await self.sendConfirmationMessage(ctx, modalResponseObject.birthdayValue)
                     if confirmation_view.userConfirmation == True:
@@ -79,19 +77,12 @@ class Registration(commands.Cog):
                         userConfirmation = True
                     elif confirmation_view.userConfirmation == False:
                         view = await self.sendTryAgainView(ctx, update=False)
-                        if view.Modal.recievedValidBirthdayValue:
-                            validBirthday = True
-                            modalResponseObject = view.Modal
-                        else: 
-                            validBirthday = False
+                        modalResponseObject = view.Modal
             else:
                 view = await self.sendTryAgainView(ctx=ctx, update=False)
-                if view.Modal.recievedValidBirthdayValue:
-                    validBirthday = True
-                    modalResponseObject = view.Modal
-                else: 
-                    validBirthday = False
-        
+                modalResponseObject = view.Modal
+
+    
             
     
 
