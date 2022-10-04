@@ -5,7 +5,7 @@ import datetime
 from datetime import datetime
 from BirthdayBot.Utils import session_scope, logger
 from BirthdayBot.Models import DiscordUser
-from BirthdayBot.Views import ExistingUserButtons, RegistrationOpenModalButton, RegistrationConfirmationButtons, UpdateConfirmationButtons, tryAgainView
+from BirthdayBot.Views import BirthdayInputModal, UpdateUserButtons,UpdateConfirmationButtons, RegisterUserButton, RegisterConfirmationButtons, tryAgainView
 from BirthdayBot.Birthday import Birthday
 
 class Registration(commands.Cog):
@@ -20,14 +20,32 @@ class Registration(commands.Cog):
         description="Prompts the user with a message to register their birthday.",
     )
     async def register(self, ctx):
-        existing_user = DiscordUser.get(field = "discord_id", value = ctx.author.id)
-        if existing_user is not None:
+        #Handles Existing User
+        if DiscordUser.does_user_exist(discord_id=ctx.author.id):
+            existing_user = DiscordUser.get(discord_id=ctx.author.id)
             await self.handleExistingUser(ctx, existing_user)
             return None
 
-        modalView = RegistrationOpenModalButton(author=ctx.author)
-        await self.sendRegistrationMessage(ctx, modalView)
-        await modalView.Modal.wait()
+        button_feedback: RegisterUserButton = await self.sendRegistrationView(ctx)
+
+        if button_feedback.timed_out:
+            ctx.send("Timed Out")
+            return None
+        
+        modal_input: BirthdayInputModal = await self.waitForModalView()
+
+        if modal_input.timed_out:
+            ctx.send("Timed Out")
+            return None
+        
+        if modal_input.recievedValidBirthdayValue is False:
+            retry_feedback = self.sendInvalidBirthdayInputRetry(ctx=ctx, update=False)
+            if retry_feedback.timed_out:
+                ctx.send("Timed Out")
+            else:
+                
+        
+
         input_birthday: Birthday = modalView.Modal.birthday
         
         if input_birthday is not None:
@@ -70,33 +88,18 @@ class Registration(commands.Cog):
             ctx.send("Oops, Something went wrong, please try again.")
 
 
-    async def handleBirthdayConfirmation(self,ctx,response: UpdateConfirmationButtons,existing_user: DiscordUser):
-        try: 
-            if response.Modal.updatedBirthday is not None:
-                dateConfirmationResponse = await self.sendUpdateConfirmationMessage(ctx, response.Modal.updatedBirthday)
-                if dateConfirmationResponse.userConfirmation and response.Modal.updatedBirthday != None:# New birthday looks good
-                    existing_user.update(field = "birthday",new_value = response.Modal.updatedBirthday)
-                    await ctx.send("user updated successfully")
-                elif dateConfirmationResponse == False and response.Modal.updatedBirthday != None:# New birthday does not look good
-                    await self.handleExistingUser(ctx,existing_user=existing_user, second_iteration=True, response=dateConfirmationResponse)
-                else:
-                    resp = await self.sendInvalidRetry(ctx, update=True)
-                    await self.handleBirthdayConfirmation(ctx, resp, existing_user=existing_user)
-            else: 
-                resp = await self.sendInvalidRetry(ctx, update=True)
-                await self.handleBirthdayConfirmation(ctx, resp, existing_user=existing_user)
-        except:
-            await ctx.send("Oops, Something went wrong, please try again.")
+    async def handleInvalidBirthdayConfirmation(self,ctx, validBirthday: Birthday,*, existing_user: DiscordUser = None):
+        while userConfirmation == False and validBirthday == False
+            TryAgainView()
 
 
-    async def sendInvalidRetry(self, ctx, update: bool):
+    async def sendInvalidBirthdayInputView(self, ctx, *, update: bool) -> tryAgainView:
         try_again_view = tryAgainView(author = ctx.author, update=update)
         await ctx.send(
             f"Invalid Date Format, please try again. (mm/dd/yyyy)",
             view=try_again_view,
         )
-        await try_again_view.wait()
-        await try_again_view.Modal.wait()
+        try_again_view.timed_out: bool = await try_again_view.wait()
         return try_again_view
 
     async def sendUpdateQuestion(self, ctx, existing_user) -> ExistingUserButtons:
@@ -140,15 +143,26 @@ class Registration(commands.Cog):
         return view
 
 
-    async def sendRegistrationMessage(self, ctx, view):
+    async def sendRegistrationView(self, ctx) -> RegisterUserButton:
+        view = RegisterUserButton(author=ctx.author)
         embed = discord.Embed(
             title="Please enter your Birthday (mm/dd/yyyy)",
             description="This will store your birthday in our database",
             color=discord.Color.red()
         )
         await ctx.send(embed=embed, view=view)
-        await view.wait()
-        
+        view.timed_out : bool = await view.wait()
+        return view
+
+    async def waitForModalView(modal: BirthdayInputModal) -> BirthdayInputModal:
+        modal.timed_out: bool = await modal.wait()
+        return modal
+
+    async def getModalFeedback(self, modal: BirthdayInputModal) -> Birthday:
+        if modal.recievedValidBirthdayValue:
+            return modal.birthdayValue
+        else:
+            return None
 
 
 async def setup(bot):
