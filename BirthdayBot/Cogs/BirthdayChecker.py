@@ -240,7 +240,7 @@ class BirthdayCommands(commands.Cog):
         month = datetime.today().month
         day = datetime.today().day
         embed = discord.Embed(
-            title=f"Celebrity Birthday - {month}/{day+1}",
+            title=f"Celebrity Birthday That's Tomorrow - {month}/{day+1}",
             description="A random Celebrity with a birthday tomorrow: ",
             color=discord.Color.red(),
         )
