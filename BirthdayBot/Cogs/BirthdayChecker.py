@@ -104,6 +104,21 @@ class BirthdayChecker(object):
 
         return all_birthdays
 
+    @classmethod
+    def getCelebMonthBirthdays(cls) -> list:
+        with session_scope() as session:
+            all_birthdays = (
+                session.query(CelebrityBirthdays)
+                .filter(
+                    extract("month", CelebrityBirthdays.celebBirthdate)
+                    == datetime.today().month,
+                )
+                .all()
+            )
+            session.expunge_all()
+
+        return all_birthdays
+
     async def sendBirthdayMessages(self, todays_birthdays: list, channel) -> None:
 
         for birthday in todays_birthdays:
@@ -271,6 +286,29 @@ class BirthdayCommands(commands.Cog):
                 inline=False,
             )
         embed.set_footer(text=f"Total amount of birthdays: {len(monthBdays)}")
+        await ctx.send(embed=embed)
+
+    @commands.hybrid_command(
+        name="monthceleb",
+        description="Displays celebrity birthdays for the month.",
+    )
+    async def monthceleb(self, ctx):
+        monthBdays = BirthdayChecker.getCelebMonthBirthdays()
+        month = datetime.today().month
+        month = datetime.strptime(str(month), "%m")
+        month = month.strftime("%B")
+        embed = discord.Embed(
+            title=f"{month} Celebrity Birthday's",
+            description="List of 5 random Celebrity's with birthdays this month:",
+            color=discord.Color.red(),
+        )
+        for randomBday in range(1, 6):
+            randomBday = random.choice(monthBdays)
+            embed.add_field(
+                name=f"{randomBday.celebName}",
+                value=f"Birthday: {randomBday.celebBirthdate.month}/{randomBday.celebBirthdate.day}",
+                inline=False,
+            )
         await ctx.send(embed=embed)
 
 
