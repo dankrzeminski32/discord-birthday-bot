@@ -86,6 +86,24 @@ class BirthdayChecker(object):
 
         return all_birthdays
 
+    @classmethod
+    def getFutureCelebBirthdays(cls) -> list:
+        tomorrowDate = datetime.now() + timedelta(days=1)
+        with session_scope() as session:
+            all_birthdays = (
+                session.query(CelebrityBirthdays)
+                .filter(
+                    extract("month", CelebrityBirthdays.celebBirthdate)
+                    == tomorrowDate.month,
+                    extract("day", CelebrityBirthdays.celebBirthdate)
+                    == tomorrowDate.day,
+                )
+                .all()
+            )
+            session.expunge_all()
+
+        return all_birthdays
+
     async def sendBirthdayMessages(self, todays_birthdays: list, channel) -> None:
 
         for birthday in todays_birthdays:
@@ -188,7 +206,7 @@ class BirthdayCommands(commands.Cog):
     )
     async def tomorrow(self, ctx):
         guildId = ctx.message.guild
-        todayBdays = BirthdayChecker.getAllFutureBirthdays(guildId)
+        tomorrowBdays = BirthdayChecker.getAllFutureBirthdays(guildId)
         month = datetime.today().month
         day = datetime.today().day
         numBdays = 1
@@ -198,7 +216,7 @@ class BirthdayCommands(commands.Cog):
             color=discord.Color.red(),
         )
         await ctx.send(embed=embed)
-        for birthdays in todayBdays:
+        for birthdays in tomorrowBdays:
             userAge = UserAgeInfo.getUserAge(birthdays.Birthday)
             user = await ctx.guild.query_members(user_ids=[int(birthdays.discord_ID)])
             user = user[0]
@@ -208,9 +226,28 @@ class BirthdayCommands(commands.Cog):
                 color=discord.Color.red(),
             )
             embed2.set_image(url=user.avatar.url)
-            embed2.set_footer(text=f"{numBdays}/{len(todayBdays)}")
+            embed2.set_footer(text=f"{numBdays}/{len(tomorrowBdays)}")
             numBdays += 1
             await ctx.send(embed=embed2)
+
+    @commands.hybrid_command(
+        name="tomorrowceleb",
+        description="Displays a random celebrity with a birthday tomorrow.",
+    )
+    async def tomorrowceleb(self, ctx):
+        tomorrowBdays = BirthdayChecker.getFutureCelebBirthdays()
+        randomBday = random.choice(tomorrowBdays)
+        month = datetime.today().month
+        day = datetime.today().day
+        embed = discord.Embed(
+            title=f"Celebrity Birthday - {month}/{day+1}",
+            description="A random Celebrity with a birthday tomorrow: ",
+            color=discord.Color.red(),
+        )
+        celebAge = randomBday.celebAge
+        celebName = randomBday.celebName
+        embed.add_field(name=f"{celebName}", value=f"Age: {celebAge}", inline=True)
+        await ctx.send(embed=embed)
 
     @commands.hybrid_command(
         name="month",
