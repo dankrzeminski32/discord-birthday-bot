@@ -15,8 +15,7 @@ class Base:
             obj = cls(**kw)
             session.add(obj)
     @classmethod
-    def get(cls, field: str, value: str) -> object:
-        kwargs = {field: value}
+    def get(cls, **kwargs) -> object:
         with session_scope() as session:      
             obj = session.query(cls).filter_by(**kwargs).scalar()
             session.expunge_all()
@@ -24,7 +23,6 @@ class Base:
 
     @classmethod
     def getAll(cls, **kwargs) -> list:
-        #kwargs = {field: value}
         with session_scope() as session:      
             obj: list = session.query(cls).filter_by(**kwargs).all()
             session.expunge_all()
@@ -67,6 +65,11 @@ class DiscordUser(Base):
         with session_scope() as session:
             self.__setattr__(field,new_value)
             session.add(self)
+
+    @staticmethod
+    def does_user_exist(discord_id: int) -> bool:
+        user = DiscordUser.get(discord_id=discord_id)
+        return False if user is None else True
     
 class BirthdayMessages(Base):
     bdayMessage = Column(String)
