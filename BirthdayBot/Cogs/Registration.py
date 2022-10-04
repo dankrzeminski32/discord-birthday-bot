@@ -32,69 +32,59 @@ class Registration(commands.Cog):
             ctx.send("Timed Out")
             return None
         
-        modal_input: BirthdayInputModal = await self.waitForModalView()
+        modal_input: BirthdayInputModal = await self.waitForModalView(button_feedback.Modal)
 
         if modal_input.timed_out:
             ctx.send("Timed Out")
             return None
         
-        self.handleRegisterBirthdayValidation(ctx,modal_input, )
+        await self.handleBirthdayValidation(ctx,modal_input, update=False)
         
         return None
         
 
     """ ---- HELPERS ---- """
-    async def handleExistingUser(self, ctx, existing_user: DiscordUser, second_iteration=False, response=None):
-        if second_iteration:
-            await self.handleBirthdayConfirmation(ctx,response, existing_user)
-            return None
-
-        response: bool = await self.sendUpdateQuestion(ctx, existing_user = existing_user)
-        if response.userConfirmation is not None:
-            if response.userConfirmation: # User wants to update
-                await self.handleBirthdayConfirmation(ctx,response, existing_user)
+    async def handleExistingUser(self, ctx, existing_user: DiscordUser):
+        view: UpdateUserButtons = await self.sendUpdateView(ctx, existing_user = existing_user)
+        if view.timed_out == False:
+            if view.userConfirmation: # User wants to update
+                modal_response = await self.waitForModalView(view.Modal)
+                await self.handleBirthdayValidation(ctx, modal_response, update=True, existing_user=existing_user)
+                return None
             else: # User doesnt want to update
                 return None
         else:
-            ctx.send("Oops, Something went wrong, please try again.")
+            await ctx.send("Timed Out")
 
 
 
 
 
-    async def handleRegisterBirthdayValidation(self,ctx, modalResponseObject: BirthdayInputModal):
+    async def handleBirthdayValidation(self,ctx, modalResponseObject: BirthdayInputModal,*, update:bool, existing_user: DiscordUser = None):
         userConfirmation = False
-        
-        while modalResponseObject.recievedValidBirthdayValue == False:
+        validBirthday = False
+
+        while validBirthday == False:
             if modalResponseObject.recievedValidBirthdayValue:
                 while userConfirmation == False:
-                    confirmation_view: RegisterConfirmationButtons = await self.sendConfirmationMessage(ctx, modalResponseObject.birthdayValue)
+                    confirmation_view: discord.ui.View = await self.sendConfirmationView(ctx, modalResponseObject.birthdayValue, update=update)
                     if confirmation_view.userConfirmation == True:
-                        DiscordUser.create(username=ctx.author.name,
-                            birthday=modalResponseObject.birthdayValue,
-                            discord_id=ctx.author.id,
-                            guild = ctx.guild.id)
-                        userConfirmation = True
+                        if update == False:
+                            DiscordUser.create(username=ctx.author.name,
+                                birthday=modalResponseObject.birthdayValue,
+                                discord_id=ctx.author.id,
+                                guild = ctx.guild.id)
+                            await ctx.send("You have been successfully added to the database!")
+                        else:
+                            existing_user.update('_birthday',modalResponseObject.birthdayValue)
+                            await ctx.send("You have been updated in the database!")
+                        return None
                     elif confirmation_view.userConfirmation == False:
-                        view = await self.sendTryAgainView(ctx, update=False)
-                        modalResponseObject = view.Modal
+                        modalResponseObject = await self.waitForModalView(confirmation_view.Modal)
+                        break
             else:
-                view = await self.sendTryAgainView(ctx=ctx, update=False)
-                modalResponseObject = view.Modal
-
-    
-            
-    
-
-
-
-
-
-
-
-
-
-
+                view = await self.sendTryAgainView(ctx=ctx, update=update)
+                modalResponseObject = await self.waitForModalView(view.Modal)
 
 
 
@@ -114,50 +104,30 @@ class Registration(commands.Cog):
 
 
 
-
-
-
-
-
-
-    async def sendUpdateQuestion(self, ctx, existing_user) -> ExistingUserButtons:
-        existing_user_view = ExistingUserButtons(
+    async def sendUpdateView(self, ctx, existing_user) -> UpdateUserButtons:
+        existing_user_view = UpdateUserButtons(
             author=ctx.author, existing_user=existing_user
             )
         await ctx.send(
             f"You already have a birthday registered - {existing_user.birthday}, would you like to update this information?",
             view=existing_user_view,
         )
-        await existing_user_view.wait()
-        if existing_user_view.userConfirmation:
-            await existing_user_view.Modal.wait()
-            return existing_user_view
+        existing_user_view.timed_out = await existing_user_view.wait()
         return existing_user_view
 
 
-    async def sendConfirmationView(self, ctx, birthday: Birthday) -> RegisterConfirmationButtons:
-        view = RegisterConfirmationButtons(author=ctx.author)
+    async def sendConfirmationView(self, ctx, birthday: Birthday, *, update: bool) -> discord.ui.View:
+        if update:
+            view = UpdateConfirmationButtons(author=ctx.author)
+        else:
+            view = RegisterConfirmationButtons(author=ctx.author)
         embed = discord.Embed(
             title="Confirmation:",
             description="Is this correct? - {}".format(birthday),
             color=discord.Color.red(),
         )
         await ctx.send(embed=embed, view=view)
-        await view.wait()
-        return view
-
-    async def sendUpdateConfirmationMessage(self, ctx, birthday: Birthday) -> UpdateConfirmationButtons:
-        view = UpdateConfirmationButtons(author=ctx.author)
-        embed = discord.Embed(
-            title="Confirmation:",
-            description="Is this correct? - {}".format(birthday),
-            color=discord.Color.red(),
-        )
-        await ctx.send(embed=embed, view=view)
-        await view.wait()
-        if view.userConfirmation:
-            return view
-        await view.Modal.wait()
+        view.timed_out = await view.wait()
         return view
 
 
@@ -172,16 +142,9 @@ class Registration(commands.Cog):
         view.timed_out : bool = await view.wait()
         return view
 
-    async def waitForModalView(modal: BirthdayInputModal) -> BirthdayInputModal:
+    async def waitForModalView(self, modal: BirthdayInputModal) -> BirthdayInputModal:
         modal.timed_out: bool = await modal.wait()
         return modal
-
-    async def getModalFeedback(self, modal: BirthdayInputModal) -> Birthday:
-        if modal.recievedValidBirthdayValue:
-            return modal.birthdayValue
-        else:
-            return None
-
 
 async def setup(bot):
     await bot.add_cog(Registration(bot))

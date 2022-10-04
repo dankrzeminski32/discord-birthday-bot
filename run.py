@@ -12,14 +12,13 @@ from config import (
 intents = discord.Intents.default()
 intents.message_content = True
 
-bot = commands.Bot(command_prefix=".danbday ", intents=intents, help_command=None)
+bot = commands.Bot(command_prefix=".bday ", intents=intents, help_command=None)
 
 mainSeeder = Seeder(PATH_TO_BIRTHDAY_IMGS, PATH_TO_BIRTHDAY_QUOTES)
 
 async def load_extensions():
     extensions = [
         "BirthdayBot.Cogs.Registration",
-        "BirthdayBot.Cogs.UserAgeInfo",
         "BirthdayBot.Cogs.Help",
         "BirthdayBot.Cogs.Events",
     ]
@@ -28,7 +27,7 @@ async def load_extensions():
 
 async def main():
     async with bot:
-        #recreateDB()
+        recreateDB()
         mainSeeder.seedDBIfEmpty()
         await load_extensions()
         await bot.start(DISCORD_BOT_TOKEN)

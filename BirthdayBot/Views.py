@@ -72,7 +72,7 @@ class RegisterUserButton(BaseView):
         open_modal_button = discord.ui.Button(style=discord.ButtonStyle.green,label='Sign Up!')
 
         async def open_modal_button_callback(interaction: discord.Interaction):
-            regModal = BirthdayInputModal("Register User:")
+            regModal = BirthdayInputModal(title="Register User:")
             await interaction.response.send_modal(regModal)
             self.Modal = regModal
             self.stop()
@@ -92,7 +92,7 @@ class RegisterConfirmationButtons(BaseYesOrNoView):
         self.Modal: BirthdayInputModal
 
     async def openRegisterUserModal_callback(self,interaction: discord.Interaction):
-        Modal = BirthdayInputModal("Register:")
+        Modal = BirthdayInputModal(title="Register:")
         await interaction.response.send_modal(Modal)
         self.userConfirmation = False
         self.stop()
@@ -110,11 +110,11 @@ class UpdateUserButtons(BaseYesOrNoView):
         self.Modal: BirthdayInputModal
 
     async def openUpdateUserModal_callback(self,interaction: discord.Interaction):
-        Modal = BirthdayInputModal("Update User:")
+        Modal = BirthdayInputModal(title="Update User:")
         await interaction.response.send_modal(Modal)
         self.userConfirmation = True
-        self.stop()
         self.Modal = Modal
+        self.stop()
 
 
 class UpdateConfirmationButtons(BaseYesOrNoView):
@@ -127,7 +127,7 @@ class UpdateConfirmationButtons(BaseYesOrNoView):
         self.Modal: BirthdayInputModal
 
     async def openUpdateUserModal_callback(self,interaction: discord.Interaction):
-        Modal = BirthdayInputModal("Update User:")
+        Modal = BirthdayInputModal(title="Update User:")
         await interaction.response.send_modal(Modal)
         self.userConfirmation = False
         self.Modal = Modal
@@ -148,7 +148,7 @@ class tryAgainView(BaseView):
         retry_button = discord.ui.Button(style=discord.ButtonStyle.green,label="Try Again!")
 
         async def retry_button_callback(interaction: discord.Interaction):
-            Modal = BirthdayInputModal("Update Birthday:") if self.update else BirthdayInputModal("Register Birthday:")
+            Modal = BirthdayInputModal(title="Update Birthday:") if self.update else BirthdayInputModal(title="Register Birthday:")
             await interaction.response.send_modal(Modal)
             self.userConfirmation = False
             self.Modal = Modal
@@ -161,12 +161,14 @@ class tryAgainView(BaseView):
 
 class BirthdayInputModal(discord.ui.Modal):
     def __init__(self, *, title: str):
-        self.title = title
+        super().__init__(title=title)
         self.birthdayTextInput = discord.ui.TextInput(label='Birthday', placeholder="MM/DD/YYYY", style=discord.TextStyle.short, min_length=10, max_length=10)
         self.on_submit_interaction: discord.Interaction
         self.birthdayValue: Birthday
         self.recievedValidBirthdayValue: bool
         self.timed_out: bool
+        self.custom_id = "BirthdayInputModal"
+        self.add_item(self.birthdayTextInput)
         
     async def on_submit(self, interaction: discord.Interaction):
         try:
