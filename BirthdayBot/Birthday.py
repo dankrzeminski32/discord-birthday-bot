@@ -33,6 +33,16 @@ class Birthday(datetime):
         date2: datetime.datetime = datetime(today.year + 1, int(self.month), int(self.day))
         days: datetime.timedelta = ((date1 if date1 > today else date2) - today).days
         return days
+
+    def getAge(self) -> int:
+        month = self.month
+        year = self.year
+        day = self.day
+        today = datetime.now()
+
+        age = today.year - year - ((today.month, today.day) < (month, day))
+        return age
+
             
     def __repr__(self):
         return "<Birthday(day='{}', month='{}', year='{}')>".format(self.day, self.month,self.year)

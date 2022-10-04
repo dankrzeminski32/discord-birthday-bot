@@ -89,7 +89,7 @@ class RegistrationOpenModalButton(BaseView):
 
 
 class RegistrationModal(discord.ui.Modal, title="Registration Modal"):
-    birthdayInput = discord.ui.TextInput(label='Birthday', placeholder="MM/DD/YYY", style=discord.TextStyle.short, min_length=8, max_length=10)
+    birthdayInput = discord.ui.TextInput(label='Birthday', placeholder="MM/DD/YYYY", style=discord.TextStyle.short, min_length=8, max_length=10)
     updatedBirthday: Birthday = None
     on_submit_interaction: discord.Interaction
     
@@ -121,8 +121,8 @@ class ExistingUserButtons(BaseYesOrNoView):
         self.stop()
         self.Modal = Modal
 
-class UpdateUserModal(discord.ui.Modal, title="Registration Modal"):
-    birthdayInput = discord.ui.TextInput(label='Birthday', placeholder="MM/DD/YYY", style=discord.TextStyle.short, min_length=8, max_length=10)
+class UpdateUserModal(discord.ui.Modal, title="Update User:"):
+    birthdayInput = discord.ui.TextInput(label='Birthday', placeholder="MM/DD/YYYY", style=discord.TextStyle.short, min_length=8, max_length=10)
     updatedBirthday: Birthday = None
     on_submit_interaction: discord.Interaction
 

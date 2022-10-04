@@ -39,6 +39,7 @@ class Registration(commands.Cog):
                     discord_id=ctx.author.id,
                     guild = ctx.guild.id
                 )
+                await ctx.send("You have been successfully added to our database")
                 logger.info(
                     "NEW USER REGISTERED: Author: {} Birthday: {} Discord ID: {}".format(
                     ctx.author, input_birthday, ctx.author.id
@@ -91,7 +92,7 @@ class Registration(commands.Cog):
     async def sendInvalidRetry(self, ctx, update: bool):
         try_again_view = tryAgainView(author = ctx.author, update=update)
         await ctx.send(
-            f"Invalid Date Format, please try again. (MM/DD/YYYY)",
+            f"Invalid Date Format, please try again. (mm/dd/yyyy)",
             view=try_again_view,
         )
         await try_again_view.wait()
