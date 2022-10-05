@@ -29,9 +29,15 @@ class BaseYesOrNoView(BaseView):
         }
         self.responseMessages: dict[str, str]
         self.userConfirmation: bool = None
-        self.invalidInteractionCheckMsg: str = "You don't have permission to press this button."
-        self.YES_BUTTON_ID: str = "yesConfirmationButton"  # used to overwrite callback in subclasses
-        self.NO_BUTTON_ID: str = "noConfirmationButton"  # used to overwrite callback in subclasses
+        self.invalidInteractionCheckMsg: str = (
+            "You don't have permission to press this button."
+        )
+        self.YES_BUTTON_ID: str = (
+            "yesConfirmationButton"  # used to overwrite callback in subclasses
+        )
+        self.NO_BUTTON_ID: str = (
+            "noConfirmationButton"  # used to overwrite callback in subclasses
+        )
         self.addButtons()
 
     def addButtons(self):

@@ -85,8 +85,10 @@ class Registration(commands.Cog):
         while validBirthday == False:
             if modalResponseObject.recievedValidBirthdayValue:
                 while userConfirmation == False:
-                    confirmation_view: discord.ui.View = await self.sendConfirmationView(
-                        ctx, modalResponseObject.birthdayValue, update=update
+                    confirmation_view: discord.ui.View = (
+                        await self.sendConfirmationView(
+                            ctx, modalResponseObject.birthdayValue, update=update
+                        )
                     )
                     if confirmation_view.userConfirmation == True:
                         if update == False:
@@ -124,9 +126,7 @@ class Registration(commands.Cog):
         try_again_view = tryAgainView(author=ctx.author, update=update)
         await ctx.send(f"{preceding_message}", view=try_again_view)
         try_again_view.timed_out: bool = await try_again_view.wait()
-        return (
-            try_again_view
-        )  # then doing try_again_view.modal will give you either RegisterModal or UpdateUserModal depending on update: bool
+        return try_again_view  # then doing try_again_view.modal will give you either RegisterModal or UpdateUserModal depending on update: bool
 
     async def sendUpdateView(self, ctx, existing_user) -> UpdateUserButtons:
         existing_user_view = UpdateUserButtons(
