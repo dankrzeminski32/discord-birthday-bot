@@ -1,28 +1,80 @@
-from xmlrpc.client import Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Date, BigInteger, Boolean
+from sqlalchemy.ext.hybrid import hybrid_property
+from BirthdayBot.Birthday import Birthday
+from BirthdayBot.Utils import session_scope
+from sqlalchemy.ext.declarative import declared_attr
 
 
-Base = declarative_base()
+class Base:
+    @declared_attr
+    def __tablename__(cls):
+        return cls.__name__  # .lower()
+
+    @classmethod
+    def create(cls, **kw) -> None:
+        with session_scope() as session:
+            obj = cls(**kw)
+            session.add(obj)
+
+    @classmethod
+    def get(cls, **kwargs) -> object:
+        with session_scope() as session:
+            obj = session.query(cls).filter_by(**kwargs).scalar()
+            session.expunge_all()
+            return obj
+
+    @classmethod
+    def getAll(cls, **kwargs) -> list:
+        with session_scope() as session:
+            obj: list = session.query(cls).filter_by(**kwargs).all()
+            session.expunge_all()
+            return obj
+
+    id = Column(Integer, primary_key=True)
+
+
+Base = declarative_base(cls=Base)
 
 
 class DiscordUser(Base):
-    __tablename__ = "DiscordUser"
-    id = Column(Integer, primary_key=True)
     username = Column(String)
-    Birthday = Column(Date)
-    discord_ID = Column(String)
+    _birthday = Column("birthday", Date)
+    discord_id = Column(BigInteger)
     guild = Column(BigInteger)
 
+    def __init__(self, username: str, birthday: Birthday, discord_id: int, guild: int):
+        self.username = username
+        self._birthday = birthday
+        self.discord_id = discord_id
+        self.guild = guild
+
     def __repr__(self):
-        return "<DiscordUser(id='{}', username='{}', birthday={}, guild={})>".format(
-            self.id, self.username, self.Birthday, self.guild
+        return "<DiscordUser(id='{}', username='{}', birthday={}, discord_id={}, guild={})>".format(
+            self.id, self.username, self.birthday, self.discord_id, self.guild
         )
+
+    @hybrid_property
+    def birthday(self) -> Birthday:
+        birthday: Birthday = Birthday(self._birthday)
+        return birthday
+
+    @birthday.setter
+    def birthday(self, birthday: Birthday):
+        self._birthday = birthday
+
+    def update(self, field, new_value):
+        with session_scope() as session:
+            self.__setattr__(field, new_value)
+            session.add(self)
+
+    @staticmethod
+    def does_user_exist(discord_id: int) -> bool:
+        user = DiscordUser.get(discord_id=discord_id)
+        return False if user is None else True
 
 
 class BirthdayMessages(Base):
-    __tablename__ = "RandomMessages"
-    id = Column(Integer, primary_key=True)
     bdayMessage = Column(String)
     author = Column(String)
 
@@ -33,8 +85,6 @@ class BirthdayMessages(Base):
 
 
 class BirthdayImages(Base):
-    __tablename__ = "BirthdayImages"
-    id = Column(Integer, primary_key=True)
     bdayImage = Column(String)
 
     def __repr__(self):
@@ -42,15 +92,13 @@ class BirthdayImages(Base):
 
 
 class IssueReports(Base):
-    __tablename__ = "IssueReports"
-    id = Column(Integer, primary_key=True)
     dateCreated = Column(Date)
     issues = Column(String)
     guild = Column(BigInteger)
     is_resolved = Column(Boolean)
 
     def __repr__(self):
-        return "<IssueImages(id='{}', dateCreated={}, issues={}, guild={}, is_resolved = '{}')>".format(
+        return "<IssueReports(id='{}', dateCreated={}, issues={}, guild={}, is_resolved = '{}')>".format(
             self.id, self.dateCreated, self.issues, self.guild, self.is_resolved
         )
 

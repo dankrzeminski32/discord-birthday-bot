@@ -13,6 +13,7 @@ from sqlalchemy import extract
 from BirthdayBot.Models import DiscordUser
 from BirthdayBot.Models import BirthdayImages
 from BirthdayBot.Models import BirthdayMessages
+from BirthdayBot.Birthday import Birthday
 
 
 class BirthdayChecker(object):
@@ -21,29 +22,13 @@ class BirthdayChecker(object):
     def __init__(self, bot):
         self.bot = bot
 
-    @classmethod
-    def getAllBirthdays(cls, guild) -> list:
-        with session_scope() as session:
-            all_birthdays = (
-                session.query(DiscordUser)
-                .filter(
-                    extract("month", DiscordUser.Birthday) == datetime.today().month,
-                    extract("day", DiscordUser.Birthday) == datetime.today().day,
-                    DiscordUser.guild == guild.id,
-                )
-                .all()
-            )
-            session.expunge_all()
-
-        return all_birthdays
-
     async def sendBirthdayMessages(self, todays_birthdays: list, channel) -> None:
-
+        todays_birthdays = DiscordUser.getAll(_birthday=Birthday(datetime.today()))
         for birthday in todays_birthdays:
             random_msg_details = self.generateRandomMessage()
             embed = discord.Embed(
                 title="Happy Birthday!",
-                description=f"<@{birthday.discord_ID}>",
+                description=f"<@{birthday.discord_id}>",
                 color=discord.Color.red(),
             )
             embed.add_field(
@@ -85,12 +70,11 @@ class BirthdayCommands(commands.Cog):
         self.bot = bot
 
     @commands.hybrid_command(
-        name="today",
-        description="Displays everyoen with birthdays for the day.",
+        name="today", description="Displays everyoen with birthdays for the day."
     )
     async def today(self, ctx):
         guildId = ctx.message.guild
-        todayBdays = BirthdayChecker.getAllBirthdays(guildId)
+        todayBdays = DiscordUser.getAll(guild=guildId)
         month = datetime.today().month
         day = datetime.today().day
         numBdays = 1
@@ -115,15 +99,13 @@ class BirthdayCommands(commands.Cog):
             await ctx.send(embed=embed2)
 
     @commands.hybrid_command(
-        name="tomorrow",
-        description="Displays users birthdays for tomorrow.",
+        name="tomorrow", description="Displays users birthdays for tomorrow."
     )
     async def tomorrow(self, ctx):
         await ctx.send("coming soon...")
 
     @commands.hybrid_command(
-        name="thismonth",
-        description="Displays users birthdays for the month.",
+        name="thismonth", description="Displays users birthdays for the month."
     )
     async def thismonth(self, ctx):
         await ctx.send("coming soon...")
