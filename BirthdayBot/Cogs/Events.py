@@ -17,7 +17,7 @@ class Events(commands.Cog):
         new_channel = await guild.create_text_channel("birthdays")
         channel = guild.get_channel(new_channel.id)
         await channel.send(
-            f"Hello {guild.name}! I am BirthdayBot. Thank you for inviting me.\n\n" # TODO - MAKE THIS A NICE EMBED 
+            f"Hello {guild.name}! I am BirthdayBot. Thank you for inviting me.\n\n"  # TODO - MAKE THIS A NICE EMBED
         )
         logger.info(f"Bot successfully joined {guild.name} and sent a join message!")
 
@@ -56,6 +56,7 @@ class Events(commands.Cog):
     #     if now.hour >= hour and now.minute > minute:
     #         future += timedelta(days=1)
     #     await asyncio.sleep((future - now).seconds)
+
 
 async def setup(bot):
     await bot.add_cog(Events(bot))

@@ -5,31 +5,33 @@ from BirthdayBot.Birthday import Birthday
 from BirthdayBot.Utils import session_scope
 from sqlalchemy.ext.declarative import declared_attr
 
+
 class Base:
     @declared_attr
     def __tablename__(cls):
-        return cls.__name__ #.lower()
+        return cls.__name__  # .lower()
+
     @classmethod
     def create(cls, **kw) -> None:
-        with session_scope() as session:      
+        with session_scope() as session:
             obj = cls(**kw)
             session.add(obj)
+
     @classmethod
     def get(cls, **kwargs) -> object:
-        with session_scope() as session:      
+        with session_scope() as session:
             obj = session.query(cls).filter_by(**kwargs).scalar()
             session.expunge_all()
-            return obj  
+            return obj
 
     @classmethod
     def getAll(cls, **kwargs) -> list:
-        with session_scope() as session:      
+        with session_scope() as session:
             obj: list = session.query(cls).filter_by(**kwargs).all()
             session.expunge_all()
-            return obj   
+            return obj
 
-
-    id =  Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True)
 
 
 Base = declarative_base(cls=Base)
@@ -37,11 +39,11 @@ Base = declarative_base(cls=Base)
 
 class DiscordUser(Base):
     username = Column(String)
-    _birthday = Column('birthday',Date)
+    _birthday = Column("birthday", Date)
     discord_id = Column(BigInteger)
     guild = Column(BigInteger)
-    
-    def __init__(self,username: str,birthday: Birthday, discord_id: int,guild: int ):
+
+    def __init__(self, username: str, birthday: Birthday, discord_id: int, guild: int):
         self.username = username
         self._birthday = birthday
         self.discord_id = discord_id
@@ -51,26 +53,27 @@ class DiscordUser(Base):
         return "<DiscordUser(id='{}', username='{}', birthday={}, discord_id={}, guild={})>".format(
             self.id, self.username, self.birthday, self.discord_id, self.guild
         )
-            
+
     @hybrid_property
     def birthday(self) -> Birthday:
-        birthday: Birthday = Birthday(self._birthday) 
+        birthday: Birthday = Birthday(self._birthday)
         return birthday
-    
+
     @birthday.setter
     def birthday(self, birthday: Birthday):
         self._birthday = birthday
-        
+
     def update(self, field, new_value):
         with session_scope() as session:
-            self.__setattr__(field,new_value)
+            self.__setattr__(field, new_value)
             session.add(self)
 
     @staticmethod
     def does_user_exist(discord_id: int) -> bool:
         user = DiscordUser.get(discord_id=discord_id)
         return False if user is None else True
-    
+
+
 class BirthdayMessages(Base):
     bdayMessage = Column(String)
     author = Column(String)

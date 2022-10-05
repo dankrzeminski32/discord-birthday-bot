@@ -70,8 +70,7 @@ class BirthdayCommands(commands.Cog):
         self.bot = bot
 
     @commands.hybrid_command(
-        name="today",
-        description="Displays everyoen with birthdays for the day.",
+        name="today", description="Displays everyoen with birthdays for the day."
     )
     async def today(self, ctx):
         guildId = ctx.message.guild
@@ -100,15 +99,13 @@ class BirthdayCommands(commands.Cog):
             await ctx.send(embed=embed2)
 
     @commands.hybrid_command(
-        name="tomorrow",
-        description="Displays users birthdays for tomorrow.",
+        name="tomorrow", description="Displays users birthdays for tomorrow."
     )
     async def tomorrow(self, ctx):
         await ctx.send("coming soon...")
 
     @commands.hybrid_command(
-        name="thismonth",
-        description="Displays users birthdays for the month.",
+        name="thismonth", description="Displays users birthdays for the month."
     )
     async def thismonth(self, ctx):
         await ctx.send("coming soon...")

@@ -39,5 +39,6 @@ def session_scope():
 
 def recreateDB():
     from BirthdayBot.Models import Base
+
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)

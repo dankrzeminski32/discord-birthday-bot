@@ -15,8 +15,7 @@ class Help(commands.Cog):
     """---- COMMANDS ----"""
 
     @commands.hybrid_command(
-        name="help",
-        description="Shows all the usable commands for BirthdayBot.",
+        name="help", description="Shows all the usable commands for BirthdayBot."
     )
     async def help(self, context: Context) -> None:
         prefix = self.bot.command_prefix
@@ -99,10 +98,7 @@ class Help(commands.Cog):
         embed.set_footer(text=f"Created at: {context.guild.created_at}")
         await context.send(embed=embed)
 
-    @commands.hybrid_command(
-        name="ping",
-        description="Check if the bot is alive.",
-    )
+    @commands.hybrid_command(name="ping", description="Check if the bot is alive.")
     async def ping(self, context: Context) -> None:
         """
         Check if the bot is alive.
