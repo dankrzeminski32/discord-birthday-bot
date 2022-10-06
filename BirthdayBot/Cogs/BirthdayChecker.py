@@ -17,7 +17,6 @@ class BirthdayChecker(object):
         self.bot = bot
 
     async def sendBirthdayMessages(self, todays_birthdays: list, channel) -> None:
-        todays_birthdays = DiscordUser.getAll(_birthday=Birthday(datetime.today()))
         for birthday in todays_birthdays:
             random_msg_details = self.generateRandomMessage()
             embed = discord.Embed(

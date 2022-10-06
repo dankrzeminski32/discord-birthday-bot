@@ -1,6 +1,6 @@
 from requests import Session
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Date, BigInteger, Boolean, func
+from sqlalchemy import Column, Integer, String, Date, BigInteger, Boolean, func, extract
 from sqlalchemy.ext.hybrid import hybrid_property, Comparator
 from BirthdayBot.Birthday import Birthday
 from BirthdayBot.Utils import session_scope
@@ -62,9 +62,9 @@ class DiscordUser(Base):
 
 
     @classmethod
-    def updateBirthday(cls, user_discord_id: int, new_birthday: Birthday):
-        """
-        DiscordUser.updateBirthday(594389042930384907, Birthday.fromUserInput("01/29/1678"))
+    def updateBirthday(cls, user_discord_id: int, new_birthday: Birthday) -> None:
+        """ Used to update a users birthday
+        Usage: DiscordUser.updateBirthday(594389042930384907, Birthday.fromUserInput("01/29/1678"))
 
         Args:
             user_discord_id (int): Unique discord id for each user
@@ -76,13 +76,35 @@ class DiscordUser(Base):
             })
 
     @staticmethod
-    def getAllBirthdays() -> list:
+    def getAllBirthdays(guildid) -> list:
+        """Grab all DiscordUsers with a birthday matching today's date
+
+        Args:
+            guildid (_type_): guild that user is associated with 
+
+        Returns:
+            list: all users found matching date and guild criteria
+        """
         with session_scope() as session:
-            todays_bdays = DiscordUser.get(_birthday=Birthday(datetime.today()))
-            return todays_bdays
+            all_birthdays = session.query(DiscordUser).filter(
+                extract('month', DiscordUser._birthday) == datetime.today().month,
+                extract('day', DiscordUser._birthday) == datetime.today().day,
+                DiscordUser.guild == guildid
+                ).all()
+            session.expunge_all()
+            return all_birthdays
+
 
     @staticmethod
     def does_user_exist(discord_id: int) -> bool:
+        """Checks if user exists in the database
+
+        Args:
+            discord_id (int): unique id of the user in question
+
+        Returns:
+            bool: True if the user does exists, false if he does not 
+        """
         user = DiscordUser.get(discord_id=discord_id)
         return False if user is None else True
 
