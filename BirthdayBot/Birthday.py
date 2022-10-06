@@ -45,6 +45,9 @@ class Birthday(datetime):
         age = today.year - year - ((today.month, today.day) < (month, day))
         return age
 
+    def __eq__(self, datetime: datetime):
+        return self.month == datetime.month and self.day == datetime.day
+
     def __repr__(self):
         return "<Birthday(day='{}', month='{}', year='{}')>".format(
             self.day, self.month, self.year

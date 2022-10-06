@@ -1,15 +1,9 @@
-from asyncio.windows_events import NULL
-import csv
-from email import message
-from types import NoneType
 import discord
 import random
 from discord.ext import commands
 from datetime import datetime
 from datetime import date
-from BirthdayBot.Cogs.UserAgeInfo import UserAgeInfo
 from BirthdayBot.Utils import session_scope, logger
-from sqlalchemy import extract
 from BirthdayBot.Models import DiscordUser
 from BirthdayBot.Models import BirthdayImages
 from BirthdayBot.Models import BirthdayMessages
@@ -74,7 +68,7 @@ class BirthdayCommands(commands.Cog):
     )
     async def today(self, ctx):
         guildId = ctx.message.guild
-        todayBdays = DiscordUser.getAll(guild=guildId)
+        todayBdays = DiscordUser.getAllBirthdays(guild=guildId)
         month = datetime.today().month
         day = datetime.today().day
         numBdays = 1
@@ -85,7 +79,7 @@ class BirthdayCommands(commands.Cog):
         )
         await ctx.send(embed=embed)
         for birthdays in todayBdays:
-            userAge = UserAgeInfo.getUserAge(birthdays.Birthday)
+            userAge = birthdays.birthday.getAge()
             user = await ctx.guild.query_members(user_ids=[int(birthdays.discord_ID)])
             user = user[0]
             embed2 = discord.Embed(
