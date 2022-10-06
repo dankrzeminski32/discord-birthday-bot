@@ -3,7 +3,6 @@ from contextlib import contextmanager
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from config import DATABASE_URI
-from BirthdayBot.Models import Base
 import logging
 from logging import FileHandler
 
@@ -25,12 +24,6 @@ engine = create_engine(DATABASE_URI)
 Session = sessionmaker(bind=engine)
 
 
-def recreateDB():
-    Base.metadata.drop_all(engine)
-    Base.metadata.create_all(engine)
-    # print(Base.metadata.__dict__)
-
-
 @contextmanager
 def session_scope():
     session = Session()
@@ -42,3 +35,10 @@ def session_scope():
         raise
     finally:
         session.close()
+
+
+def recreateDB():
+    from BirthdayBot.Models import Base
+
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
