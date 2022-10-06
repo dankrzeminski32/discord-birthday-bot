@@ -21,7 +21,7 @@ class BirthdayChecker(object):
 
     def __init__(self, bot):
         self.bot = bot
-        
+
     @classmethod
     def getAllBirthdays(cls, guild) -> list:
         with session_scope() as session:
@@ -119,6 +119,7 @@ class BirthdayChecker(object):
             session.expunge_all()
 
         return all_birthdays
+
     async def sendBirthdayMessages(self, todays_birthdays: list, channel) -> None:
         todays_birthdays = DiscordUser.getAll(_birthday=Birthday(datetime.today()))
         for birthday in todays_birthdays:

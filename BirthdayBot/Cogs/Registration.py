@@ -15,6 +15,7 @@ from BirthdayBot.Views import (
 )
 from BirthdayBot.Birthday import Birthday
 
+
 class Registration(commands.Cog):
     """Class Dedicated to housing all commands related to registration"""
 
