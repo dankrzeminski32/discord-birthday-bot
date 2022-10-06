@@ -79,7 +79,7 @@ git push
 
 Daniel Krzeminski - dankrzeminski32@gmail.com
 
-Ethan Kvachkoff
+Ethan Kvachkoff - ethankvachkoff1@gmail.com
 
 ## Version History
 
