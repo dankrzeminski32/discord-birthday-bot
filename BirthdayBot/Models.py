@@ -138,7 +138,7 @@ class CommandCounter(Base):
     monthceleb = Column(Integer)
 
     def __repr__(self):
-        return "<CelebrityBirthdays(id='{}', register='{}', age = '{}', help = '{}', botinfo = '{}', serverinfo = '{}', ping = '{}', invite = '{}', server = '{}', report = '{}', today = '{}', todayceleb = '{}', tomorrow = '{}', tomorrowceleb = '{}', month = '{}', monthceleb = '{}')>".format(
+        return "<CommandCounter(id='{}', register='{}', age = '{}', help = '{}', botinfo = '{}', serverinfo = '{}', ping = '{}', invite = '{}', server = '{}', report = '{}', today = '{}', todayceleb = '{}', tomorrow = '{}', tomorrowceleb = '{}', month = '{}', monthceleb = '{}')>".format(
             self.id,
             self.register,
             self.age,
