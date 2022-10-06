@@ -32,7 +32,7 @@ async def load_extensions():
 
 async def main():
     async with bot:
-        recreateDB()
+        # recreateDB()
         mainSeeder.seedDBIfEmpty()
         # ScrapeIt()
         await load_extensions()
