@@ -7,7 +7,6 @@ import random
 from discord.ext import commands
 from datetime import datetime
 from datetime import date
-from BirthdayBot.Cogs.UserAgeInfo import UserAgeInfo
 from BirthdayBot.Utils import session_scope, logger
 from sqlalchemy import extract
 from BirthdayBot.Models import DiscordUser
@@ -23,7 +22,6 @@ class BirthdayChecker(object):
         self.bot = bot
 
     async def sendBirthdayMessages(self, todays_birthdays: list, channel) -> None:
-        todays_birthdays = DiscordUser.getAll(_birthday=Birthday(datetime.today()))
         for birthday in todays_birthdays:
             random_msg_details = self.generateRandomMessage()
             embed = discord.Embed(
@@ -54,6 +52,12 @@ class BirthdayChecker(object):
             birthdayMessage = random.choice(session.query(BirthdayMessages).all())
             birthdayImage = random.choice(session.query(BirthdayImages).all())
 
+            testImage = BirthdayChecker.validateImage(birthdayImage)
+            if testImage == False:
+                while testImage == False:
+                    birthdayImage = random.choice(session.query(BirthdayImages).all())
+                    BirthdayChecker.validateImage(birthdayImage)
+
             bdayMessage = {
                 "message": birthdayMessage.bdayMessage,
                 "author": birthdayMessage.author,
@@ -63,6 +67,29 @@ class BirthdayChecker(object):
             }
 
             return bdayMessage
+
+    def validateImage(image: str):
+        if image == NoneType:
+            with session_scope() as session:
+                session.query.filter(session.bdayImage == image).delete()
+            return False
+        else:
+            return True
+
+    @classmethod
+    def getAllBirthdays(cls, guild) -> list:
+        with session_scope() as session:
+            all_birthdays = (
+                session.query(DiscordUser)
+                .filter(
+                    extract("month", DiscordUser._birthday) == datetime.today().month,
+                    extract("day", DiscordUser._birthday) == datetime.today().day,
+                    DiscordUser.guild == guild.id,
+                )
+                .all()
+            )
+            session.expunge_all()
+        return all_birthdays
 
 
 class BirthdayCommands(commands.Cog):
@@ -85,7 +112,7 @@ class BirthdayCommands(commands.Cog):
         )
         await ctx.send(embed=embed)
         for birthdays in todayBdays:
-            userAge = UserAgeInfo.getUserAge(birthdays.Birthday)
+            userAge = birthdays.birthday.getAge()
             user = await ctx.guild.query_members(user_ids=[int(birthdays.discord_ID)])
             user = user[0]
             embed2 = discord.Embed(
