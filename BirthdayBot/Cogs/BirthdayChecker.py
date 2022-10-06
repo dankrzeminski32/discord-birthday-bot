@@ -1,5 +1,6 @@
 from asyncio.windows_events import NULL
 import csv
+import requests
 from email import message
 from types import NoneType
 import discord
@@ -55,8 +56,12 @@ class BirthdayChecker(object):
             testImage = BirthdayChecker.validateImage(birthdayImage)
             if testImage == False:
                 while testImage == False:
+                    session.query(BirthdayImages).filter(
+                        BirthdayImages.bdayImage == birthdayImage.bdayImage
+                    ).delete()
+                    session.commit()
                     birthdayImage = random.choice(session.query(BirthdayImages).all())
-                    BirthdayChecker.validateImage(birthdayImage)
+                    testImage = BirthdayChecker.validateImage(birthdayImage)
 
             bdayMessage = {
                 "message": birthdayMessage.bdayMessage,
@@ -69,12 +74,14 @@ class BirthdayChecker(object):
             return bdayMessage
 
     def validateImage(image: str):
-        if image == NoneType:
-            with session_scope() as session:
-                session.query.filter(session.bdayImage == image).delete()
-            return False
-        else:
+        """Check if resource exist?"""
+        if not image:
+            raise ValueError("url is required")
+        try:
+            resp = requests.head(image.bdayImage)
             return True
+        except Exception as e:
+            return False
 
     @classmethod
     def getAllBirthdays(cls, guild) -> list:
