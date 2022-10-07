@@ -4,10 +4,8 @@ from BirthdayBot.Utils import session_scope, logger
 
 
 class Seeder(object):
-    def __init__(self, bdayImages_path: str, bdayQuotes_path: str):
-        self.bdayImagePath = bdayImages_path
+    def __init__(self, bdayQuotes_path: str):
         self.bdayQuotesPath = bdayQuotes_path
-        self.bdayImagesFile = open(self.bdayImagePath, "r")
         self.bdayQuotesFile = open(self.bdayQuotesPath, "r")
 
     def seedDBIfEmpty(self) -> None:
@@ -26,24 +24,6 @@ class Seeder(object):
                     logger.info("Birthday Quotes table is filled")
         except Exception as e:
             logger.error("Database Seeding Issue, %s" % e)
-
-    def imageSeed(self) -> None:
-        file1 = self.bdayImagesFile
-        Lines = file1.readlines()
-
-        try:
-            with session_scope() as s:
-                total_images_added = 0
-                for line in Lines:
-                    imageUrl = BirthdayImages(bdayImage=line)
-                    s.add(imageUrl)
-                    total_images_added += 1
-                logger.info(
-                    "Images seeder has ran successfully. %s Images added"
-                    % total_images_added
-                )
-        except Exception as e:
-            logger.error("Image Logger has failed, %s" % e)
 
     def quoteSeed(self) -> None:
         file2 = self.bdayQuotesFile
