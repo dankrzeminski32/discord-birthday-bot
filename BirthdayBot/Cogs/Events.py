@@ -25,13 +25,13 @@ class Events(commands.Cog):
     async def on_ready(self):
         logger.info(f"We have logged in as {self.bot.user}")
 
-    @tasks.loop(seconds=30)  # change back to 24 hours
+    @tasks.loop(seconds=320)
     async def birthdayAnnouncements(self):
         await self.bot.wait_until_ready()
         bdaychecker = BirthdayChecker(self.bot)
         channel = None
         for guild in self.bot.guilds:
-            bdays = BirthdayChecker.getAllBirthdays(guild)
+            bdays = BirthdayChecker.getAllBirthdays(guildid=guild.id)
             for channel in guild.text_channels:
                 if channel.name == "birthdays":
                     bday_channel = channel.id

@@ -1,19 +1,16 @@
-from asyncio.windows_events import NULL
-import csv
-import requests
-from email import message
-from types import NoneType
 import discord
 import random
 from discord.ext import commands
 from datetime import datetime, timedelta
 from datetime import date
 from BirthdayBot.Utils import session_scope, logger
-from sqlalchemy import extract
 from BirthdayBot.Models import CelebrityBirthdays, CommandCounter, DiscordUser
 from BirthdayBot.Models import BirthdayImages
 from BirthdayBot.Models import BirthdayMessages
 from BirthdayBot.Birthday import Birthday
+from BirthdayBot.Models import CelebrityBirthdays
+from sqlalchemy import extract
+import requests
 
 
 class BirthdayChecker(object):
@@ -22,102 +19,69 @@ class BirthdayChecker(object):
     def __init__(self, bot):
         self.bot = bot
 
-    @classmethod
-    def getAllBirthdays(cls, guild) -> list:
+    @staticmethod
+    def getAllBirthdays(
+        *,
+        guildid: int = None,
+        date: datetime = datetime.today(),
+        checks_only_month: bool = False,
+        celeb: bool = False,
+    ) -> list:
+        """
+        Gets all birthdays on the date specified
+
+
+        Args:
+            guildid (int): guildid of birthdays you wish to search for in
+            date (datetime, optional): date you wish to get birthdays matched to. Defaults to datetime.today().
+            checks_only_month (bool, optional): If true, disregards the day of your date paramater,returning users with bdays in a given month. Defaults to False.
+
+        Returns:
+            list: All birthdays
+        """
         with session_scope() as session:
-            all_birthdays = (
-                session.query(DiscordUser)
-                .filter(
-                    extract("month", DiscordUser.Birthday) == datetime.today().month,
-                    extract("day", DiscordUser.Birthday) == datetime.today().day,
-                    DiscordUser.guild == guild.id,
-                )
-                .all()
-            )
+            if celeb is False:
+                if checks_only_month is False:
+                    all_birthdays = (
+                        session.query(DiscordUser)
+                        .filter(
+                            extract("month", DiscordUser._birthday) == date.month,
+                            extract("day", DiscordUser._birthday) == date.day,
+                            DiscordUser.guild == guildid,
+                        )
+                        .all()
+                    )
+                else:
+                    all_birthdays = (
+                        session.query(DiscordUser)
+                        .filter(
+                            extract("month", DiscordUser._birthday) == date.month,
+                            DiscordUser.guild == guildid,
+                        )
+                        .all()
+                    )
+            else:
+                if checks_only_month is False:
+                    all_birthdays = (
+                        session.query(CelebrityBirthdays)
+                        .filter(
+                            extract("month", CelebrityBirthdays._celebBirthdate)
+                            == date.month,
+                            extract("day", CelebrityBirthdays._celebBirthdate)
+                            == date.day,
+                        )
+                        .all()
+                    )
+                else:
+                    all_birthdays = (
+                        session.query(CelebrityBirthdays)
+                        .filter(
+                            extract("month", CelebrityBirthdays._celebBirthdate)
+                            == date.month,
+                        )
+                        .all()
+                    )
             session.expunge_all()
-
-        return all_birthdays
-
-    @classmethod
-    def getAllFutureBirthdays(cls, guild) -> list:
-        tomorrowDate = datetime.now() + timedelta(days=1)
-        with session_scope() as session:
-            all_birthdays = (
-                session.query(DiscordUser)
-                .filter(
-                    extract("month", DiscordUser.Birthday) == tomorrowDate.month,
-                    extract("day", DiscordUser.Birthday) == tomorrowDate.day,
-                    DiscordUser.guild == guild.id,
-                )
-                .all()
-            )
-            session.expunge_all()
-
-        return all_birthdays
-
-    @classmethod
-    def getAllMonthBirthdays(cls, guild) -> list:
-        with session_scope() as session:
-            all_birthdays = (
-                session.query(DiscordUser)
-                .filter(
-                    extract("month", DiscordUser.Birthday) == datetime.today().month,
-                    DiscordUser.guild == guild.id,
-                )
-                .all()
-            )
-            session.expunge_all()
-
-        return all_birthdays
-
-    @classmethod
-    def getAllCelebBirthdays(cls) -> list:
-        with session_scope() as session:
-            all_birthdays = (
-                session.query(CelebrityBirthdays)
-                .filter(
-                    extract("month", CelebrityBirthdays.celebBirthdate)
-                    == datetime.today().month,
-                    extract("day", CelebrityBirthdays.celebBirthdate)
-                    == datetime.today().day,
-                )
-                .all()
-            )
-            session.expunge_all()
-
-        return all_birthdays
-
-    @classmethod
-    def getFutureCelebBirthdays(cls) -> list:
-        tomorrowDate = datetime.now() + timedelta(days=1)
-        with session_scope() as session:
-            all_birthdays = (
-                session.query(CelebrityBirthdays)
-                .filter(
-                    extract("month", CelebrityBirthdays.celebBirthdate)
-                    == tomorrowDate.month,
-                    extract("day", CelebrityBirthdays.celebBirthdate)
-                    == tomorrowDate.day,
-                )
-                .all()
-            )
-            session.expunge_all()
-
-        return all_birthdays
-
-    @classmethod
-    def getCelebMonthBirthdays(cls) -> list:
-        with session_scope() as session:
-            all_birthdays = (
-                session.query(CelebrityBirthdays)
-                .filter(
-                    extract("month", CelebrityBirthdays.celebBirthdate)
-                    == datetime.today().month,
-                )
-                .all()
-            )
-            session.expunge_all()
-
         return all_birthdays
 
     async def sendBirthdayMessages(self, todays_birthdays: list, channel) -> None:
@@ -177,24 +141,9 @@ class BirthdayChecker(object):
             raise ValueError("url is required")
         try:
             resp = requests.head(image.bdayImage)
-            return True
+            return True  # TODO - Are we logging failures?
         except Exception as e:
             return False
-
-    @classmethod
-    def getAllBirthdays(cls, guild) -> list:
-        with session_scope() as session:
-            all_birthdays = (
-                session.query(DiscordUser)
-                .filter(
-                    extract("month", DiscordUser._birthday) == datetime.today().month,
-                    extract("day", DiscordUser._birthday) == datetime.today().day,
-                    DiscordUser.guild == guild.id,
-                )
-                .all()
-            )
-            session.expunge_all()
-        return all_birthdays
 
 
 class BirthdayCommands(commands.Cog):
@@ -206,8 +155,7 @@ class BirthdayCommands(commands.Cog):
         description="Displays everyone with birthdays for the day.",
     )
     async def today(self, ctx):
-        guildId = ctx.message.guild.id
-        todayBdays = DiscordUser.getAll(guild=guildId)
+        todayBdays = BirthdayChecker.getAllBirthdays(guildid=ctx.message.guild.id)
         month = datetime.today().month
         day = datetime.today().day
         numBdays = 1
@@ -219,7 +167,7 @@ class BirthdayCommands(commands.Cog):
         await ctx.send(embed=embed)
         for birthdays in todayBdays:
             userAge = birthdays.birthday.getAge()
-            user = await ctx.guild.query_members(user_ids=[int(birthdays.discord_ID)])
+            user = await ctx.guild.query_members(user_ids=[int(birthdays.discord_id)])
             user = user[0]
             embed2 = discord.Embed(
                 title=f"{birthdays.username}",
@@ -237,7 +185,7 @@ class BirthdayCommands(commands.Cog):
         description="Displays a random celebrity with a birthday today.",
     )
     async def todayceleb(self, ctx):
-        todayBdays = BirthdayChecker.getAllCelebBirthdays()
+        todayBdays = BirthdayChecker.getAllBirthdays(celeb=True)
         randomBday = random.choice(todayBdays)
         month = datetime.today().month
         day = datetime.today().day
@@ -258,8 +206,10 @@ class BirthdayCommands(commands.Cog):
         description="Displays users birthdays for tomorrow.",
     )
     async def tomorrow(self, ctx):
-        guildId = ctx.message.guild
-        tomorrowBdays = BirthdayChecker.getAllFutureBirthdays(guildId)
+        tomorrowDate = datetime.now() + timedelta(days=1)
+        tomorrowBdays = BirthdayChecker.getAllBirthdays(
+            guildid=ctx.message.guild.id, date=tomorrowDate
+        )
         month = datetime.today().month
         day = datetime.today().day
         numBdays = 1
@@ -270,12 +220,12 @@ class BirthdayCommands(commands.Cog):
         )
         await ctx.send(embed=embed)
         for birthdays in tomorrowBdays:
-            userAge = UserAgeInfo.getUserAge(birthdays.Birthday)
-            user = await ctx.guild.query_members(user_ids=[int(birthdays.discord_ID)])
+            userAge = birthdays.birthday.getAge()
+            user = await ctx.guild.query_members(user_ids=[int(birthdays.discord_id)])
             user = user[0]
             embed2 = discord.Embed(
                 title=f"{birthdays.username}",
-                description=f"is {userAge} today!",
+                description=f"is {userAge} tomorrow!",
                 color=discord.Color.red(),
             )
             embed2.set_image(url=user.avatar.url)
@@ -289,7 +239,8 @@ class BirthdayCommands(commands.Cog):
         description="Displays a random celebrity with a birthday tomorrow.",
     )
     async def tomorrowceleb(self, ctx):
-        tomorrowBdays = BirthdayChecker.getFutureCelebBirthdays()
+        tomorrowDate = datetime.now() + timedelta(days=1)
+        tomorrowBdays = BirthdayChecker.getAllBirthdays(date=tomorrowDate, celeb=True)
         randomBday = random.choice(tomorrowBdays)
         month = datetime.today().month
         day = datetime.today().day
@@ -309,8 +260,9 @@ class BirthdayCommands(commands.Cog):
         description="Displays users birthdays for the month.",
     )
     async def month(self, ctx):
-        guildId = ctx.message.guild
-        monthBdays = BirthdayChecker.getAllMonthBirthdays(guildId)
+        monthBdays = BirthdayChecker.getAllBirthdays(
+            guildid=ctx.message.guild.id, checks_only_month=True
+        )
         month = datetime.today().month
         month = datetime.strptime(str(month), "%m")
         month = month.strftime("%B")
@@ -322,7 +274,7 @@ class BirthdayCommands(commands.Cog):
         for birthdays in monthBdays:
             embed.add_field(
                 name=f"{birthdays.username}",
-                value=f"Birthday: {birthdays.Birthday.month}/{birthdays.Birthday.day}",
+                value=f"Birthday: {birthdays.birthday.month}/{birthdays.birthday.day}",
                 inline=False,
             )
         embed.set_footer(text=f"Total amount of birthdays: {len(monthBdays)}")
@@ -334,7 +286,7 @@ class BirthdayCommands(commands.Cog):
         description="Displays celebrity birthdays for the month.",
     )
     async def monthceleb(self, ctx):
-        monthBdays = BirthdayChecker.getCelebMonthBirthdays()
+        monthBdays = BirthdayChecker.getAllBirthdays(celeb=True, checks_only_month=True)
         month = datetime.today().month
         month = datetime.strptime(str(month), "%m")
         month = month.strftime("%B")
