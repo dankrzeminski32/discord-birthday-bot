@@ -1,6 +1,8 @@
 # DISCORD
 DISCORD_BOT_TOKEN: str = "TOKEN"
 
+# Rename this to config.py
+
 # POSTGRES
 POSTGRES_USER: str = "DB-USERNAME"
 POSTGRES_PASS: str = "DB-PASS"
