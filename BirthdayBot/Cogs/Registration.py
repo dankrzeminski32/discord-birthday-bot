@@ -4,7 +4,7 @@ from discord.ext import commands
 import datetime
 from datetime import datetime
 from BirthdayBot.Utils import session_scope, logger
-from BirthdayBot.Models import DiscordUser
+from BirthdayBot.Models import CommandCounter, DiscordUser
 from BirthdayBot.Views import (
     BirthdayInputModal,
     UpdateUserButtons,
@@ -50,7 +50,7 @@ class Registration(commands.Cog):
             return None
 
         await self.handleBirthdayValidation(ctx, modal_input, update=False)
-
+        CommandCounter.incrementCommand("register")
         return None
 
     """ ---- HELPERS ---- """

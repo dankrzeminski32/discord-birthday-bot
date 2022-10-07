@@ -3,7 +3,7 @@ from discord.ext import commands
 import platform
 from discord.ext.commands import Context
 from BirthdayBot.Utils import session_scope, logger
-from BirthdayBot.Models import IssueReports
+from BirthdayBot.Models import CommandCounter, IssueReports
 import datetime
 from datetime import date
 
@@ -37,6 +37,7 @@ class Help(commands.Cog):
                     name=i.capitalize(), value=f"```{help_text}```", inline=False
                 )
         await context.send(embed=embed)
+        CommandCounter.incrementCommand("help")
 
     """ ---- HELPERS ---- """
 
@@ -67,6 +68,7 @@ class Help(commands.Cog):
         )
         embed.set_footer(text=f"Requested by {context.author}")
         await context.send(embed=embed)
+        CommandCounter.incrementCommand("botinfo")
 
     @commands.hybrid_command(
         name="serverinfo",
@@ -97,6 +99,7 @@ class Help(commands.Cog):
         embed.add_field(name=f"Roles ({len(context.guild.roles)})", value=roles)
         embed.set_footer(text=f"Created at: {context.guild.created_at}")
         await context.send(embed=embed)
+        CommandCounter.incrementCommand("serverinfo")
 
     @commands.hybrid_command(name="ping", description="Check if the bot is alive.")
     async def ping(self, context: Context) -> None:
@@ -111,6 +114,7 @@ class Help(commands.Cog):
             color=0x9C84EF,
         )
         await context.send(embed=embed)
+        CommandCounter.incrementCommand("ping")
 
     @commands.hybrid_command(
         name="invite",
@@ -133,6 +137,7 @@ class Help(commands.Cog):
             await context.send("I sent you a private message!")
         except discord.Forbidden:
             await context.send(embed=embed)
+        CommandCounter.incrementCommand("invite")
 
     @commands.hybrid_command(
         name="server",
@@ -145,7 +150,7 @@ class Help(commands.Cog):
         :param context: The hybrid command context.
         """
         embed = discord.Embed(
-            description=f"Join the support server for the bot by clicking [here](https://discord.gg/mTBrXyWxAF).",
+            description=f"Join the support server for the bot by clicking [here](https://discord.gg/XpTttCjTtj).",
             color=0xD75BF4,
         )
         try:
@@ -153,6 +158,7 @@ class Help(commands.Cog):
             await context.send("I sent you a private message!")
         except discord.Forbidden:
             await context.send(embed=embed)
+        CommandCounter.incrementCommand("server")
 
     async def helpList(ctx):
         embed = discord.Embed(
@@ -172,6 +178,7 @@ class Help(commands.Cog):
         )
         # To add more commands just add mroe fields! max=25 fields 2/25
         await ctx.send(embed=embed)
+        CommandCounter.incrementCommand("helpList")
 
     @commands.hybrid_command(
         name="report",
@@ -197,6 +204,7 @@ class Help(commands.Cog):
             logger.error("Report had an error when being stored, %s" % e)
 
         await ctx.send("The issue has been reported and will be looked at.")
+        CommandCounter.incrementCommand("report")
 
 
 async def setup(bot):
