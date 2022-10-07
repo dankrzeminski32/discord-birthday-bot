@@ -7,7 +7,6 @@ from BirthdayBot.Birthday import Birthday
 from BirthdayBot.Cogs.BirthdayChecker import BirthdayChecker
 
 
-
 class Events(commands.Cog):
     def __init__(self, bot):
         self.bot = bot

@@ -12,6 +12,7 @@ from BirthdayBot.Models import CelebrityBirthdays
 from sqlalchemy import extract
 import requests
 
+
 class BirthdayChecker(object):
     """Handles the checking of birthdays for the day"""
 
@@ -19,7 +20,13 @@ class BirthdayChecker(object):
         self.bot = bot
 
     @staticmethod
-    def getAllBirthdays(*, guildid: int = None, date: datetime = datetime.today(), checks_only_month: bool = False, celeb: bool=False) -> list:
+    def getAllBirthdays(
+        *,
+        guildid: int = None,
+        date: datetime = datetime.today(),
+        checks_only_month: bool = False,
+        celeb: bool = False,
+    ) -> list:
         """
         Gets all birthdays on the date specified
 
@@ -34,17 +41,25 @@ class BirthdayChecker(object):
         """
         with session_scope() as session:
             if celeb is False:
-                    if checks_only_month is False:
-                        all_birthdays = session.query(DiscordUser).filter(
-                            extract('month', DiscordUser._birthday) == date.month,
-                            extract('day', DiscordUser._birthday) == date.day,
-                            DiscordUser.guild == guildid
-                            ).all()
-                    else:
-                        all_birthdays = session.query(DiscordUser).filter(
-                            extract('month', DiscordUser._birthday) == date.month,
-                            DiscordUser.guild == guildid
-                            ).all()
+                if checks_only_month is False:
+                    all_birthdays = (
+                        session.query(DiscordUser)
+                        .filter(
+                            extract("month", DiscordUser._birthday) == date.month,
+                            extract("day", DiscordUser._birthday) == date.day,
+                            DiscordUser.guild == guildid,
+                        )
+                        .all()
+                    )
+                else:
+                    all_birthdays = (
+                        session.query(DiscordUser)
+                        .filter(
+                            extract("month", DiscordUser._birthday) == date.month,
+                            DiscordUser.guild == guildid,
+                        )
+                        .all()
+                    )
             else:
                 if checks_only_month is False:
                     all_birthdays = (
@@ -68,8 +83,6 @@ class BirthdayChecker(object):
                     )
             session.expunge_all()
         return all_birthdays
-
-
 
     async def sendBirthdayMessages(self, todays_birthdays: list, channel) -> None:
         for birthday in todays_birthdays:
@@ -128,7 +141,7 @@ class BirthdayChecker(object):
             raise ValueError("url is required")
         try:
             resp = requests.head(image.bdayImage)
-            return True # TODO - Are we logging failures? 
+            return True  # TODO - Are we logging failures?
         except Exception as e:
             return False
 
@@ -194,7 +207,9 @@ class BirthdayCommands(commands.Cog):
     )
     async def tomorrow(self, ctx):
         tomorrowDate = datetime.now() + timedelta(days=1)
-        tomorrowBdays = BirthdayChecker.getAllBirthdays(guildid=ctx.message.guild.id, date=tomorrowDate)
+        tomorrowBdays = BirthdayChecker.getAllBirthdays(
+            guildid=ctx.message.guild.id, date=tomorrowDate
+        )
         month = datetime.today().month
         day = datetime.today().day
         numBdays = 1
@@ -245,7 +260,9 @@ class BirthdayCommands(commands.Cog):
         description="Displays users birthdays for the month.",
     )
     async def month(self, ctx):
-        monthBdays = BirthdayChecker.getAllBirthdays(guildid=ctx.message.guild.id, checks_only_month=True)
+        monthBdays = BirthdayChecker.getAllBirthdays(
+            guildid=ctx.message.guild.id, checks_only_month=True
+        )
         month = datetime.today().month
         month = datetime.strptime(str(month), "%m")
         month = month.strftime("%B")

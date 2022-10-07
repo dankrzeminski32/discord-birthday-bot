@@ -99,11 +99,16 @@ class Registration(commands.Cog):
                                 guild=ctx.guild.id,
                             )
                             await ctx.send(
-                                "You have been successfully added to the database!" # TODO, Make this look pretty
+                                "You have been successfully added to the database!"  # TODO, Make this look pretty
                             )
                         else:
-                            DiscordUser.updateBirthday(existing_user.discord_id, modalResponseObject.birthdayValue)
-                            await ctx.send("You have been updated in the database!") # TODO, Make this look pretty
+                            DiscordUser.updateBirthday(
+                                existing_user.discord_id,
+                                modalResponseObject.birthdayValue,
+                            )
+                            await ctx.send(
+                                "You have been updated in the database!"
+                            )  # TODO, Make this look pretty
                         return None
                     elif confirmation_view.userConfirmation == False:
                         modalResponseObject = await self.waitForModalView(
@@ -131,7 +136,7 @@ class Registration(commands.Cog):
             author=ctx.author, existing_user=existing_user
         )
         await ctx.send(
-            f"You already have a birthday registered - {existing_user.birthday}, would you like to update this information?", # TODO, Make this look pretty
+            f"You already have a birthday registered - {existing_user.birthday}, would you like to update this information?",  # TODO, Make this look pretty
             view=existing_user_view,
         )
         existing_user_view.timed_out = await existing_user_view.wait()
