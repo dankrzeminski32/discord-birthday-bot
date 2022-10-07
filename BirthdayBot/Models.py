@@ -162,10 +162,10 @@ class CommandCounter(Base):
     def previousAmount(cls, command: str) -> int:
         """Surveys the 'CommandCounter' table and filters by id=1 (Will only and always will be id=1), and returns the attribute.
         Args:
-            command (str): _description_
+            command (str): String represented of the name of the command being incremented.
 
         Returns:
-            int: _description_
+            int: Returns the amount of the given in String command
         """
         with session_scope() as session:
             obj: CommandCounter = session.query(CommandCounter).filter_by(id=1).first()
@@ -176,7 +176,7 @@ class CommandCounter(Base):
         """Uses the function "previousAmount" to get the current amount for a specific command_Id then adds one in turn just keeps incrementing it by one when its called.
 
         Args:
-            command_id (str): _description_
+            command_id (str): String representation of the name of the command being incremented.
         """
         with session_scope() as session:
             session.query(CommandCounter).filter(CommandCounter.id == 1).update(
