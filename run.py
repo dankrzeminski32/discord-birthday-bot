@@ -9,7 +9,7 @@ from config import (
     PATH_TO_BIRTHDAY_QUOTES,
 )
 from BirthdayBot.Scraper.CelebScraper import ScrapeIt
-
+from BirthdayBot.Models import CommandCounter
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -17,6 +17,8 @@ intents.message_content = True
 bot = commands.Bot(command_prefix=".bday ", intents=intents, help_command=None)
 
 mainSeeder = Seeder(PATH_TO_BIRTHDAY_IMGS, PATH_TO_BIRTHDAY_QUOTES)
+
+commandCounter = CommandCounter()
 
 
 async def load_extensions():

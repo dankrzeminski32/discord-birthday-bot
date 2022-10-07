@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 from datetime import date
 from BirthdayBot.Utils import session_scope, logger
 from sqlalchemy import extract
-from BirthdayBot.Models import CelebrityBirthdays, DiscordUser
+from BirthdayBot.Models import CelebrityBirthdays, CommandCounter, DiscordUser
 from BirthdayBot.Models import BirthdayImages
 from BirthdayBot.Models import BirthdayMessages
 from BirthdayBot.Birthday import Birthday
@@ -206,7 +206,7 @@ class BirthdayCommands(commands.Cog):
         description="Displays everyone with birthdays for the day.",
     )
     async def today(self, ctx):
-        guildId = ctx.message.guild
+        guildId = ctx.message.guild.id
         todayBdays = DiscordUser.getAll(guild=guildId)
         month = datetime.today().month
         day = datetime.today().day
@@ -230,6 +230,7 @@ class BirthdayCommands(commands.Cog):
             embed2.set_footer(text=f"{numBdays}/{len(todayBdays)}")
             numBdays += 1
             await ctx.send(embed=embed2)
+        CommandCounter.incrementCommand("today")
 
     @commands.hybrid_command(
         name="todayceleb",
@@ -248,7 +249,9 @@ class BirthdayCommands(commands.Cog):
         celebAge = randomBday.celebAge
         celebName = randomBday.celebName
         embed.add_field(name=f"{celebName}", value=f"Age: {celebAge}", inline=True)
+
         await ctx.send(embed=embed)
+        CommandCounter.incrementCommand("todayceleb")
 
     @commands.hybrid_command(
         name="tomorrow",
@@ -279,6 +282,7 @@ class BirthdayCommands(commands.Cog):
             embed2.set_footer(text=f"{numBdays}/{len(tomorrowBdays)}")
             numBdays += 1
             await ctx.send(embed=embed2)
+        CommandCounter.incrementCommand("tomorrow")
 
     @commands.hybrid_command(
         name="tomorrowceleb",
@@ -298,6 +302,7 @@ class BirthdayCommands(commands.Cog):
         celebName = randomBday.celebName
         embed.add_field(name=f"{celebName}", value=f"Age: {celebAge}", inline=True)
         await ctx.send(embed=embed)
+        CommandCounter.incrementCommand("tomorrowceleb")
 
     @commands.hybrid_command(
         name="month",
@@ -322,6 +327,7 @@ class BirthdayCommands(commands.Cog):
             )
         embed.set_footer(text=f"Total amount of birthdays: {len(monthBdays)}")
         await ctx.send(embed=embed)
+        CommandCounter.incrementCommand("month")
 
     @commands.hybrid_command(
         name="monthceleb",
@@ -345,6 +351,7 @@ class BirthdayCommands(commands.Cog):
                 inline=False,
             )
         await ctx.send(embed=embed)
+        CommandCounter.incrementCommand("monthceleb")
 
 
 async def setup(bot):
