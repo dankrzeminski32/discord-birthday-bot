@@ -7,6 +7,7 @@ from BirthdayBot.Birthday import Birthday
 from BirthdayBot.Cogs.BirthdayChecker import BirthdayChecker
 
 
+
 class Events(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -25,13 +26,13 @@ class Events(commands.Cog):
     async def on_ready(self):
         logger.info(f"We have logged in as {self.bot.user}")
 
-    @tasks.loop(seconds=30)
+    @tasks.loop(seconds=320)
     async def birthdayAnnouncements(self):
         await self.bot.wait_until_ready()
         bdaychecker = BirthdayChecker(self.bot)
         channel = None
         for guild in self.bot.guilds:
-            bdays = DiscordUser.getAllBirthdays(guildid=guild.id)
+            bdays = BirthdayChecker.getAllBirthdays(guildid=guild.id)
             for channel in guild.text_channels:
                 if channel.name == "birthdays":
                     bday_channel = channel.id

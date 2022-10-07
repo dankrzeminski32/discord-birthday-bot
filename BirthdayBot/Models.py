@@ -75,25 +75,6 @@ class DiscordUser(Base):
                 '_birthday': new_birthday
             })
 
-    @staticmethod
-    def getAllBirthdays(guildid) -> list:
-        """Grab all DiscordUsers with a birthday matching today's date
-
-        Args:
-            guildid (_type_): guild that user is associated with 
-
-        Returns:
-            list: all users found matching date and guild criteria
-        """
-        with session_scope() as session:
-            all_birthdays = session.query(DiscordUser).filter(
-                extract('month', DiscordUser._birthday) == datetime.today().month,
-                extract('day', DiscordUser._birthday) == datetime.today().day,
-                DiscordUser.guild == guildid
-                ).all()
-            session.expunge_all()
-            return all_birthdays
-
 
     @staticmethod
     def does_user_exist(discord_id: int) -> bool:
@@ -144,13 +125,18 @@ class CelebrityBirthdays(Base):
     celebName = Column(String)
     celebAge = Column(Integer)
     celebJob = Column(String)
-    celebBirthdate = Column(Date)
+    _celebBirthdate = Column(Date)
     celebLifeSpan = Column(String)
 
     def __repr__(self):
         return "<CelebrityBirthdays(id='{}', celebName='{}', celebAge = '{}', celebJob = '{}',celebBirthdate = '{}', lifeSpan = '{}')>".format(
             self.id, self.celebName, self.celebAge, self.celebJob, self.celebLifeSpan
         )
+    @hybrid_property
+    def celebBirthdate(self) -> Birthday:
+        birthday: Birthday = Birthday(self._celebBirthdate)
+        return birthday
+
 
 
 class CommandCounter(Base):

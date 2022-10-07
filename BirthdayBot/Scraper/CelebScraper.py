@@ -7,6 +7,7 @@ from BirthdayBot.Utils import session_scope, logger
 from BirthdayBot.Models import Base, CelebrityBirthdays
 import datetime
 from datetime import datetime
+from webdriver_manager.chrome import ChromeDriverManager
 
 
 def ScrapeIt():
@@ -22,7 +23,7 @@ def ScrapeIt():
     options.add_argument("--disable-extensions")
     options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
-    driver = webdriver.Chrome(options=options)
+    driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
     sleepTimer = 2
 
     class CelebrityScraper(object):
@@ -79,7 +80,7 @@ def ScrapeIt():
                             celebName=celebName,
                             celebAge=celebAge,
                             celebJob=celebJob,
-                            celebBirthdate=celebBirthdate,
+                            _celebBirthdate=celebBirthdate,
                             celebLifeSpan=lifeSpan,
                         )
 
