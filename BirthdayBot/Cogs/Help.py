@@ -150,7 +150,7 @@ class Help(commands.Cog):
         :param context: The hybrid command context.
         """
         embed = discord.Embed(
-            description=f"Join the support server for the bot by clicking [here](https://discord.gg/mTBrXyWxAF).",
+            description=f"Join the support server for the bot by clicking [here](https://discord.gg/XpTttCjTtj).",
             color=0xD75BF4,
         )
         try:
