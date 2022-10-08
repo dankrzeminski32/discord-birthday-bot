@@ -53,6 +53,14 @@ class Registration(commands.Cog):
         CommandCounter.incrementCommand("register")
         return None
 
+    @commands.hybrid_command(
+        name="set",
+        description="Allows you to configure which timezone birthdaybot uses for your guild",
+    )
+    async def set(self, ctx, arg1):
+        await ctx.send(arg1)
+
+
     """ ---- HELPERS ---- """
 
     async def handleExistingUser(self, ctx, existing_user: DiscordUser):
