@@ -44,20 +44,6 @@ def ScrapeIt():
             driver.get(url)
 
             soup = BeautifulSoup(driver.page_source, "html.parser")
-            # for link in soup.find_all('a'):
-            #     get_result: re.Match = re.search(expr, str(link.get('style')))
-            #     if get_result:
-            #         result = get_result.group()
-            #         result = result[:-1]
-            #         print(result)
-            #     else:
-            #         get_default_match: re.Match = re.search(default_image_expr, str(link.get('style')))
-            #         if get_default_match:
-            #             result = get_default_match.group()
-            #             result = result[:-1]
-            #             print(result)
-            #         else:
-            #             print("No Match Found")
 
             for link in soup.find_all("a", class_="face person-item clearfix"):
 
