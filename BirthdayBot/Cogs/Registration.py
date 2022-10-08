@@ -60,7 +60,6 @@ class Registration(commands.Cog):
     async def set(self, ctx, arg1):
         await ctx.send(arg1)
 
-
     """ ---- HELPERS ---- """
 
     async def handleExistingUser(self, ctx, existing_user: DiscordUser):

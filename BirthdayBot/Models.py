@@ -126,6 +126,7 @@ class CelebrityBirthdays(Base):
     celebJob = Column(String)
     _celebBirthdate = Column(Date)
     celebLifeSpan = Column(String)
+    celebImgLink = Column(String)
 
     def __repr__(self):
         return "<CelebrityBirthdays(id='{}', celebName='{}', celebAge = '{}', celebJob = '{}',celebBirthdate = '{}', lifeSpan = '{}')>".format(
