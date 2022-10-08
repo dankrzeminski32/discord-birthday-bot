@@ -1,10 +1,11 @@
-from email.policy import default
+from requests import Session
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Date, BigInteger, Boolean, insert
+from sqlalchemy import Column, Integer, String, Date, BigInteger, Boolean, extract
 from sqlalchemy.ext.hybrid import hybrid_property
 from BirthdayBot.Birthday import Birthday
 from BirthdayBot.Utils import session_scope
 from sqlalchemy.ext.declarative import declared_attr
+from datetime import datetime
 
 
 class Base:
@@ -60,17 +61,30 @@ class DiscordUser(Base):
         birthday: Birthday = Birthday(self._birthday)
         return birthday
 
-    @birthday.setter
-    def birthday(self, birthday: Birthday):
-        self._birthday = birthday
+    @classmethod
+    def updateBirthday(cls, user_discord_id: int, new_birthday: Birthday) -> None:
+        """Used to update a users birthday
+        Usage: DiscordUser.updateBirthday(594389042930384907, Birthday.fromUserInput("01/29/1678"))
 
-    def update(self, field, new_value):
+        Args:
+            user_discord_id (int): Unique discord id for each user
+            new_birthday (Birthday): Birthday Object
+        """
         with session_scope() as session:
-            self.__setattr__(field, new_value)
-            session.add(self)
+            session.query(DiscordUser).filter(
+                DiscordUser.discord_id == user_discord_id
+            ).update({"_birthday": new_birthday})
 
     @staticmethod
     def does_user_exist(discord_id: int) -> bool:
+        """Checks if user exists in the database
+
+        Args:
+            discord_id (int): unique id of the user in question
+
+        Returns:
+            bool: True if the user does exists, false if he does not
+        """
         user = DiscordUser.get(discord_id=discord_id)
         return False if user is None else True
 
@@ -110,13 +124,18 @@ class CelebrityBirthdays(Base):
     celebName = Column(String)
     celebAge = Column(Integer)
     celebJob = Column(String)
-    celebBirthdate = Column(Date)
+    _celebBirthdate = Column(Date)
     celebLifeSpan = Column(String)
 
     def __repr__(self):
         return "<CelebrityBirthdays(id='{}', celebName='{}', celebAge = '{}', celebJob = '{}',celebBirthdate = '{}', lifeSpan = '{}')>".format(
             self.id, self.celebName, self.celebAge, self.celebJob, self.celebLifeSpan
         )
+
+    @hybrid_property
+    def celebBirthdate(self) -> Birthday:
+        birthday: Birthday = Birthday(self._celebBirthdate)
+        return birthday
 
 
 class CommandCounter(Base):
