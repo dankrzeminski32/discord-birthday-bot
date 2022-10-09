@@ -211,6 +211,7 @@ class BirthdayCommands(commands.Cog):
         description="Displays users birthdays for tomorrow.",
     )
     async def tomorrow(self, ctx):
+        defaultImage = "https://ia803204.us.archive.org/4/items/discordprofilepictures/discordblue.png"
         tomorrowDate = datetime.now() + timedelta(days=1)
         tomorrowBdays = BirthdayChecker.getAllBirthdays(
             guildid=ctx.message.guild.id, date=tomorrowDate
@@ -233,7 +234,10 @@ class BirthdayCommands(commands.Cog):
                 description=f"is {userAge} tomorrow!",
                 color=discord.Color.red(),
             )
-            embed2.set_image(url=user.avatar.url)
+            if user.avatar.url == NoneType:
+                embed2.set_image(url=defaultImage)
+            else:
+                embed2.set_image(url=user.avatar.url)
             embed2.set_footer(text=f"{numBdays}/{len(tomorrowBdays)}")
             numBdays += 1
             await ctx.send(embed=embed2)
