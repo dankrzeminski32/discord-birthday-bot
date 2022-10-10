@@ -1,3 +1,4 @@
+from types import NoneType
 import discord
 import random
 from discord.ext import commands
@@ -166,6 +167,7 @@ class BirthdayCommands(commands.Cog):
         )
         await ctx.send(embed=embed)
         for birthdays in todayBdays:
+            defaultImage = "https://ia803204.us.archive.org/4/items/discordprofilepictures/discordblue.png"
             userAge = birthdays.birthday.getAge()
             user = await ctx.guild.query_members(user_ids=[int(birthdays.discord_id)])
             user = user[0]
@@ -174,7 +176,10 @@ class BirthdayCommands(commands.Cog):
                 description=f"is {userAge} today!",
                 color=discord.Color.red(),
             )
-            embed2.set_image(url=user.avatar.url)
+            if user.avatar.url == NoneType:
+                embed2.set_image(url=defaultImage)
+            else:
+                embed2.set_image(url=user.avatar.url)
             embed2.set_footer(text=f"{numBdays}/{len(todayBdays)}")
             numBdays += 1
             await ctx.send(embed=embed2)
@@ -206,6 +211,7 @@ class BirthdayCommands(commands.Cog):
         description="Displays users birthdays for tomorrow.",
     )
     async def tomorrow(self, ctx):
+        defaultImage = "https://ia803204.us.archive.org/4/items/discordprofilepictures/discordblue.png"
         tomorrowDate = datetime.now() + timedelta(days=1)
         tomorrowBdays = BirthdayChecker.getAllBirthdays(
             guildid=ctx.message.guild.id, date=tomorrowDate
@@ -228,7 +234,10 @@ class BirthdayCommands(commands.Cog):
                 description=f"is {userAge} tomorrow!",
                 color=discord.Color.red(),
             )
-            embed2.set_image(url=user.avatar.url)
+            if user.avatar.url == NoneType:
+                embed2.set_image(url=defaultImage)
+            else:
+                embed2.set_image(url=user.avatar.url)
             embed2.set_footer(text=f"{numBdays}/{len(tomorrowBdays)}")
             numBdays += 1
             await ctx.send(embed=embed2)
