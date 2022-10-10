@@ -190,6 +190,7 @@ class BirthdayCommands(commands.Cog):
         description="Displays a random celebrity with a birthday today.",
     )
     async def todayceleb(self, ctx):
+        defaultImage = "https://ia803204.us.archive.org/4/items/discordprofilepictures/discordblue.png"
         todayBdays = BirthdayChecker.getAllBirthdays(celeb=True)
         randomBday = random.choice(todayBdays)
         month = datetime.today().month
@@ -202,7 +203,10 @@ class BirthdayCommands(commands.Cog):
         celebAge = randomBday.celebAge
         celebName = randomBday.celebName
         embed.add_field(name=f"{celebName}", value=f"Age: {celebAge}", inline=True)
-
+        if randomBday.celebImgLink == NoneType:
+            embed.set_image(url=defaultImage)
+        else:
+            embed.set_image(url=randomBday.celebImgLink)
         await ctx.send(embed=embed)
         CommandCounter.incrementCommand("todayceleb")
 
@@ -248,6 +252,7 @@ class BirthdayCommands(commands.Cog):
         description="Displays a random celebrity with a birthday tomorrow.",
     )
     async def tomorrowceleb(self, ctx):
+        defaultImage = "https://ia803204.us.archive.org/4/items/discordprofilepictures/discordblue.png"
         tomorrowDate = datetime.now() + timedelta(days=1)
         tomorrowBdays = BirthdayChecker.getAllBirthdays(date=tomorrowDate, celeb=True)
         randomBday = random.choice(tomorrowBdays)
@@ -261,6 +266,10 @@ class BirthdayCommands(commands.Cog):
         celebAge = randomBday.celebAge
         celebName = randomBday.celebName
         embed.add_field(name=f"{celebName}", value=f"Age: {celebAge}", inline=True)
+        if randomBday.celebImgLink == NoneType:
+            embed.set_image(url=defaultImage)
+        else:
+            embed.set_image(url=randomBday.celebImgLink)
         await ctx.send(embed=embed)
         CommandCounter.incrementCommand("tomorrowceleb")
 
