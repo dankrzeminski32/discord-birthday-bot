@@ -12,6 +12,7 @@ from BirthdayBot.Views import (
     RegisterUserButton,
     RegisterConfirmationButtons,
     tryAgainView,
+    TimezoneSelectView
 )
 from BirthdayBot.Birthday import Birthday
 
@@ -52,6 +53,14 @@ class Registration(commands.Cog):
         await self.handleBirthdayValidation(ctx, modal_input, update=False)
         CommandCounter.incrementCommand("register")
         return None
+
+
+    @commands.hybrid_command(
+        name="set",
+        description="Prompts the user with a message to set the servers timezone",
+    )
+    async def set(self,ctx):
+        await ctx.send("Please pick a timezone from the selection",view=TimezoneSelectView())
 
     """ ---- HELPERS ---- """
 

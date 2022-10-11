@@ -201,3 +201,8 @@ class CommandCounter(Base):
             session.query(CommandCounter).filter(CommandCounter.id == 1).update(
                 {command_id: (CommandCounter.previousAmount(command_id) + 1)}
             )
+
+
+class Guild(Base):
+    guild_id = Column(BigInteger)
+    timezone = Column(String(255))

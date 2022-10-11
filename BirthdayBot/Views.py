@@ -213,3 +213,24 @@ class BirthdayInputModal(discord.ui.Modal):
         self.on_submit_interaction = interaction
         await interaction.response.defer()
         self.stop()
+
+
+class TimezoneSelect(discord.ui.Select):
+    def __init__(self):
+        options = [
+            discord.SelectOption(label="Central Time (CST)", emoji=":clock1:"),
+            discord.SelectOption(label="Central Time (CST)", emoji=":clock1:"),
+            discord.SelectOption(label="Central Time (CST)", emoji=":clock1:"),
+            discord.SelectOption(label="Central Time (CST)", emoji=":clock1:"),
+            discord.SelectOption(label="Central Time (CST)", emoji=":clock1:"),
+            discord.SelectOption(label="Central Time (CST)", emoji=":clock1:"),
+            discord.SelectOption(label="Central Time (CST)", emoji=":clock1:"),
+        ]
+
+        super().__init__(placeholder="Select a Timezone for your server to use",max_values=1,min_values=1, options=options)
+
+
+class TimezoneSelectView(discord.ui.View):
+    def __init__(self, *, timeout=180):
+        super().__init__(timeout=timeout)
+        self.add_item(TimezoneSelect)
