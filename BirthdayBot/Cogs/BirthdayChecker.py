@@ -313,20 +313,8 @@ class BirthdayCommands(commands.Cog):
         if DiscordUser.does_user_exist(discord_id=ctx.author.id):
             user = DiscordUser.get(discord_id=ctx.author.id)
             userBday = user.birthday
-            with session_scope() as session:
-                celebBday = (
-                    session.query(CelebrityBirthdays)
-                    .filter(
-                        extract("month", CelebrityBirthdays._celebBirthdate)
-                        == userBday.month,
-                        extract("day", CelebrityBirthdays._celebBirthdate)
-                        == userBday.day,
-                    )
-                    .all()
-                )
-                session.expunge_all()
-            celeb = random.choice(celebBday)
-            celebBday = celeb._celebBirthdate
+            celebs_matching_users_bday: list = BirthdayChecker.getAllBirthdays(celeb=True, date=user.birthday)
+            celeb = random.choice(celebs_matching_users_bday)
 
             embed = discord.Embed(
                 title="--Infromation--",
@@ -349,7 +337,7 @@ class BirthdayCommands(commands.Cog):
             await ctx.send(embed=embed)
             await ctx.send(embed=embed2)
         else:
-            ctx.send(
+            await ctx.send(
                 "ERROR: You don't have a birthday on file, make sure you use, '.bday reigster' to set one."
             )
 
