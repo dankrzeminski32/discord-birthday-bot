@@ -11,12 +11,6 @@ class Seeder(object):
     def seedDBIfEmpty(self) -> None:
         try:
             with session_scope() as s:
-                if not s.query(BirthdayImages).all():
-                    logger.info("Birthday Images table was empty. Now seeding...")
-                    self.imageSeed()
-                else:
-                    logger.info("Birthday Images table is filled")
-
                 if not s.query(BirthdayMessages).all():
                     logger.info("Birthday Quotes table was empty. Now seeding...")
                     self.quoteSeed()

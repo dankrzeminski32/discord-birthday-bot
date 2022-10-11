@@ -63,7 +63,7 @@ class Registration(commands.Cog):
         await ctx.send("Please pick a timezone from the selection",view=TimezoneSelectView())
 
     """ ---- HELPERS ---- """
-
+    
     async def handleExistingUser(self, ctx, existing_user: DiscordUser):
         view: UpdateUserButtons = await self.sendUpdateView(
             ctx, existing_user=existing_user

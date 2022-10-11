@@ -126,6 +126,7 @@ class CelebrityBirthdays(Base):
     celebJob = Column(String)
     _celebBirthdate = Column(Date)
     celebLifeSpan = Column(String)
+    celebImgLink = Column(String)
 
     def __repr__(self):
         return "<CelebrityBirthdays(id='{}', celebName='{}', celebAge = '{}', celebJob = '{}',celebBirthdate = '{}', lifeSpan = '{}')>".format(
@@ -156,9 +157,10 @@ class CommandCounter(Base):
     tomorrowceleb = Column(Integer)
     month = Column(Integer)
     monthceleb = Column(Integer)
+    me = Column(Integer)
 
     def __repr__(self):
-        return "<CommandCounter(id='{}', register='{}', age = '{}', help = '{}', botinfo = '{}', serverinfo = '{}', ping = '{}', invite = '{}', server = '{}', report = '{}', today = '{}', todayceleb = '{}', tomorrow = '{}', tomorrowceleb = '{}', month = '{}', monthceleb = '{}')>".format(
+        return "<CommandCounter(id='{}', register='{}', age = '{}', help = '{}', botinfo = '{}', serverinfo = '{}', ping = '{}', invite = '{}', server = '{}', report = '{}', today = '{}', todayceleb = '{}', tomorrow = '{}', tomorrowceleb = '{}', month = '{}', monthceleb = '{}', me = '{}')>".format(
             self.id,
             self.register,
             self.age,
@@ -175,6 +177,7 @@ class CommandCounter(Base):
             self.tomorrowceleb,
             self.month,
             self.monthceleb,
+            self.me,
         )
 
     @classmethod

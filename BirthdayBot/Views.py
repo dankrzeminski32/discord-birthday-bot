@@ -218,19 +218,20 @@ class BirthdayInputModal(discord.ui.Modal):
 class TimezoneSelect(discord.ui.Select):
     def __init__(self):
         options = [
-            discord.SelectOption(label="Central Time (CST)", emoji=":clock1:"),
-            discord.SelectOption(label="Central Time (CST)", emoji=":clock1:"),
-            discord.SelectOption(label="Central Time (CST)", emoji=":clock1:"),
-            discord.SelectOption(label="Central Time (CST)", emoji=":clock1:"),
-            discord.SelectOption(label="Central Time (CST)", emoji=":clock1:"),
-            discord.SelectOption(label="Central Time (CST)", emoji=":clock1:"),
-            discord.SelectOption(label="Central Time (CST)", emoji=":clock1:"),
+            discord.SelectOption(label="Atlantic Standard Time (AST)"),
+            discord.SelectOption(label="Eastern Standard Time (EST)"),
+            discord.SelectOption(label="Central Standard Time (CST)"),
+            discord.SelectOption(label="Mountain Standard Time (MST)"),
+            discord.SelectOption(label="Pacific Standard Time (PST)"),
+            discord.SelectOption(label="Alaskan Standard Time (AKST)"),
+            discord.SelectOption(label="Hawaii-Aleutian Standard Time (HST)"),
+            discord.SelectOption(label="Samoa Standard Time (UTC-11"),
+            discord.SelectOption(label="Chamorro Standard Time (UTC+10)")
         ]
-
         super().__init__(placeholder="Select a Timezone for your server to use",max_values=1,min_values=1, options=options)
 
 
 class TimezoneSelectView(discord.ui.View):
     def __init__(self, *, timeout=180):
         super().__init__(timeout=timeout)
-        self.add_item(TimezoneSelect)
+        self.add_item(TimezoneSelect())

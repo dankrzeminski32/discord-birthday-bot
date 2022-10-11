@@ -7,7 +7,9 @@ from BirthdayBot.Utils import session_scope, logger
 from BirthdayBot.Models import Base, CelebrityBirthdays
 import datetime
 from datetime import datetime
-from webdriver_manager.chrome import ChromeDriverManager
+
+# from webdriver_manager.chrome import ChromeDriverManager #import doesnt work even after pip install webdriver_manager. Noted By:Ethan
+import re
 
 
 def ScrapeIt():
@@ -23,10 +25,15 @@ def ScrapeIt():
     options.add_argument("--disable-extensions")
     options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
-    driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
+    # driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
+
+    driver = webdriver.Chrome(options=options)  # Usable for Ethan Windows
     sleepTimer = 2
 
     class CelebrityScraper(object):
+        EXPR = r"https:\/\/www.famousbirthdays.com\/thumbnails\/.*\)"
+        DEFAULT_IMG_EXPR = r"https:\/\/www.famousbirthdays.com\/faces\/.*\)"
+
         def Scrape(month, day):
             i = 0
             numMonth = datetime.strptime(month, "%B")
@@ -42,6 +49,9 @@ def ScrapeIt():
             soup = BeautifulSoup(driver.page_source, "html.parser")
 
             for link in soup.find_all("a", class_="face person-item clearfix"):
+
+                match = CelebrityScraper.get_regex_img_link_match(link=link)
+
                 for link2 in link.find_all("div", class_="info"):
                     celebName = link2.find("div", class_="name").text
 
@@ -82,6 +92,7 @@ def ScrapeIt():
                             celebJob=celebJob,
                             _celebBirthdate=celebBirthdate,
                             celebLifeSpan=lifeSpan,
+                            celebImgLink=match,
                         )
 
                         try:
@@ -92,6 +103,28 @@ def ScrapeIt():
                         i += 1
             i += i
             print(i)
+
+        def get_regex_img_link_match(link):
+            get_result: re.Match = re.search(
+                CelebrityScraper.EXPR, str(link.get("style"))
+            )
+            if get_result:
+                result = get_result.group()
+                result = result[:-1]
+                print(result)
+                return result
+            else:
+                get_default_match: re.Match = re.search(
+                    CelebrityScraper.DEFAULT_IMG_EXPR, str(link.get("style"))
+                )
+                if get_default_match:
+                    result = get_default_match.group()
+                    result = result[:-1]
+                    print(result)
+                    return result
+                else:
+                    print("No Match Found")
+                    return None
 
     for month in monthsWith29:
         for i in range(1, 30, 1):
@@ -105,3 +138,6 @@ def ScrapeIt():
         for i in range(1, 32, 1):
             CelebrityScraper.Scrape(month, i)
             time.sleep(sleepTimer)
+
+
+# ScrapeIt()
