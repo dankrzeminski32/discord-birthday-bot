@@ -323,6 +323,46 @@ class BirthdayCommands(commands.Cog):
         await ctx.send(embed=embed)
         CommandCounter.incrementCommand("monthceleb")
 
+    @commands.hybrid_command(
+        name="me",
+        description="Displays user infromation along with a random celebrity that shares the same brithday with the user.",
+    )
+    async def me(self, ctx):
+        if DiscordUser.does_user_exist(discord_id=ctx.author.id):
+            user = DiscordUser.get(discord_id=ctx.author.id)
+            userBday = user.birthday
+            celebs_matching_users_bday: list = BirthdayChecker.getAllBirthdays(
+                celeb=True, date=user.birthday
+            )
+            celeb = random.choice(celebs_matching_users_bday)
+
+            embed = discord.Embed(
+                title="--Infromation--",
+                description="Here is infromation regarding you.",
+                color=discord.Color.red(),
+            )
+            embed.add_field(
+                name="Birthday:",
+                value=f"{userBday}",
+                inline=False,
+            )
+            embed2 = discord.Embed(
+                title="You Share A Birthday With",
+                description=f"{celeb.celebName}",
+                color=discord.Color.red(),
+            )
+            embed2.set_image(url=celeb.celebImgLink)
+            embed2.set_footer(text=f"Occupation: {celeb.celebJob}")
+
+            await ctx.send(embed=embed)
+            await ctx.send(embed=embed2)
+        else:
+            await ctx.send(
+                "ERROR: You don't have a birthday on file, make sure you use, '.bday reigster' to set one."
+            )
+
+        CommandCounter.incrementCommand("me")
+
 
 async def setup(bot):
     await bot.add_cog(BirthdayCommands(bot))
