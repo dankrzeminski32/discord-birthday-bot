@@ -313,7 +313,9 @@ class BirthdayCommands(commands.Cog):
         if DiscordUser.does_user_exist(discord_id=ctx.author.id):
             user = DiscordUser.get(discord_id=ctx.author.id)
             userBday = user.birthday
-            celebs_matching_users_bday: list = BirthdayChecker.getAllBirthdays(celeb=True, date=user.birthday)
+            celebs_matching_users_bday: list = BirthdayChecker.getAllBirthdays(
+                celeb=True, date=user.birthday
+            )
             celeb = random.choice(celebs_matching_users_bday)
 
             embed = discord.Embed(
