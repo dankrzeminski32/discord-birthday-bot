@@ -40,49 +40,62 @@ class BirthdayChecker(object):
         Returns:
             list: All birthdays
         """
-        with session_scope() as session:
-            if celeb is False:
-                if checks_only_month is False:
-                    all_birthdays = (
-                        session.query(DiscordUser)
-                        .filter(
-                            extract("month", DiscordUser._birthday) == date.month,
-                            extract("day", DiscordUser._birthday) == date.day,
-                            DiscordUser.guild == guildid,
-                        )
-                        .all()
+
+        if guildid is None:
+            with session_scope() as session:
+                all_birthdays = (
+                    session.query(DiscordUser)
+                    .filter(
+                        extract("month", DiscordUser._birthday) == date.month,
+                        extract("day", DiscordUser._birthday) == date.day,
                     )
+                    .all()
+                )
+                session.expunge_all()
+        else:
+            with session_scope() as session:
+                if celeb is False:
+                    if checks_only_month is False:
+                        all_birthdays = (
+                            session.query(DiscordUser)
+                            .filter(
+                                extract("month", DiscordUser._birthday) == date.month,
+                                extract("day", DiscordUser._birthday) == date.day,
+                                DiscordUser.guild == guildid,
+                            )
+                            .all()
+                        )
+                    else:
+                        all_birthdays = (
+                            session.query(DiscordUser)
+                            .filter(
+                                extract("month", DiscordUser._birthday) == date.month,
+                                DiscordUser.guild == guildid,
+                            )
+                            .all()
+                        )
                 else:
-                    all_birthdays = (
-                        session.query(DiscordUser)
-                        .filter(
-                            extract("month", DiscordUser._birthday) == date.month,
-                            DiscordUser.guild == guildid,
+                    if checks_only_month is False:
+                        all_birthdays = (
+                            session.query(CelebrityBirthdays)
+                            .filter(
+                                extract("month", CelebrityBirthdays._celebBirthdate)
+                                == date.month,
+                                extract("day", CelebrityBirthdays._celebBirthdate)
+                                == date.day,
+                            )
+                            .all()
                         )
-                        .all()
-                    )
-            else:
-                if checks_only_month is False:
-                    all_birthdays = (
-                        session.query(CelebrityBirthdays)
-                        .filter(
-                            extract("month", CelebrityBirthdays._celebBirthdate)
-                            == date.month,
-                            extract("day", CelebrityBirthdays._celebBirthdate)
-                            == date.day,
+                    else:
+                        all_birthdays = (
+                            session.query(CelebrityBirthdays)
+                            .filter(
+                                extract("month", CelebrityBirthdays._celebBirthdate)
+                                == date.month,
+                            )
+                            .all()
                         )
-                        .all()
-                    )
-                else:
-                    all_birthdays = (
-                        session.query(CelebrityBirthdays)
-                        .filter(
-                            extract("month", CelebrityBirthdays._celebBirthdate)
-                            == date.month,
-                        )
-                        .all()
-                    )
-            session.expunge_all()
+                session.expunge_all()
         return all_birthdays
 
     async def sendBirthdayMessages(self, todays_birthdays: list, channel) -> None:
