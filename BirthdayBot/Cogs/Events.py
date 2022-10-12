@@ -25,7 +25,7 @@ class Events(commands.Cog):
     async def on_ready(self):
         logger.info(f"We have logged in as {self.bot.user}")
 
-    @tasks.loop(seconds=20)
+    @tasks.loop(seconds=320)
     async def birthdayAnnouncements(self):
         await self.bot.wait_until_ready()
         bdaychecker = BirthdayChecker(self.bot)
