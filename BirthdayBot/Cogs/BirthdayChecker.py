@@ -43,14 +43,23 @@ class BirthdayChecker(object):
 
         if guildid is None:
             with session_scope() as session:
-                all_birthdays = (
-                    session.query(DiscordUser)
-                    .filter(
-                        extract("month", DiscordUser._birthday) == date.month,
-                        extract("day", DiscordUser._birthday) == date.day,
+                if checks_only_month is False:
+                    all_birthdays = (
+                        session.query(DiscordUser)
+                        .filter(
+                            extract("month", DiscordUser._birthday) == date.month,
+                            extract("day", DiscordUser._birthday) == date.day,
+                        )
+                        .all()
                     )
-                    .all()
-                )
+                else:
+                    all_birthdays = (
+                        session.query(DiscordUser)
+                        .filter(
+                            extract("month", DiscordUser._birthday) == date.month,
+                        )
+                        .all()
+                    )
                 session.expunge_all()
         else:
             with session_scope() as session:
