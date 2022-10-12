@@ -17,7 +17,7 @@ def ScrapeIt():
     # Has to be lower case months or wont work.
     monthsWith29 = ["february"]
     monthsWith30 = ["april", "june", "september", "november"]
-    monthsWith31 = ["december", "march", "january", "may", "july", "august", "october"]
+    monthsWith31 = ["october", "december", "march", "january", "may", "july", "august"]
 
     options = webdriver.ChromeOptions()
     options.add_argument("start-maximized")
@@ -126,16 +126,16 @@ def ScrapeIt():
                     print("No Match Found")
                     return None
 
+    for month in monthsWith31:
+        for i in range(1, 32, 1):
+            CelebrityScraper.Scrape(month, i)
+            time.sleep(sleepTimer)
     for month in monthsWith29:
         for i in range(1, 30, 1):
             CelebrityScraper.Scrape(month, i)
             time.sleep(sleepTimer)
     for month in monthsWith30:
         for i in range(1, 31, 1):
-            CelebrityScraper.Scrape(month, i)
-            time.sleep(sleepTimer)
-    for month in monthsWith31:
-        for i in range(1, 32, 1):
             CelebrityScraper.Scrape(month, i)
             time.sleep(sleepTimer)
 

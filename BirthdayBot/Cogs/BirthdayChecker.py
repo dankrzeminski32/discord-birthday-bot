@@ -40,8 +40,30 @@ class BirthdayChecker(object):
         Returns:
             list: All birthdays
         """
+
         with session_scope() as session:
             if celeb is False:
+                if guildid is None:
+                    with session_scope() as session:
+                        if checks_only_month is False:
+                            all_birthdays = (
+                                session.query(DiscordUser)
+                                .filter(
+                                    extract("month", DiscordUser._birthday)
+                                    == date.month,
+                                    extract("day", DiscordUser._birthday) == date.day,
+                                )
+                                .all()
+                            )
+                        else:
+                            all_birthdays = (
+                                session.query(DiscordUser)
+                                .filter(
+                                    extract("month", DiscordUser._birthday)
+                                    == date.month,
+                                )
+                                .all()
+                            )
                 if checks_only_month is False:
                     all_birthdays = (
                         session.query(DiscordUser)

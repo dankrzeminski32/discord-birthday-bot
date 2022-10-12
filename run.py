@@ -12,6 +12,7 @@ from BirthdayBot.Models import CommandCounter
 from BirthdayBot.Scraper import ImageScraper
 
 intents = discord.Intents.default()
+intents.members = True
 intents.message_content = True
 
 bot = commands.Bot(command_prefix=".bday ", intents=intents, help_command=None)
