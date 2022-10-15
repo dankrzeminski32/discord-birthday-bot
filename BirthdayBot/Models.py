@@ -44,8 +44,9 @@ class DiscordUser(Base):
     _birthday = Column("birthday", Date)
     discord_id = Column(BigInteger)
     guild = Column(BigInteger)
+    timezone = Column(String)
 
-    def __init__(self, username: str, birthday: Birthday, discord_id: int, guild: int):
+    def __init__(self, username: str, birthday: Birthday, discord_id: int, guild: int, timezone: str = "UTC"):
         self.username = username
         self._birthday = birthday
         self.discord_id = discord_id
