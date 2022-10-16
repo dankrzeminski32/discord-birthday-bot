@@ -112,8 +112,8 @@ class BirthdayChecker(object):
             user = user[0]
             random_msg_details = self.generateRandomMessage()
             embed = discord.Embed(
-                title="Happy Birthday!",
-                description=f"<@{birthday.discord_id}>",
+                title="🎈🎂Happy Birthday!🎂🎈",
+                description=f"🎂 <@{birthday.discord_id}> 🎂",
                 color=discord.Color.red(),
             )
             embed.add_field(
