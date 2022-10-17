@@ -199,18 +199,19 @@ class BirthdayInputModal(discord.ui.Modal):
         self.timezoneInput = discord.ui.TextInput(
             label="Timezone",
             placeholder="America/Central",
-            style=discord.TextStyle
+            style=discord.TextStyle.short,
             min_length=2,
             max_length=100
         )
         self.on_submit_interaction: discord.Interaction
         self.birthdayValue: Birthday
-        self.timezone: str
+        self.timezoneValue: str
         self.recievedValidBirthdayValue: bool
         self.recievedValidTimezone: bool
         self.timed_out: bool
         self.custom_id = "BirthdayInputModal"
         self.add_item(self.birthdayTextInput)
+        self.add_item(self.timezoneInput)
 
     async def on_submit(self, interaction: discord.Interaction):
         # Attempt to create Birthday datetime object from user text input
@@ -223,7 +224,7 @@ class BirthdayInputModal(discord.ui.Modal):
         # Attempt to create timezone object from user text input 
         try:
             pytz.timezone(str(self.timezoneInput))
-            self.timezone = self.timezoneInput
+            self.timezoneValue = self.timezoneInput
             self.recievedValidTimezone = True
         except:
             self.recievedValidTimezone = False

@@ -51,6 +51,7 @@ class DiscordUser(Base):
         self._birthday = birthday
         self.discord_id = discord_id
         self.guild = guild
+        self.timezone = timezone
 
     def __repr__(self):
         return "<DiscordUser(id='{}', username='{}', birthday={}, discord_id={}, guild={})>".format(

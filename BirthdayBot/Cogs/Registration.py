@@ -12,7 +12,6 @@ from BirthdayBot.Views import (
     RegisterUserButton,
     RegisterConfirmationButtons,
     tryAgainView,
-    TimezoneSelectView
 )
 from BirthdayBot.Birthday import Birthday
 
@@ -106,6 +105,7 @@ class Registration(commands.Cog):
                                 birthday=modalResponseObject.birthdayValue,
                                 discord_id=ctx.author.id,
                                 guild=ctx.guild.id,
+                                timezone=modalResponseObject.timezoneValue
                             )
                             await ctx.send(
                                 "You have been successfully added to the database!"  # TODO, Make this look pretty
