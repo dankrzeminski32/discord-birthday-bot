@@ -45,6 +45,7 @@ class DiscordUser(Base):
     discord_id = Column(BigInteger)
     guild = Column(BigInteger)
     timezone = Column(String)
+    last_birthday_announced = Column(Date)
 
     def __init__(self, username: str, birthday: Birthday, discord_id: int, guild: int, timezone: str = "UTC"):
         self.username = username
@@ -62,6 +63,10 @@ class DiscordUser(Base):
     def birthday(self) -> Birthday:
         birthday: Birthday = Birthday(self._birthday)
         return birthday
+
+    @staticmethod
+    def hasBirthdayBeenAnnouncedToday(user_discord_id: int) -> bool:
+        pass
 
     @classmethod
     def updateBirthday(cls, user_discord_id: int, new_birthday: Birthday) -> None:

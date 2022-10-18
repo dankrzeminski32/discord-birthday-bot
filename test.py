@@ -1,3 +1,7 @@
-import pytz
+from datetime import datetime
+from pytz import timezone
+import pytz    
+# Current time in UTC
+now_utc = datetime.now(timezone('America/Chicago'))
 
-pytz.timezone('UTC')
+print(now_utc.day, now_utc.month)
