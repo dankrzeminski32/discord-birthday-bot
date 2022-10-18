@@ -26,7 +26,7 @@ class Registration(commands.Cog):
 
     @commands.hybrid_command(
         name="register",
-        description="Prompts the user with a message to register their birthday.",
+        description="Prompts the user with a message to register their birthday. If already registered, gives you the option to update your information.",
     )
     async def register(self, ctx):
         # Handles Existing User
@@ -52,14 +52,6 @@ class Registration(commands.Cog):
         await self.handleBirthdayValidation(ctx, modal_input, update=False)
         CommandCounter.incrementCommand("register")
         return None
-
-
-    @commands.hybrid_command(
-        name="set",
-        description="Prompts the user with a message to set the servers timezone",
-    )
-    async def set(self,ctx):
-        await ctx.send("Please pick a timezone from the selection",view=TimezoneSelectView())
 
     """ ---- HELPERS ---- """
     
@@ -91,7 +83,7 @@ class Registration(commands.Cog):
         validBirthday = False
 
         while validBirthday == False:
-            if modalResponseObject.recievedValidBirthdayValue:
+            if modalResponseObject.recievedValidBirthdayValue and modalResponseObject.recievedValidTimezone:
                 while userConfirmation == False:
                     confirmation_view: discord.ui.View = (
                         await self.sendConfirmationView(
@@ -125,7 +117,12 @@ class Registration(commands.Cog):
                         )
                         break
             else:
-                view = await self.sendTryAgainView(ctx=ctx, update=update)
+                if modalResponseObject.recievedValidBirthdayValue is False and modalResponseObject.recievedValidTimezone is False:
+                    view = await self.sendTryAgainView(ctx=ctx, update=update, preceding_message="Invalid Birthday (mm/dd/yyyy) and Timezone, try again.")
+                elif modalResponseObject.recievedValidBirthdayValue is True and modalResponseObject.recievedValidTimezone is False:
+                    view = await self.sendTryAgainView(ctx=ctx, update=update, preceding_message="Invalid Timezone, try again.")
+                else: # recieved valid timezone but not birthday
+                    view = await self.sendTryAgainView(ctx=ctx, update=update, preceding_message="Invalid Birthday (mm/dd/yyyy), try again.")
                 modalResponseObject = await self.waitForModalView(view.Modal)
 
     async def sendTryAgainView(
@@ -170,8 +167,8 @@ class Registration(commands.Cog):
     async def sendRegistrationView(self, ctx) -> RegisterUserButton:
         view = RegisterUserButton(author=ctx.author)
         embed = discord.Embed(
-            title="Please enter your Birthday (mm/dd/yyyy)",
-            description="This will store your birthday in our database",
+            title="Please enter your Birthday (mm/dd/yyyy) and Timezone",
+            description="[Click here](https://timezonedb.com/time-zones) for valid Timezones",
             color=discord.Color.red(),
         )
         await ctx.send(embed=embed, view=view)
