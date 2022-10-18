@@ -105,17 +105,23 @@ class Registration(commands.Cog):
                                 discord_id=ctx.author.id,
                                 guild=ctx.guild.id,
                             )
-                            await ctx.send(
-                                "You have been successfully added to the database!"  # TODO, Make this look pretty
+                            embed = discord.Embed(
+                                title="__Added__",
+                                description="You have been successfully added to the database!",
+                                color=discord.Color.green(),
                             )
+                            await ctx.send(embed=embed, ephemeral=True)
                         else:
                             DiscordUser.updateBirthday(
                                 existing_user.discord_id,
                                 modalResponseObject.birthdayValue,
                             )
-                            await ctx.send(
-                                "You have been updated in the database!"
-                            )  # TODO, Make this look pretty
+                            embed2 = discord.Embed(
+                                title="__Updated__ ✔️",
+                                description="You have been updated in the database!",
+                                color=discord.Color.green(),
+                            )
+                            await ctx.send(embed=embed2, ephemeral=True)
                         return None
                     elif confirmation_view.userConfirmation == False:
                         modalResponseObject = await self.waitForModalView(
@@ -142,10 +148,12 @@ class Registration(commands.Cog):
         existing_user_view = UpdateUserButtons(
             author=ctx.author, existing_user=existing_user
         )
-        await ctx.send(
-            f"You already have a birthday registered - {existing_user.birthday}, would you like to update this information?",  # TODO, Make this look pretty
-            view=existing_user_view,
+        embed = discord.Embed(
+            title="__Registration__",
+            description=f"You already have a birthday registered - {existing_user.birthday}, would you like to update this information?",
+            color=discord.Color.red(),
         )
+        await ctx.send(embed=embed, view=existing_user_view)
         existing_user_view.timed_out = await existing_user_view.wait()
         return existing_user_view
 
