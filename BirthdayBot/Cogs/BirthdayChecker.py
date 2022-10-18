@@ -33,10 +33,9 @@ class BirthdayChecker(object):
 
 
         Args:
-            guildid (int): guildid of birthdays you wish to search for in
+            guildid (int, optional): guildid of birthdays you wish to search for in
             date (datetime, optional): date you wish to get birthdays matched to. Defaults to datetime.today().
             checks_only_month (bool, optional): If true, disregards the day of your date paramater,returning users with bdays in a given month. Defaults to False.
-
         Returns:
             list: All birthdays
         """
@@ -44,45 +43,43 @@ class BirthdayChecker(object):
         with session_scope() as session:
             if celeb is False:
                 if guildid is None:
-                    with session_scope() as session:
-                        if checks_only_month is False:
-                            all_birthdays = (
-                                session.query(DiscordUser)
-                                .filter(
-                                    extract("month", DiscordUser._birthday)
-                                    == date.month,
-                                    extract("day", DiscordUser._birthday) == date.day,
-                                )
-                                .all()
+                    if checks_only_month is False:
+                        all_birthdays = (
+                            session.query(DiscordUser)
+                            .filter(
+                                extract("month", DiscordUser._birthday) == date.month,
+                                extract("day", DiscordUser._birthday) == date.day,
                             )
-                        else:
-                            all_birthdays = (
-                                session.query(DiscordUser)
-                                .filter(
-                                    extract("month", DiscordUser._birthday)
-                                    == date.month,
-                                )
-                                .all()
-                            )
-                if checks_only_month is False:
-                    all_birthdays = (
-                        session.query(DiscordUser)
-                        .filter(
-                            extract("month", DiscordUser._birthday) == date.month,
-                            extract("day", DiscordUser._birthday) == date.day,
-                            DiscordUser.guild == guildid,
+                            .all()
                         )
-                        .all()
-                    )
+                    else:
+                        all_birthdays = (
+                            session.query(DiscordUser)
+                            .filter(
+                                extract("month", DiscordUser._birthday) == date.month,
+                            )
+                            .all()
+                        )
                 else:
-                    all_birthdays = (
-                        session.query(DiscordUser)
-                        .filter(
-                            extract("month", DiscordUser._birthday) == date.month,
-                            DiscordUser.guild == guildid,
+                    if checks_only_month is False:
+                        all_birthdays = (
+                            session.query(DiscordUser)
+                            .filter(
+                                extract("month", DiscordUser._birthday) == date.month,
+                                extract("day", DiscordUser._birthday) == date.day,
+                                DiscordUser.guild == guildid,
+                            )
+                            .all()
                         )
-                        .all()
-                    )
+                    else:
+                        all_birthdays = (
+                            session.query(DiscordUser)
+                            .filter(
+                                extract("month", DiscordUser._birthday) == date.month,
+                                DiscordUser.guild == guildid,
+                            )
+                            .all()
+                        )
             else:
                 if checks_only_month is False:
                     all_birthdays = (
@@ -108,11 +105,15 @@ class BirthdayChecker(object):
         return all_birthdays
 
     async def sendBirthdayMessages(self, todays_birthdays: list, channel) -> None:
+        defaultImage = "https://ia803204.us.archive.org/4/items/discordprofilepictures/discordblue.png"
+        guild = channel.guild
         for birthday in todays_birthdays:
+            user = await guild.query_members(user_ids=[int(birthday.discord_id)])
+            user = user[0]
             random_msg_details = self.generateRandomMessage()
             embed = discord.Embed(
-                title="Happy Birthday!",
-                description=f"<@{birthday.discord_id}>",
+                title="🎈🎂Happy Birthday!🎂🎈",
+                description=f"🎂 <@{birthday.discord_id}> 🎂",
                 color=discord.Color.red(),
             )
             embed.add_field(
@@ -122,6 +123,10 @@ class BirthdayChecker(object):
                 + random_msg_details["author"],
                 inline=False,
             )
+            if user.avatar.url == NoneType:
+                embed.set_thumbnail(url=defaultImage)
+            else:
+                embed.set_thumbnail(url=user.avatar.url)
             embed.set_image(url=random_msg_details["birthdayImage"])
             await channel.send(embed=embed)
             logger.info(
@@ -183,8 +188,8 @@ class BirthdayCommands(commands.Cog):
         day = datetime.today().day
         numBdays = 1
         embed = discord.Embed(
-            title=f"Todays Birthday's - {month}/{day}",
-            description="List of people with birthdays today:",
+            title=f"__Todays Birthday's - {month}/{day}__",
+            description="List of people with birthdays **today**:",
             color=discord.Color.red(),
         )
         await ctx.send(embed=embed)
@@ -195,14 +200,14 @@ class BirthdayCommands(commands.Cog):
             user = user[0]
             embed2 = discord.Embed(
                 title=f"{birthdays.username}",
-                description=f"is {userAge} today!",
+                description=f"is **{userAge}** today! 🎂",
                 color=discord.Color.red(),
             )
             if user.avatar.url == NoneType:
                 embed2.set_image(url=defaultImage)
             else:
-                embed2.set_image(url=user.avatar.url)
-            embed2.set_footer(text=f"{numBdays}/{len(todayBdays)}")
+                embed2.set_thumbnail(url=user.avatar.url)
+            embed2.set_footer(text=f"{numBdays}/{len(todayBdays)} 🎈")
             numBdays += 1
             await ctx.send(embed=embed2)
         CommandCounter.incrementCommand("today")
@@ -218,13 +223,15 @@ class BirthdayCommands(commands.Cog):
         month = datetime.today().month
         day = datetime.today().day
         embed = discord.Embed(
-            title=f"Celebrity Birthday - {month}/{day}",
-            description="A random Celebrity with a birthday today: ",
+            title=f"__Celebrity Birthday - {month}/{day}__ 🎂🎈",
+            description="A random Celebrity with a birthday **today**: ",
             color=discord.Color.red(),
         )
         celebAge = randomBday.celebAge
         celebName = randomBday.celebName
-        embed.add_field(name=f"{celebName}", value=f"Age: {celebAge}", inline=True)
+        embed.add_field(
+            name=f"__{celebName}__", value=f"Age: **{celebAge}**", inline=True
+        )
         if randomBday.celebImgLink == NoneType:
             embed.set_image(url=defaultImage)
         else:
@@ -246,8 +253,8 @@ class BirthdayCommands(commands.Cog):
         day = datetime.today().day
         numBdays = 1
         embed = discord.Embed(
-            title=f"Tomorrows Birthday's - {month}/{day+1}",
-            description="List of people with birthdays tomorrow:",
+            title=f"__Tomorrows Birthday's - {month}/{day+1}__",
+            description="List of people with birthdays **tomorrow**:",
             color=discord.Color.red(),
         )
         await ctx.send(embed=embed)
@@ -257,7 +264,7 @@ class BirthdayCommands(commands.Cog):
             user = user[0]
             embed2 = discord.Embed(
                 title=f"{birthdays.username}",
-                description=f"is {userAge} tomorrow!",
+                description=f"is **{userAge}** tomorrow!",
                 color=discord.Color.red(),
             )
             if user.avatar.url == NoneType:
@@ -281,13 +288,13 @@ class BirthdayCommands(commands.Cog):
         month = datetime.today().month
         day = datetime.today().day
         embed = discord.Embed(
-            title=f"Celebrity Birthday That's Tomorrow - {month}/{day+1}",
-            description="A random Celebrity with a birthday tomorrow: ",
+            title=f"__Celebrity Birthday That's Tomorrow - {month}/{day+1}__",
+            description="A random Celebrity with a birthday **tomorrow**: ",
             color=discord.Color.red(),
         )
         celebAge = randomBday.celebAge
         celebName = randomBday.celebName
-        embed.add_field(name=f"{celebName}", value=f"Age: {celebAge}", inline=True)
+        embed.add_field(name=f"{celebName}", value=f"Age: **{celebAge}**", inline=True)
         if randomBday.celebImgLink == NoneType:
             embed.set_image(url=defaultImage)
         else:
@@ -307,8 +314,8 @@ class BirthdayCommands(commands.Cog):
         month = datetime.strptime(str(month), "%m")
         month = month.strftime("%B")
         embed = discord.Embed(
-            title=f"{month} Birthday's",
-            description="List of people with birthdays this month:",
+            title=f"__{month} Birthday's__",
+            description="List of people with birthdays this **month**:",
             color=discord.Color.red(),
         )
         for birthdays in monthBdays:
@@ -331,15 +338,15 @@ class BirthdayCommands(commands.Cog):
         month = datetime.strptime(str(month), "%m")
         month = month.strftime("%B")
         embed = discord.Embed(
-            title=f"{month} Celebrity Birthday's",
-            description="List of 5 random Celebrity's with birthdays this month:",
+            title=f"__{month} Celebrity Birthday's__ 🎂🎈",
+            description="List of 5 random Celebrity's with birthdays this **month**:",
             color=discord.Color.red(),
         )
         for randomBday in range(1, 6):
             randomBday = random.choice(monthBdays)
             embed.add_field(
                 name=f"{randomBday.celebName}",
-                value=f"Birthday: {randomBday.celebBirthdate.month}/{randomBday.celebBirthdate.day}",
+                value=f"➖ Birthday: {randomBday.celebBirthdate.month}/{randomBday.celebBirthdate.day}",
                 inline=False,
             )
         await ctx.send(embed=embed)
@@ -359,7 +366,7 @@ class BirthdayCommands(commands.Cog):
             celeb = random.choice(celebs_matching_users_bday)
 
             embed = discord.Embed(
-                title="--Infromation--",
+                title="__--Infromation--__",
                 description="Here is infromation regarding you.",
                 color=discord.Color.red(),
             )
@@ -370,7 +377,7 @@ class BirthdayCommands(commands.Cog):
             )
             embed2 = discord.Embed(
                 title="You Share A Birthday With",
-                description=f"{celeb.celebName}",
+                description=f"**{celeb.celebName}**",
                 color=discord.Color.red(),
             )
             embed2.set_image(url=celeb.celebImgLink)
