@@ -2,8 +2,6 @@ config.py
 __pycache__
 venv/
 DiscordBirthdays.csv
-BirthdayMessages.txt
-BirthdayImages.txt
 .vscode/
 launch.json
 discord_default.log
