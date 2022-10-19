@@ -7,6 +7,7 @@ from BirthdayBot.Birthday import Birthday
 from BirthdayBot.Cogs.BirthdayChecker import BirthdayChecker
 from pytz import timezone
 
+
 class Events(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -31,9 +32,17 @@ class Events(commands.Cog):
         bdaychecker = BirthdayChecker(self.bot)
         channel = None
         users_with_bdays = BirthdayChecker.getAllBirthdays()
-        timezone_filtered_bdays = [user for user in users_with_bdays if Birthday.isToday(user.birthday, timezone(user.timezone))] 
-        unannounced_filtered_bdays = [user for user in timezone_filtered_bdays if user.hasBirthdayBeenAnnouncedToday() is False]
-        
+        timezone_filtered_bdays = [
+            user
+            for user in users_with_bdays
+            if Birthday.isToday(user.birthday, timezone(user.timezone))
+        ]
+        unannounced_filtered_bdays = [
+            user
+            for user in timezone_filtered_bdays
+            if user.hasBirthdayBeenAnnouncedToday() is False
+        ]
+
         if not unannounced_filtered_bdays:
             return
 

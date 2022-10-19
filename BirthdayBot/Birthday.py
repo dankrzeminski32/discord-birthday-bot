@@ -2,6 +2,7 @@ from datetime import datetime
 from pytz import timezone
 from sqlalchemy import true
 
+
 class Birthday(datetime):
     """Represents all of our users birthdays"""
 
@@ -17,12 +18,16 @@ class Birthday(datetime):
 
     @staticmethod
     def isToday(birthday: datetime, timezone: timezone) -> bool:
-        birthday = datetime(birthday.year,birthday.month,birthday.day,0,0,0,0, tzinfo=timezone)
-        if(birthday.day == datetime.now(timezone).day and birthday.month == datetime.now(timezone).month):
+        birthday = datetime(
+            birthday.year, birthday.month, birthday.day, 0, 0, 0, 0, tzinfo=timezone
+        )
+        if (
+            birthday.day == datetime.now(timezone).day
+            and birthday.month == datetime.now(timezone).month
+        ):
             return True
         else:
             return False
-
 
     @classmethod
     def fromUserInput(cls, datestring: str) -> None:

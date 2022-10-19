@@ -54,7 +54,7 @@ class Registration(commands.Cog):
         return None
 
     """ ---- HELPERS ---- """
-    
+
     async def handleExistingUser(self, ctx, existing_user: DiscordUser):
         view: UpdateUserButtons = await self.sendUpdateView(
             ctx, existing_user=existing_user
@@ -83,7 +83,10 @@ class Registration(commands.Cog):
         validBirthday = False
 
         while validBirthday == False:
-            if modalResponseObject.recievedValidBirthdayValue and modalResponseObject.recievedValidTimezone:
+            if (
+                modalResponseObject.recievedValidBirthdayValue
+                and modalResponseObject.recievedValidTimezone
+            ):
                 while userConfirmation == False:
                     confirmation_view: discord.ui.View = (
                         await self.sendConfirmationView(
@@ -97,7 +100,7 @@ class Registration(commands.Cog):
                                 birthday=modalResponseObject.birthdayValue,
                                 discord_id=ctx.author.id,
                                 guild=ctx.guild.id,
-                                timezone=modalResponseObject.timezoneValue
+                                timezone=modalResponseObject.timezoneValue,
                             )
                             embed = discord.Embed(
                                 title="__Added__",
@@ -123,12 +126,30 @@ class Registration(commands.Cog):
                         )
                         break
             else:
-                if modalResponseObject.recievedValidBirthdayValue is False and modalResponseObject.recievedValidTimezone is False:
-                    view = await self.sendTryAgainView(ctx=ctx, update=update, preceding_message="Invalid Birthday (mm/dd/yyyy) and Timezone, try again.")
-                elif modalResponseObject.recievedValidBirthdayValue is True and modalResponseObject.recievedValidTimezone is False:
-                    view = await self.sendTryAgainView(ctx=ctx, update=update, preceding_message="Invalid Timezone, try again.")
-                else: # recieved valid timezone but not birthday
-                    view = await self.sendTryAgainView(ctx=ctx, update=update, preceding_message="Invalid Birthday (mm/dd/yyyy), try again.")
+                if (
+                    modalResponseObject.recievedValidBirthdayValue is False
+                    and modalResponseObject.recievedValidTimezone is False
+                ):
+                    view = await self.sendTryAgainView(
+                        ctx=ctx,
+                        update=update,
+                        preceding_message="Invalid Birthday (mm/dd/yyyy) and Timezone, try again.",
+                    )
+                elif (
+                    modalResponseObject.recievedValidBirthdayValue is True
+                    and modalResponseObject.recievedValidTimezone is False
+                ):
+                    view = await self.sendTryAgainView(
+                        ctx=ctx,
+                        update=update,
+                        preceding_message="Invalid Timezone, try again.",
+                    )
+                else:  # recieved valid timezone but not birthday
+                    view = await self.sendTryAgainView(
+                        ctx=ctx,
+                        update=update,
+                        preceding_message="Invalid Birthday (mm/dd/yyyy), try again.",
+                    )
                 modalResponseObject = await self.waitForModalView(view.Modal)
 
     async def sendTryAgainView(

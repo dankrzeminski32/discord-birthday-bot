@@ -1,4 +1,4 @@
-#from types import NoneType
+# from types import NoneType
 import discord
 import random
 from discord.ext import commands
@@ -13,6 +13,7 @@ from BirthdayBot.Models import CelebrityBirthdays
 from sqlalchemy import extract
 import requests
 from pytz import timezone
+
 
 class BirthdayChecker(object):
     """Handles the checking of birthdays for the day"""
@@ -129,7 +130,9 @@ class BirthdayChecker(object):
                 embed.set_thumbnail(url=user.avatar.url)
             embed.set_image(url=random_msg_details["birthdayImage"])
             await channel.send(embed=embed)
-            DiscordUser.setBirthdayAnnouncedToday(birthday.discord_id, timezone(birthday.timezone))
+            DiscordUser.setBirthdayAnnouncedToday(
+                birthday.discord_id, timezone(birthday.timezone)
+            )
             logger.info(
                 "Sending Birthday Announcement: Username: {} -  Quote ID: {} - Author: {} - Image ID: {}".format(
                     birthday.username,

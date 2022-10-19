@@ -4,6 +4,7 @@ from BirthdayBot.Models import DiscordUser
 from BirthdayBot.Birthday import Birthday
 import pytz
 
+
 class BaseView(discord.ui.View):
     def __init__(self, *, timeout=180, author: discord.User):
         super().__init__(timeout=timeout)
@@ -201,7 +202,7 @@ class BirthdayInputModal(discord.ui.Modal):
             placeholder="America/Chicago",
             style=discord.TextStyle.short,
             min_length=2,
-            max_length=100
+            max_length=100,
         )
         self.on_submit_interaction: discord.Interaction
         self.birthdayValue: Birthday
@@ -220,8 +221,8 @@ class BirthdayInputModal(discord.ui.Modal):
             self.recievedValidBirthdayValue = True
         except:
             self.recievedValidBirthdayValue = False
-            
-        # Attempt to create timezone object from user text input 
+
+        # Attempt to create timezone object from user text input
         try:
             pytz.timezone(str(self.timezoneInput))
             self.timezoneValue = self.timezoneInput.value

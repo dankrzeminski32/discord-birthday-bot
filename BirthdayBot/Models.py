@@ -8,6 +8,7 @@ from sqlalchemy.ext.declarative import declared_attr
 from datetime import datetime, tzinfo
 import pytz
 
+
 class Base:
     @declared_attr
     def __tablename__(cls):
@@ -47,7 +48,14 @@ class DiscordUser(Base):
     timezone = Column(String)
     last_birthday_announced = Column(Date)
 
-    def __init__(self, username: str, birthday: Birthday, discord_id: int, guild: int, timezone: str = "UTC"):
+    def __init__(
+        self,
+        username: str,
+        birthday: Birthday,
+        discord_id: int,
+        guild: int,
+        timezone: str = "UTC",
+    ):
         self.username = username
         self._birthday = birthday
         self.discord_id = discord_id
@@ -65,7 +73,9 @@ class DiscordUser(Base):
         return birthday
 
     @classmethod
-    def setBirthdayAnnouncedToday(cls, user_discord_id: int, users_timezone: pytz.timezone):
+    def setBirthdayAnnouncedToday(
+        cls, user_discord_id: int, users_timezone: pytz.timezone
+    ):
         with session_scope() as session:
             session.query(DiscordUser).filter(
                 DiscordUser.discord_id == user_discord_id
@@ -79,7 +89,10 @@ class DiscordUser(Base):
         """
         if self.last_birthday_announced is None:
             return False
-        elif(self.last_birthday_announced < datetime.now(pytz.timezone(self.timezone)).date()):
+        elif (
+            self.last_birthday_announced
+            < datetime.now(pytz.timezone(self.timezone)).date()
+        ):
             return False
         else:
             return True
