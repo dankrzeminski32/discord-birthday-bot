@@ -107,7 +107,7 @@ class Registration(commands.Cog):
                                 description="You have been successfully added to the database!",
                                 color=discord.Color.green(),
                             )
-                            await ctx.send(embed=embed, ephemeral=True)
+                            await ctx.send(embed=embed)
                         else:
                             DiscordUser.updateBirthday(
                                 existing_user.discord_id,
@@ -118,7 +118,7 @@ class Registration(commands.Cog):
                                 description="You have been updated in the database!",
                                 color=discord.Color.green(),
                             )
-                            await ctx.send(embed=embed2, ephemeral=True)
+                            await ctx.send(embed=embed2)
                         return None
                     elif confirmation_view.userConfirmation == False:
                         modalResponseObject = await self.waitForModalView(
