@@ -1,4 +1,3 @@
-# from types import NoneType
 import discord
 import random
 from discord.ext import commands
@@ -207,7 +206,7 @@ class BirthdayCommands(commands.Cog):
                 description=f"is **{userAge}** today! 🎂",
                 color=discord.Color.red(),
             )
-            if user.avatar.url == NoneType:
+            if user.avatar.url == None:
                 embed2.set_image(url=defaultImage)
             else:
                 embed2.set_thumbnail(url=user.avatar.url)
@@ -236,7 +235,7 @@ class BirthdayCommands(commands.Cog):
         embed.add_field(
             name=f"__{celebName}__", value=f"Age: **{celebAge}**", inline=True
         )
-        if randomBday.celebImgLink == NoneType:
+        if randomBday.celebImgLink == None:
             embed.set_image(url=defaultImage)
         else:
             embed.set_image(url=randomBday.celebImgLink)
@@ -271,7 +270,7 @@ class BirthdayCommands(commands.Cog):
                 description=f"is **{userAge}** tomorrow!",
                 color=discord.Color.red(),
             )
-            if user.avatar.url == NoneType:
+            if user.avatar.url == None:
                 embed2.set_image(url=defaultImage)
             else:
                 embed2.set_image(url=user.avatar.url)
@@ -299,7 +298,7 @@ class BirthdayCommands(commands.Cog):
         celebAge = randomBday.celebAge
         celebName = randomBday.celebName
         embed.add_field(name=f"{celebName}", value=f"Age: **{celebAge}**", inline=True)
-        if randomBday.celebImgLink == NoneType:
+        if randomBday.celebImgLink == None:
             embed.set_image(url=defaultImage)
         else:
             embed.set_image(url=randomBday.celebImgLink)

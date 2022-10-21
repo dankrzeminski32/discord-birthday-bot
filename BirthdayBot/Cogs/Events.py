@@ -15,11 +15,37 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
-        new_channel = await guild.create_text_channel("birthdays")
-        channel = guild.get_channel(new_channel.id)
-        await channel.send(
-            f"Hello {guild.name}! I am BirthdayBot. Thank you for inviting me.\n\n"  # TODO - MAKE THIS A NICE EMBED
+        prefix = self.bot.command_prefix
+        for channel in guild.text_channels:
+            if channel.name == "birthdays":
+                bday_channel = channel.id
+                channel = self.bot.get_channel(bday_channel)
+        # what if channel got deleted?
+        if channel.name != "birthdays" or channel == None:
+            logger.warning("birthdays channel not found in %s" % guild)
+            logger.info(
+                "Attempting to create 'birthdays' channel in %s" % guild
+            )
+            new_channel = await guild.create_text_channel("birthdays")
+            channel = self.bot.get_channel(new_channel.id)
+        embed = discord.Embed(
+            title="Help", description="List of available commands:", color=0x9C84EF
         )
+        for i in self.bot.cogs:
+            if i == "Events":
+                pass
+            else:
+                cog = self.bot.get_cog(i)
+                commands = cog.get_commands()
+                data = []
+                for command in commands:
+                    description = command.description.partition("\n")[0]
+                    data.append(f"{prefix}{command.name} - {description}" + "\n")
+                help_text = "\n".join(data)
+                embed.add_field(
+                    name=i.capitalize(), value=f"```{help_text}```", inline=False
+                )
+        await channel.send(embed=embed)
         logger.info(f"Bot successfully joined {guild.name} and sent a join message!")
 
     @commands.Cog.listener()
