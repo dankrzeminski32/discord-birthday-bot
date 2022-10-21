@@ -52,13 +52,15 @@ class BaseYesOrNoView(BaseView):
         yes_button.custom_id = self.YES_BUTTON_ID
 
         async def no_button_callback(interaction: discord.Interaction):
-            await interaction.response.send_message(f"{self.responseMessages['no']}",ephemeral=True)
+            await interaction.response.send_message(
+                f"{self.responseMessages['no']}", ephemeral=True
+            )
             self.userConfirmation = False
             self.stop()
 
         async def yes_button_callback(interaction: discord.Interaction):
             await interaction.response.send_message(
-                f"{self.responseMessages['yes']}",ephemeral=True
+                f"{self.responseMessages['yes']}", ephemeral=True
             )  # Ephermal = True if we only want user to see, tbd
             self.userConfirmation = True
             self.stop()

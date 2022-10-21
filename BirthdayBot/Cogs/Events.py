@@ -23,9 +23,7 @@ class Events(commands.Cog):
         # what if channel got deleted?
         if channel.name != "birthdays" or channel == None:
             logger.warning("birthdays channel not found in %s" % guild)
-            logger.info(
-                "Attempting to create 'birthdays' channel in %s" % guild
-            )
+            logger.info("Attempting to create 'birthdays' channel in %s" % guild)
             new_channel = await guild.create_text_channel("birthdays")
             channel = self.bot.get_channel(new_channel.id)
         embed = discord.Embed(
