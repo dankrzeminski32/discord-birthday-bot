@@ -1,4 +1,4 @@
-from types import NoneType
+# from types import NoneType
 import discord
 import random
 from discord.ext import commands
@@ -12,6 +12,7 @@ from BirthdayBot.Birthday import Birthday
 from BirthdayBot.Models import CelebrityBirthdays
 from sqlalchemy import extract
 import requests
+from pytz import timezone
 
 
 class BirthdayChecker(object):
@@ -112,8 +113,8 @@ class BirthdayChecker(object):
             user = user[0]
             random_msg_details = self.generateRandomMessage()
             embed = discord.Embed(
-                title="🎈🎂Happy Birthday!🎂🎈",
-                description=f"🎂 <@{birthday.discord_id}> 🎂",
+                title="🎈🎂 Happy Birthday! 🎂🎈",
+                description=f"<@{birthday.discord_id}>",
                 color=discord.Color.red(),
             )
             embed.add_field(
@@ -123,12 +124,15 @@ class BirthdayChecker(object):
                 + random_msg_details["author"],
                 inline=False,
             )
-            if user.avatar.url == NoneType:
+            if user.avatar.url is None:
                 embed.set_thumbnail(url=defaultImage)
             else:
                 embed.set_thumbnail(url=user.avatar.url)
             embed.set_image(url=random_msg_details["birthdayImage"])
             await channel.send(embed=embed)
+            DiscordUser.setBirthdayAnnouncedToday(
+                birthday.discord_id, timezone(birthday.timezone)
+            )
             logger.info(
                 "Sending Birthday Announcement: Username: {} -  Quote ID: {} - Author: {} - Image ID: {}".format(
                     birthday.username,

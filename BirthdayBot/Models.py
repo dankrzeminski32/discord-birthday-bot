@@ -1,11 +1,12 @@
-from requests import Session
+from requests import Session, session
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Date, BigInteger, Boolean, extract
 from sqlalchemy.ext.hybrid import hybrid_property
 from BirthdayBot.Birthday import Birthday
 from BirthdayBot.Utils import session_scope
 from sqlalchemy.ext.declarative import declared_attr
-from datetime import datetime
+from datetime import datetime, tzinfo
+import pytz
 
 
 class Base:
@@ -44,12 +45,22 @@ class DiscordUser(Base):
     _birthday = Column("birthday", Date)
     discord_id = Column(BigInteger)
     guild = Column(BigInteger)
+    timezone = Column(String)
+    last_birthday_announced = Column(Date)
 
-    def __init__(self, username: str, birthday: Birthday, discord_id: int, guild: int):
+    def __init__(
+        self,
+        username: str,
+        birthday: Birthday,
+        discord_id: int,
+        guild: int,
+        timezone: str = "UTC",
+    ):
         self.username = username
         self._birthday = birthday
         self.discord_id = discord_id
         self.guild = guild
+        self.timezone = timezone
 
     def __repr__(self):
         return "<DiscordUser(id='{}', username='{}', birthday={}, discord_id={}, guild={})>".format(
@@ -60,6 +71,31 @@ class DiscordUser(Base):
     def birthday(self) -> Birthday:
         birthday: Birthday = Birthday(self._birthday)
         return birthday
+
+    @classmethod
+    def setBirthdayAnnouncedToday(
+        cls, user_discord_id: int, users_timezone: pytz.timezone
+    ):
+        with session_scope() as session:
+            session.query(DiscordUser).filter(
+                DiscordUser.discord_id == user_discord_id
+            ).update({"last_birthday_announced": datetime.now(users_timezone)})
+
+    def hasBirthdayBeenAnnouncedToday(self) -> bool:
+        """Checks if a users birthday has been announced in chat today already
+
+        Returns:
+            bool: True or false, depending if the user has already been announced today
+        """
+        if self.last_birthday_announced is None:
+            return False
+        elif (
+            self.last_birthday_announced
+            < datetime.now(pytz.timezone(self.timezone)).date()
+        ):
+            return False
+        else:
+            return True
 
     @classmethod
     def updateBirthday(cls, user_discord_id: int, new_birthday: Birthday) -> None:

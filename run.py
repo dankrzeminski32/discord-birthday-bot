@@ -36,9 +36,9 @@ async def load_extensions():
 async def main():
     async with bot:
         # recreateDB()
-        mainSeeder.seedDBIfEmpty()
         # ScrapeIt()
         # ImageScraper.ImageScrapeIt()
+        mainSeeder.seedDBIfEmpty()
         await load_extensions()
         await bot.start(DISCORD_BOT_TOKEN)
 

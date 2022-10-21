@@ -5,6 +5,7 @@ from datetime import datetime
 from BirthdayBot.Models import DiscordUser
 from BirthdayBot.Birthday import Birthday
 from BirthdayBot.Cogs.BirthdayChecker import BirthdayChecker
+from pytz import timezone
 
 
 class Events(commands.Cog):
@@ -25,16 +26,30 @@ class Events(commands.Cog):
     async def on_ready(self):
         logger.info(f"We have logged in as {self.bot.user}")
 
-    @tasks.loop(seconds=30)
+    @tasks.loop(seconds=300)
     async def birthdayAnnouncements(self):
         await self.bot.wait_until_ready()
         bdaychecker = BirthdayChecker(self.bot)
         channel = None
-        bdays = BirthdayChecker.getAllBirthdays()
+        users_with_bdays = BirthdayChecker.getAllBirthdays()
+        timezone_filtered_bdays = [
+            user
+            for user in users_with_bdays
+            if Birthday.isToday(user.birthday, timezone(user.timezone))
+        ]
+        unannounced_filtered_bdays = [
+            user
+            for user in timezone_filtered_bdays
+            if user.hasBirthdayBeenAnnouncedToday() is False
+        ]
+
+        if not unannounced_filtered_bdays:
+            return
+
         for guild in self.bot.guilds:
             individual_bdays = []
             for user in guild.members:
-                for userBday in bdays:
+                for userBday in unannounced_filtered_bdays:
                     if user.id == userBday.discord_id:
                         individual_bdays.append(userBday)
                         for channel in guild.text_channels:

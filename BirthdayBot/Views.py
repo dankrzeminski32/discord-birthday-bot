@@ -2,6 +2,7 @@ import discord
 from sqlalchemy import union
 from BirthdayBot.Models import DiscordUser
 from BirthdayBot.Birthday import Birthday
+import pytz
 
 
 class BaseView(discord.ui.View):
@@ -196,19 +197,38 @@ class BirthdayInputModal(discord.ui.Modal):
             min_length=10,
             max_length=10,
         )
+        self.timezoneInput = discord.ui.TextInput(
+            label="Timezone",
+            placeholder="America/Chicago",
+            style=discord.TextStyle.short,
+            min_length=2,
+            max_length=100,
+        )
         self.on_submit_interaction: discord.Interaction
         self.birthdayValue: Birthday
+        self.timezoneValue: str
         self.recievedValidBirthdayValue: bool
+        self.recievedValidTimezone: bool
         self.timed_out: bool
         self.custom_id = "BirthdayInputModal"
         self.add_item(self.birthdayTextInput)
+        self.add_item(self.timezoneInput)
 
     async def on_submit(self, interaction: discord.Interaction):
+        # Attempt to create Birthday datetime object from user text input
         try:
             self.birthdayValue = Birthday.fromUserInput(str(self.birthdayTextInput))
             self.recievedValidBirthdayValue = True
         except:
             self.recievedValidBirthdayValue = False
+
+        # Attempt to create timezone object from user text input
+        try:
+            pytz.timezone(str(self.timezoneInput))
+            self.timezoneValue = self.timezoneInput.value
+            self.recievedValidTimezone = True
+        except:
+            self.recievedValidTimezone = False
 
         self.on_submit_interaction = interaction
         await interaction.response.defer()
