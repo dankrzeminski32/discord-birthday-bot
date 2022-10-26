@@ -256,7 +256,7 @@ class BirthdayCommands(commands.Cog):
         day = datetime.today().day
         numBdays = 1
         embed = discord.Embed(
-            title=f"__Tomorrows Birthday's - {month}/{day+1}🎂🎈__",
+            title=f"__Tomorrows Birthday's - {month}/{day+1} 🎂🎈__",
             description="List of people with birthdays **tomorrow**:",
             color=discord.Color.red(),
         )
@@ -291,7 +291,7 @@ class BirthdayCommands(commands.Cog):
         month = datetime.today().month
         day = datetime.today().day
         embed = discord.Embed(
-            title=f"__Celebrity Birthday's, Tomorrow - {month}/{day+1}🎂🎈__",
+            title=f"__Celebrity Birthday's, Tomorrow - {month}/{day+1} 🎂🎈__",
             description="A random Celebrity with a birthday **tomorrow**: ",
             color=discord.Color.red(),
         )
