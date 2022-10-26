@@ -256,7 +256,7 @@ class BirthdayCommands(commands.Cog):
         day = datetime.today().day
         numBdays = 1
         embed = discord.Embed(
-            title=f"__Tomorrows Birthday's - {month}/{day+1}__",
+            title=f"__Tomorrows Birthday's - {month}/{day+1}🎂🎈__",
             description="List of people with birthdays **tomorrow**:",
             color=discord.Color.red(),
         )
@@ -291,7 +291,7 @@ class BirthdayCommands(commands.Cog):
         month = datetime.today().month
         day = datetime.today().day
         embed = discord.Embed(
-            title=f"__Celebrity Birthday That's Tomorrow - {month}/{day+1}__",
+            title=f"__Celebrity Birthday's, Tomorrow - {month}/{day+1}🎂🎈__",
             description="A random Celebrity with a birthday **tomorrow**: ",
             color=discord.Color.red(),
         )
@@ -317,7 +317,7 @@ class BirthdayCommands(commands.Cog):
         month = datetime.strptime(str(month), "%m")
         month = month.strftime("%B")
         embed = discord.Embed(
-            title=f"__{month} Birthday's__",
+            title=f"__{month} Birthday's 🎂🎈___",
             description="List of people with birthdays this **month**:",
             color=discord.Color.red(),
         )
@@ -370,7 +370,7 @@ class BirthdayCommands(commands.Cog):
 
             embed = discord.Embed(
                 title="__--Infromation--__",
-                description="Here is infromation regarding you.",
+                description="Here is information regarding you.",
                 color=discord.Color.red(),
             )
             embed.add_field(
@@ -379,7 +379,7 @@ class BirthdayCommands(commands.Cog):
                 inline=False,
             )
             embed2 = discord.Embed(
-                title="You Share A Birthday With",
+                title="You Share A Birthday With...",
                 description=f"**{celeb.celebName}**",
                 color=discord.Color.red(),
             )
@@ -390,7 +390,7 @@ class BirthdayCommands(commands.Cog):
             await ctx.send(embed=embed2)
         else:
             await ctx.send(
-                "ERROR: You don't have a birthday on file, make sure you use, '.bday reigster' to set one."
+                "ERROR: You don't have a birthday on file, make sure you use, '.bday register' to set one."
             )
 
         CommandCounter.incrementCommand("me")
