@@ -8,7 +8,9 @@ from BirthdayBot.Models import Base, CelebrityBirthdays
 import datetime
 from datetime import datetime
 
-# from webdriver_manager.chrome import ChromeDriverManager #import doesnt work even after pip install webdriver_manager. Noted By:Ethan
+from webdriver_manager.chrome import (
+    ChromeDriverManager,
+)  # import doesnt work even after pip install webdriver_manager. Noted By:Ethan
 import re
 
 
@@ -25,9 +27,9 @@ def ScrapeIt():
     options.add_argument("--disable-extensions")
     options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
-    # driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
+    driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
 
-    driver = webdriver.Chrome(options=options)  # Usable for Ethan Windows
+    # driver = webdriver.Chrome(options=options)  # Usable for Ethan Windows
     sleepTimer = 2
 
     class CelebrityScraper(object):
