@@ -8,7 +8,9 @@ from BirthdayBot.Models import Base, CelebrityBirthdays
 import datetime
 from datetime import datetime
 
-from webdriver_manager.chrome import ChromeDriverManager #import doesnt work even after pip install webdriver_manager. Noted By:Ethan
+from webdriver_manager.chrome import (
+    ChromeDriverManager,
+)  # import doesnt work even after pip install webdriver_manager. Noted By:Ethan
 import re
 
 
