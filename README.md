@@ -1,4 +1,4 @@
-# BirthdayDiscordBot 🎂
+# Celebrity Birthday Bot 🎂
 
 A simple and easy to use Birthday Discord Bot which helps to boost server comradery and friendship. 
 
