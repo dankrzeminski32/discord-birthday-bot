@@ -1,5 +1,10 @@
 # BirthdayDiscordBot 🎂
 
+![image](https://github.com/dankrzeminski32/discord-birthday-bot/assets/76189617/d1cc5320-88a0-41f6-90e8-7fce4ffd7f32)
+
+![image](https://github.com/dankrzeminski32/discord-birthday-bot/assets/76189617/b27edf59-8956-43e8-8cca-d8f8f7dc732a)
+
+
 A simple and easy to use Birthday Discord Bot which helps to boost server comradery and friendship. 
 
 ## Description
